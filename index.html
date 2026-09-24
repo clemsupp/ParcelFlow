@@ -2,2192 +2,4917 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ParcelFlow</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>ParcelFlow — Centre Logistique</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+:root{
+  --bg:#080b10;
+  --panel:#111722;
+  --panel2:#171e2b;
+  --panel3:#202a39;
+  --line:#2b3647;
+  --text:#edf3fb;
+  --muted:#8290a4;
+  --gold:#f5bd45;
+  --green:#49d18c;
+  --red:#ef6262;
+  --blue:#5ba8ff;
+  --purple:#a477ff;
+  --cyan:#50dbe8;
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #090b0f;
-    color: #eef2f6;
-    font-family: Inter, Arial, sans-serif;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
 
-button {
-    font: inherit;
-    border: 0;
-    color: inherit;
-    cursor: pointer;
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
-#app {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+body{
+  touch-action:none;
 }
 
-/* TOP */
-
-.topbar {
-    height: 68px;
-    flex-shrink: 0;
-    background: #11151b;
-    border-bottom: 1px solid #252c35;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 18px;
-    z-index: 20;
+button{
+  border:0;
+  color:var(--text);
+  font:inherit;
+  cursor:pointer;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+#app{
+  width:100%;
+  height:100%;
+  position:relative;
+  overflow:hidden;
 }
 
-.logo-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: #55d99a;
-    color: #07100b;
-    display: grid;
-    place-items: center;
-    font-size: 20px;
+/* =========================
+   TOP HUD
+========================= */
+
+#topbar{
+  position:absolute;
+  z-index:30;
+  left:12px;
+  right:12px;
+  top:10px;
+  height:64px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  pointer-events:none;
 }
 
-.logo-text {
-    font-size: 19px;
-    font-weight: 900;
-    letter-spacing: -.5px;
+.brand{
+  height:58px;
+  padding:0 18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(13,18,27,.94);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:170px;
+  box-shadow:0 8px 30px rgba(0,0,0,.25);
 }
 
-.logo-text span {
-    color: #55d99a;
+.brand strong{
+  font-size:17px;
+  letter-spacing:.4px;
 }
 
-.top-stats {
-    display: flex;
-    align-items: center;
-    gap: 9px;
+.brand span{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:2px;
 }
 
-.top-stat {
-    background: #171c23;
-    border: 1px solid #29313b;
-    border-radius: 9px;
-    padding: 7px 12px;
-    min-width: 105px;
+.stats{
+  display:flex;
+  gap:7px;
+  flex:1;
+  overflow:hidden;
 }
 
-.top-stat-label {
-    font-size: 9px;
-    color: #77818d;
-    text-transform: uppercase;
-    letter-spacing: .6px;
+.stat{
+  min-width:105px;
+  height:58px;
+  padding:8px 12px;
+  background:rgba(13,18,27,.94);
+  border:1px solid var(--line);
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  box-shadow:0 8px 30px rgba(0,0,0,.2);
 }
 
-.top-stat-value {
-    margin-top: 2px;
-    font-size: 14px;
-    font-weight: 800;
+.stat .label{
+  color:var(--muted);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:1px;
 }
 
-.money {
-    color: #63e49b;
+.stat .value{
+  font-size:16px;
+  font-weight:800;
+  margin-top:2px;
+  white-space:nowrap;
 }
 
-/* MAIN */
+.gold{color:var(--gold)}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.blue{color:var(--blue)}
+.purple{color:var(--purple)}
+.cyan{color:var(--cyan)}
 
-.main {
-    flex: 1;
-    min-height: 0;
-    display: flex;
+.topButtons{
+  display:flex;
+  gap:7px;
+  pointer-events:auto;
 }
 
-/* LEFT */
-
-.sidebar {
-    width: 245px;
-    flex-shrink: 0;
-    background: #10141a;
-    border-right: 1px solid #252c35;
-    padding: 14px;
-    overflow-y: auto;
+.iconBtn{
+  width:52px;
+  height:52px;
+  border-radius:15px;
+  border:1px solid var(--line);
+  background:rgba(13,18,27,.94);
+  font-size:20px;
 }
 
-.section-title {
-    color: #68737f;
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 4px 5px 9px;
+.iconBtn:active{
+  transform:scale(.94);
 }
 
-.tool {
-    width: 100%;
-    background: #151a21;
-    border: 1px solid #272f38;
-    border-radius: 10px;
-    padding: 11px;
-    margin-bottom: 7px;
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    text-align: left;
-    transition: .12s;
+/* =========================
+   GAME
+========================= */
+
+#gameWrap{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 40%,#151d2a 0,#090d14 62%);
 }
 
-.tool:hover {
-    background: #1b222a;
+#game{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  touch-action:none;
+  display:block;
 }
 
-.tool.active {
-    border-color: #55d99a;
-    background: #14251d;
-    box-shadow: 0 0 0 1px rgba(85,217,154,.12);
+/* =========================
+   BOTTOM TOOLBAR
+========================= */
+
+#toolbar{
+  position:absolute;
+  z-index:25;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  height:92px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:rgba(13,18,27,.96);
+  box-shadow:0 15px 45px rgba(0,0,0,.45);
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  touch-action:pan-x;
 }
 
-.tool-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    background: #202730;
-    display: grid;
-    place-items: center;
-    font-size: 17px;
-    flex-shrink: 0;
+#toolbar::-webkit-scrollbar{
+  display:none;
 }
 
-.tool.active .tool-icon {
-    background: #55d99a;
-    color: #08120d;
+.tool{
+  flex:0 0 76px;
+  height:70px;
+  border-radius:16px;
+  border:1px solid #293547;
+  background:#171f2c;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
 }
 
-.tool-name {
-    font-size: 12px;
-    font-weight: 800;
+.tool .ico{
+  font-size:25px;
 }
 
-.tool-info {
-    font-size: 10px;
-    color: #727d89;
-    margin-top: 2px;
+.tool .name{
+  font-size:10px;
+  color:#b9c4d3;
+  white-space:nowrap;
 }
 
-.price {
-    margin-left: auto;
-    font-size: 10px;
-    color: #55d99a;
+.tool.active{
+  border-color:var(--gold);
+  background:#2b2415;
+  box-shadow:0 0 0 2px rgba(245,189,69,.13);
 }
 
-/* CANVAS */
-
-.world {
-    flex: 1;
-    min-width: 0;
-    min-height: 0;
-    position: relative;
-    overflow: hidden;
-    background:
-        radial-gradient(circle at center, #151a20 0%, #0d1014 65%);
+.tool:active{
+  transform:scale(.95);
 }
 
-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    touch-action: none;
+/* =========================
+   SIDE PANEL
+========================= */
+
+#panel{
+  position:absolute;
+  z-index:40;
+  right:12px;
+  top:85px;
+  bottom:116px;
+  width:min(370px,92vw);
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:rgba(13,18,27,.98);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  transform:translateX(calc(100% + 30px));
+  transition:transform .22s ease;
+  overflow:hidden;
 }
 
-/* RIGHT */
-
-.rightbar {
-    width: 275px;
-    flex-shrink: 0;
-    background: #10141a;
-    border-left: 1px solid #252c35;
-    padding: 14px;
-    overflow-y: auto;
+#panel.open{
+  transform:translateX(0);
 }
 
-.panel {
-    background: #151a21;
-    border: 1px solid #272f38;
-    border-radius: 11px;
-    padding: 13px;
-    margin-bottom: 11px;
+#panelHead{
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px 0 18px;
+  border-bottom:1px solid var(--line);
 }
 
-.panel-title {
-    font-size: 12px;
-    font-weight: 900;
-    margin-bottom: 11px;
+#panelTitle{
+  font-weight:800;
+  font-size:17px;
 }
 
-.objective {
-    background: #0f1419;
-    border-radius: 8px;
-    padding: 10px;
+#panelClose{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#202938;
+  font-size:18px;
 }
 
-.objective-title {
-    font-size: 11px;
-    font-weight: 800;
+#panelContent{
+  padding:14px;
+  height:calc(100% - 58px);
+  overflow-y:auto;
+  touch-action:pan-y;
 }
 
-.objective-text {
-    font-size: 10px;
-    color: #79848f;
-    margin-top: 4px;
+.card{
+  background:#171f2c;
+  border:1px solid #2a3648;
+  border-radius:16px;
+  padding:13px;
+  margin-bottom:10px;
 }
 
-.progress {
-    width: 100%;
-    height: 6px;
-    background: #272e37;
-    border-radius: 20px;
-    margin-top: 9px;
-    overflow: hidden;
+.card h3{
+  margin:0 0 7px;
+  font-size:14px;
 }
 
-.progress > div {
-    height: 100%;
-    width: 0%;
-    background: #55d99a;
-    transition: width .25s;
+.card p{
+  margin:5px 0;
+  color:#aeb9c8;
+  font-size:12px;
+  line-height:1.45;
 }
 
-.metric {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 7px 0;
-    border-bottom: 1px solid #242b33;
+.big{
+  font-size:23px;
+  font-weight:900;
 }
 
-.metric:last-child {
-    border-bottom: 0;
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:8px 0;
 }
 
-.metric-label {
-    color: #77818c;
-    font-size: 10px;
+.action{
+  width:100%;
+  min-height:46px;
+  border-radius:13px;
+  background:#263245;
+  border:1px solid #36445a;
+  font-weight:800;
+  margin-top:7px;
 }
 
-.metric-value {
-    font-size: 11px;
-    font-weight: 800;
+.action.goldBtn{
+  background:#4a3613;
+  border-color:#86641f;
 }
 
-.controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
+.action.greenBtn{
+  background:#173c2b;
+  border-color:#286848;
 }
 
-.control-btn {
-    background: #20262e;
-    border: 1px solid #303944;
-    border-radius: 7px;
-    padding: 8px 3px;
-    font-size: 10px;
-    font-weight: 800;
+.action.redBtn{
+  background:#401f23;
+  border-color:#703239;
 }
 
-.control-btn.active {
-    background: #55d99a;
-    color: #07100b;
-    border-color: #55d99a;
+.action:disabled{
+  opacity:.4;
 }
 
-.big-button {
-    width: 100%;
-    padding: 11px;
-    border-radius: 8px;
-    background: #20262e;
-    border: 1px solid #303944;
-    font-size: 11px;
-    font-weight: 800;
-    margin-top: 7px;
+.action:active{
+  transform:scale(.98);
 }
 
-.big-button:hover {
-    background: #29313a;
+.progress{
+  height:8px;
+  border-radius:99px;
+  background:#0c1119;
+  overflow:hidden;
+  margin-top:7px;
 }
 
-.danger {
-    color: #ff7676;
+.progress i{
+  display:block;
+  height:100%;
+  background:var(--gold);
+  width:0%;
+  border-radius:99px;
 }
 
-/* WORLD UI */
+/* =========================
+   MODALS
+========================= */
 
-.world-top {
-    position: absolute;
-    top: 13px;
-    left: 13px;
-    right: 13px;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-    z-index: 3;
+.modal{
+  position:absolute;
+  z-index:80;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.62);
+  backdrop-filter:blur(7px);
+  padding:18px;
 }
 
-.world-chip {
-    background: rgba(12,16,21,.88);
-    border: 1px solid #29313a;
-    border-radius: 9px;
-    padding: 8px 11px;
-    font-size: 10px;
-    color: #9aa4af;
-    backdrop-filter: blur(8px);
+.modal.show{
+  display:flex;
 }
 
-.world-chip strong {
-    color: white;
+.modalBox{
+  width:min(720px,96vw);
+  max-height:90vh;
+  overflow:hidden;
+  border-radius:24px;
+  border:1px solid #354154;
+  background:#111722;
+  box-shadow:0 30px 100px rgba(0,0,0,.7);
 }
 
-.toast {
-    position: absolute;
-    left: 50%;
-    top: 22px;
-    transform: translateX(-50%) translateY(-10px);
-    background: #55d99a;
-    color: #07100b;
-    font-size: 11px;
-    font-weight: 900;
-    padding: 9px 14px;
-    border-radius: 9px;
-    opacity: 0;
-    pointer-events: none;
-    transition: .25s;
-    z-index: 30;
+.modalHead{
+  height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  border-bottom:1px solid var(--line);
 }
 
-.toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+.modalHead strong{
+  font-size:19px;
 }
 
-/* MOBILE */
-
-@media(max-width: 900px) {
-    .sidebar {
-        width: 190px;
-    }
-
-    .rightbar {
-        width: 225px;
-    }
-
-    .top-stat:nth-child(2) {
-        display: none;
-    }
+.modalBody{
+  padding:15px;
+  max-height:calc(90vh - 62px);
+  overflow-y:auto;
+  touch-action:pan-y;
 }
 
-@media(max-width: 700px) {
-    .sidebar {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        height: 78px;
-        width: 100%;
-        z-index: 15;
-        border-right: 0;
-        border-top: 1px solid #252c35;
-        padding: 6px;
-        display: flex;
-        gap: 5px;
-        overflow-x: auto;
-        overflow-y: hidden;
-    }
+/* =========================
+   RESEARCH TREE
+========================= */
 
-    .section-title {
-        display: none;
-    }
+.researchGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
 
-    .tool {
-        width: 76px;
-        min-width: 76px;
-        margin: 0;
-        padding: 5px;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        text-align: center;
-    }
+.research{
+  padding:13px;
+  border-radius:16px;
+  background:#18202d;
+  border:1px solid #2c394b;
+}
 
-    .tool-icon {
-        width: 29px;
-        height: 29px;
-        font-size: 14px;
-    }
+.research.locked{
+  opacity:.5;
+}
 
-    .tool-name {
-        font-size: 8px;
-    }
+.research.done{
+  border-color:#2d8c63;
+  background:#132a21;
+}
 
-    .tool-info,
-    .price {
-        display: none;
-    }
+.research h3{
+  margin:0 0 5px;
+  font-size:14px;
+}
 
-    .rightbar {
-        display: none;
-    }
+.research small{
+  color:#96a3b5;
+  line-height:1.35;
+}
 
-    .topbar {
-        height: 58px;
-    }
+.research button{
+  width:100%;
+  margin-top:9px;
+  height:39px;
+  border-radius:10px;
+  background:#29364a;
+  font-weight:700;
+}
 
-    .top-stat {
-        min-width: 80px;
-        padding: 5px 8px;
-    }
+/* =========================
+   CONTRACTS
+========================= */
 
-    .top-stat-label {
-        font-size: 8px;
-    }
+.contract{
+  border:1px solid #2d394a;
+  background:#171f2c;
+  border-radius:16px;
+  padding:13px;
+  margin-bottom:9px;
+}
 
-    .top-stat-value {
-        font-size: 11px;
-    }
+.contractTop{
+  display:flex;
+  justify-content:space-between;
+}
 
-    .logo-text {
-        font-size: 15px;
-    }
+.contractTitle{
+  font-weight:800;
+}
 
-    .logo-icon {
-        width: 31px;
-        height: 31px;
-    }
+.contractReward{
+  color:var(--gold);
+  font-weight:900;
+}
+
+.contractDesc{
+  color:#99a6b8;
+  font-size:12px;
+  margin:6px 0;
+}
+
+.contractBar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.contractBar .progress{
+  flex:1;
+}
+
+.contractStatus{
+  font-size:11px;
+  color:#aab5c4;
+}
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+#notifications{
+  position:absolute;
+  z-index:100;
+  top:82px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(430px,90vw);
+  pointer-events:none;
+}
+
+.note{
+  background:rgba(17,23,34,.97);
+  border:1px solid #344257;
+  border-radius:15px;
+  padding:12px 15px;
+  margin-bottom:7px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  animation:noteIn .22s ease;
+  font-size:13px;
+}
+
+@keyframes noteIn{
+  from{opacity:0;transform:translateY(-15px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* =========================
+   TUTORIAL
+========================= */
+
+#tutorial{
+  position:absolute;
+  z-index:60;
+  left:50%;
+  bottom:120px;
+  transform:translateX(-50%);
+  width:min(480px,90vw);
+  background:rgba(17,23,34,.97);
+  border:1px solid #3c4a60;
+  border-radius:18px;
+  padding:14px 16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  display:none;
+}
+
+#tutorial.show{
+  display:block;
+}
+
+#tutorial strong{
+  font-size:14px;
+}
+
+#tutorial p{
+  margin:6px 0 10px;
+  font-size:12px;
+  color:#aeb8c8;
+  line-height:1.4;
+}
+
+#tutorial button{
+  width:100%;
+  height:40px;
+  border-radius:11px;
+  background:#263448;
+  font-weight:800;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+  #topbar{
+    left:7px;
+    right:7px;
+    top:7px;
+    height:55px;
+  }
+
+  .brand{
+    min-width:112px;
+    height:50px;
+    padding:0 12px;
+  }
+
+  .brand strong{
+    font-size:14px;
+  }
+
+  .brand span{
+    display:none;
+  }
+
+  .stats{
+    gap:5px;
+  }
+
+  .stat{
+    min-width:86px;
+    height:50px;
+    padding:6px 8px;
+  }
+
+  .stat .label{
+    font-size:7px;
+  }
+
+  .stat .value{
+    font-size:13px;
+  }
+
+  .topButtons{
+    display:none;
+  }
+
+  #toolbar{
+    left:7px;
+    right:7px;
+    bottom:7px;
+    height:82px;
+    border-radius:19px;
+    padding:7px;
+  }
+
+  .tool{
+    flex-basis:67px;
+    height:65px;
+  }
+
+  #panel{
+    top:70px;
+    right:7px;
+    bottom:98px;
+    width:calc(100vw - 14px);
+  }
+
+  .researchGrid{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
 
 <body>
-
 <div id="app">
 
-<header class="topbar">
+  <div id="gameWrap">
+    <canvas id="game"></canvas>
+  </div>
 
-    <div class="logo">
-        <div class="logo-icon">📦</div>
-        <div class="logo-text">
-            PARCEL<span>FLOW</span>
-        </div>
+  <div id="topbar">
+
+    <div class="brand">
+      <strong>ParcelFlow</strong>
+      <span>CENTRE LOGISTIQUE</span>
     </div>
 
-    <div class="top-stats">
+    <div class="stats">
 
-        <div class="top-stat">
-            <div class="top-stat-label">Argent</div>
-            <div class="top-stat-value money" id="money">1 000 €</div>
-        </div>
+      <div class="stat">
+        <span class="label">Trésorerie</span>
+        <span class="value gold" id="money">1 500 €</span>
+      </div>
 
-        <div class="top-stat">
-            <div class="top-stat-label">Colis / min</div>
-            <div class="top-stat-value" id="ppm">0</div>
-        </div>
+      <div class="stat">
+        <span class="label">Colis / min</span>
+        <span class="value green" id="ppm">0</span>
+      </div>
 
-        <div class="top-stat">
-            <div class="top-stat-label">Expédiés</div>
-            <div class="top-stat-value" id="shipped">0</div>
-        </div>
+      <div class="stat">
+        <span class="label">Expédiés</span>
+        <span class="value blue" id="shipped">0</span>
+      </div>
+
+      <div class="stat">
+        <span class="label">Niveau</span>
+        <span class="value purple" id="level">1</span>
+      </div>
+
+      <div class="stat">
+        <span class="label">Énergie</span>
+        <span class="value cyan" id="energy">0 / 100</span>
+      </div>
 
     </div>
 
-</header>
+    <div class="topButtons">
+      <button class="iconBtn" id="researchBtn">🔬</button>
+      <button class="iconBtn" id="contractsBtn">📋</button>
+      <button class="iconBtn" id="statsBtn">📊</button>
+      <button class="iconBtn" id="settingsBtn">⚙️</button>
+    </div>
+  </div>
 
-<main class="main">
+  <div id="notifications"></div>
 
-    <aside class="sidebar">
+  <div id="tutorial">
+    <strong id="tutorialTitle">Bienvenue dans ParcelFlow</strong>
+    <p id="tutorialText">
+      Construis ton premier convoyeur entre l'entrée et la sortie.
+    </p>
+    <button id="tutorialOk">Compris</button>
+  </div>
 
-        <div class="section-title">Construction</div>
+  <div id="toolbar">
 
-        <button class="tool active" data-tool="belt">
-            <div class="tool-icon">➜</div>
-            <div>
-                <div class="tool-name">Tapis roulant</div>
-                <div class="tool-info">Transporter les colis</div>
-            </div>
-            <div class="price">10 €</div>
-        </button>
+    <button class="tool active" data-tool="belt">
+      <span class="ico">➡️</span>
+      <span class="name">Convoyeur</span>
+    </button>
 
-        <button class="tool" data-tool="splitter">
-            <div class="tool-icon">⑂</div>
-            <div>
-                <div class="tool-name">Répartiteur</div>
-                <div class="tool-info">Diviser le flux</div>
-            </div>
-            <div class="price">80 €</div>
-        </button>
+    <button class="tool" data-tool="fastbelt">
+      <span class="ico">⚡</span>
+      <span class="name">Rapide</span>
+    </button>
 
-        <button class="tool" data-tool="merger">
-            <div class="tool-icon">Y</div>
-            <div>
-                <div class="tool-name">Fusionneur</div>
-                <div class="tool-info">Réunir les flux</div>
-            </div>
-            <div class="price">80 €</div>
-        </button>
+    <button class="tool" data-tool="splitter">
+      <span class="ico">🔀</span>
+      <span class="name">Splitter</span>
+    </button>
 
-        <button class="tool" data-tool="sorter">
-            <div class="tool-icon">◇</div>
-            <div>
-                <div class="tool-name">Centre de tri</div>
-                <div class="tool-info">Traiter les colis</div>
-            </div>
-            <div class="price">250 €</div>
-        </button>
+    <button class="tool" data-tool="merger">
+      <span class="ico">🔁</span>
+      <span class="name">Mergeur</span>
+    </button>
 
-        <button class="tool" data-tool="storage">
-            <div class="tool-icon">▣</div>
-            <div>
-                <div class="tool-name">Stockage</div>
-                <div class="tool-info">Entreposer</div>
-            </div>
-            <div class="price">300 €</div>
-        </button>
+    <button class="tool" data-tool="sorter">
+      <span class="ico">🎯</span>
+      <span class="name">Trieur</span>
+    </button>
 
-        <div class="section-title" style="margin-top:18px">Actions</div>
+    <button class="tool" data-tool="scanner">
+      <span class="ico">📡</span>
+      <span class="name">Scanner</span>
+    </button>
 
-        <button class="tool" data-tool="erase">
-            <div class="tool-icon">⌫</div>
-            <div>
-                <div class="tool-name">Démolir</div>
-                <div class="tool-info">Supprimer une case</div>
-            </div>
-        </button>
+    <button class="tool" data-tool="storage">
+      <span class="ico">📦</span>
+      <span class="name">Stockage</span>
+    </button>
 
-        <button class="tool" data-tool="select">
-            <div class="tool-icon">↖</div>
-            <div>
-                <div class="tool-name">Sélection</div>
-                <div class="tool-info">Inspecter</div>
-            </div>
-        </button>
+    <button class="tool" data-tool="charger">
+      <span class="ico">🔋</span>
+      <span class="name">Chargeur</span>
+    </button>
 
-    </aside>
+    <button class="tool" data-tool="dock">
+      <span class="ico">🚚</span>
+      <span class="name">Quai</span>
+    </button>
 
-    <section class="world">
+    <button class="tool" data-tool="erase">
+      <span class="ico">🗑️</span>
+      <span class="name">Détruire</span>
+    </button>
 
-        <canvas id="game"></canvas>
+    <button class="tool" id="rotateTool">
+      <span class="ico">↻</span>
+      <span class="name">Rotation</span>
+    </button>
 
-        <div class="world-top">
-            <div class="world-chip">
-                Mode : <strong id="modeText">Construction</strong>
-            </div>
+    <button class="tool" id="researchTool">
+      <span class="ico">🔬</span>
+      <span class="name">Recherche</span>
+    </button>
 
-            <div class="world-chip">
-                Vitesse : <strong id="speedText">×1</strong>
-            </div>
+  </div>
+
+  <aside id="panel">
+    <div id="panelHead">
+      <span id="panelTitle">Informations</span>
+      <button id="panelClose">✕</button>
+    </div>
+    <div id="panelContent"></div>
+  </aside>
+
+  <!-- RESEARCH -->
+  <div class="modal" id="researchModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <strong>🔬 Centre de recherche</strong>
+        <button class="iconBtn modalClose">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="card">
+          <div class="row">
+            <span>Niveau technologique</span>
+            <strong id="techLevel">1</strong>
+          </div>
+          <div class="progress">
+            <i id="xpBar"></i>
+          </div>
+          <p id="xpText">0 / 100 XP</p>
+        </div>
+        <div class="researchGrid" id="researchGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTRACTS -->
+  <div class="modal" id="contractsModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <strong>📋 Contrats</strong>
+        <button class="iconBtn modalClose">✕</button>
+      </div>
+      <div class="modalBody">
+        <div id="contractsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="modal" id="statsModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <strong>📊 Statistiques</strong>
+        <button class="iconBtn modalClose">✕</button>
+      </div>
+      <div class="modalBody" id="statsContent"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="modal" id="settingsModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <strong>⚙️ Jeu</strong>
+        <button class="iconBtn modalClose">✕</button>
+      </div>
+      <div class="modalBody">
+
+        <div class="card">
+          <h3>Simulation</h3>
+          <button class="action" id="pauseBtn">⏸️ Pause</button>
+          <button class="action" id="speedBtn">Vitesse : ×1</button>
         </div>
 
-        <div class="toast" id="toast"></div>
-
-    </section>
-
-    <aside class="rightbar">
-
-        <div class="panel">
-
-            <div class="panel-title">Objectif actuel</div>
-
-            <div class="objective">
-
-                <div class="objective-title" id="objectiveTitle">
-                    Première expédition
-                </div>
-
-                <div class="objective-text" id="objectiveText">
-                    Expédie 20 colis.
-                </div>
-
-                <div class="progress">
-                    <div id="objectiveProgress"></div>
-                </div>
-
-            </div>
-
+        <div class="card">
+          <h3>Sauvegarde</h3>
+          <button class="action greenBtn" id="saveBtn">💾 Sauvegarder</button>
+          <button class="action" id="loadBtn">↩️ Charger</button>
+          <button class="action redBtn" id="resetBtn">⚠️ Nouvelle partie</button>
         </div>
 
-        <div class="panel">
-
-            <div class="panel-title">Production</div>
-
-            <div class="metric">
-                <span class="metric-label">Colis entrants</span>
-                <span class="metric-value" id="incoming">0 / min</span>
-            </div>
-
-            <div class="metric">
-                <span class="metric-label">Colis expédiés</span>
-                <span class="metric-value" id="shipped2">0</span>
-            </div>
-
-            <div class="metric">
-                <span class="metric-label">En attente</span>
-                <span class="metric-value" id="waiting">0</span>
-            </div>
-
-            <div class="metric">
-                <span class="metric-label">Efficacité</span>
-                <span class="metric-value" id="efficiency">100 %</span>
-            </div>
-
+        <div class="card">
+          <h3>Contrôles tablette</h3>
+          <p>👆 Appui : construire / sélectionner</p>
+          <p>👆 Glisser : construire une ligne</p>
+          <p>👆 Deux doigts : déplacer la caméra</p>
+          <p>🤏 Pincer : zoomer / dézoomer</p>
+          <p>🔄 Appuyer sur un convoyeur : rotation</p>
+          <p>🖐️ Appui long : informations</p>
         </div>
 
-        <div class="panel">
-
-            <div class="panel-title">Simulation</div>
-
-            <div class="controls">
-
-                <button class="control-btn active" data-speed="1">
-                    ×1
-                </button>
-
-                <button class="control-btn" data-speed="2">
-                    ×2
-                </button>
-
-                <button class="control-btn" data-speed="4">
-                    ×4
-                </button>
-
-            </div>
-
-            <button class="big-button" id="pauseBtn">
-                ⏸ Pause
-            </button>
-
-            <button class="big-button" id="resetBtn">
-                ↻ Recommencer
-            </button>
-
-        </div>
-
-        <div class="panel">
-
-            <div class="panel-title">Économie</div>
-
-            <div class="metric">
-                <span class="metric-label">Valeur / colis</span>
-                <span class="metric-value money">12 €</span>
-            </div>
-
-            <div class="metric">
-                <span class="metric-label">Coût tapis</span>
-                <span class="metric-value">10 €</span>
-            </div>
-
-            <div class="metric">
-                <span class="metric-label">Valeur usine</span>
-                <span class="metric-value" id="factoryValue">0 €</span>
-            </div>
-
-        </div>
-
-    </aside>
-
-</main>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
+"use strict";
+
+/* =========================================================
+   PARCELFLOW V3
+   GROS MOTEUR DE JEU
+========================================================= */
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 let W = 0;
 let H = 0;
+let DPR = Math.min(devicePixelRatio || 1, 2);
 
-const TILE = 52;
-const COLS = 18;
-const ROWS = 11;
-
-let offsetX = 0;
-let offsetY = 0;
-
-let selectedTool = "belt";
-let speed = 1;
-let paused = false;
-
-let lastTime = performance.now();
-
-const grid = [];
-
-for(let y = 0; y < ROWS; y++) {
-    grid[y] = [];
-
-    for(let x = 0; x < COLS; x++) {
-        grid[y][x] = null;
-    }
+function resize(){
+  W = canvas.clientWidth;
+  H = canvas.clientHeight;
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(W * DPR);
+  canvas.height = Math.floor(H * DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
 }
 
-/*
-    Directions:
-    0 = droite
-    1 = bas
-    2 = gauche
-    3 = haut
-*/
-
-function makeBelt(dir = 0) {
-    return {
-        type: "belt",
-        dir: dir,
-        parcels: []
-    };
-}
-
-/* Entrée */
-
-grid[5][1] = {
-    type: "input",
-    parcels: [],
-    timer: 0
-};
-
-/* Sortie */
-
-grid[5][16] = {
-    type: "output",
-    parcels: [],
-    shipped: 0
-};
-
-/* Ligne de départ */
-
-for(let x = 2; x <= 5; x++) {
-    grid[5][x] = makeBelt(0);
-}
-
-/* Quelques tapis initiaux */
-
-grid[5][6] = makeBelt(0);
-grid[5][7] = makeBelt(0);
-grid[5][8] = makeBelt(0);
-grid[5][9] = makeBelt(0);
-grid[5][10] = makeBelt(0);
-grid[5][11] = makeBelt(0);
-grid[5][12] = makeBelt(0);
-grid[5][13] = makeBelt(0);
-grid[5][14] = makeBelt(0);
-grid[5][15] = makeBelt(0);
-
-let money = 1000;
-let totalShipped = 0;
-let totalIncoming = 0;
-let totalBuilt = 0;
-let currentPPM = 0;
-
-let factoryValue = 0;
-
-let spawnTimer = 0;
-
-const parcels = [];
-
-let mouse = {
-    x: 0,
-    y: 0,
-    down: false
-};
-
-let touchStart = null;
-
-/* ------------------------------------------------ */
-
-function resize() {
-
-    const rect = canvas.getBoundingClientRect();
-
-    W = rect.width;
-    H = rect.height;
-
-    canvas.width = Math.floor(W * devicePixelRatio);
-    canvas.height = Math.floor(H * devicePixelRatio);
-
-    ctx.setTransform(
-        devicePixelRatio,
-        0,
-        0,
-        devicePixelRatio,
-        0,
-        0
-    );
-
-    offsetX = Math.max(
-        20,
-        (W - COLS * TILE) / 2
-    );
-
-    offsetY = Math.max(
-        70,
-        (H - ROWS * TILE) / 2
-    );
-}
-
-window.addEventListener("resize", resize);
-
+window.addEventListener("resize",resize);
 resize();
 
-/* ------------------------------------------------ */
+/* =========================================================
+   CONFIGURATION
+========================================================= */
 
-function cellCenter(x, y) {
+const TILE = 58;
 
-    return {
-        x: offsetX + x * TILE + TILE / 2,
-        y: offsetY + y * TILE + TILE / 2
-    };
-}
+const WORLD_W = 90;
+const WORLD_H = 60;
 
-function mouseCell() {
+const COLORS = {
+  bg:"#090d14",
+  grid:"#182130",
+  grid2:"#202b3c",
+  belt:"#303d4f",
+  beltEdge:"#4c5c72",
+  fast:"#31546c",
+  fastEdge:"#5da7d8",
+  yellow:"#f5bd45",
+  green:"#49d18c",
+  red:"#ef6262",
+  blue:"#5ba8ff",
+  purple:"#a477ff",
+  cyan:"#50dbe8",
+  white:"#edf3fb"
+};
 
-    return {
-        x: Math.floor((mouse.x - offsetX) / TILE),
-        y: Math.floor((mouse.y - offsetY) / TILE)
-    };
-}
+const BUILDINGS = {
+  belt:{
+    name:"Convoyeur",
+    icon:"➡️",
+    price:75,
+    energy:1,
+    speed:1,
+    desc:"Convoyeur standard.",
+    color:"#39485c"
+  },
 
-/* ------------------------------------------------ */
+  fastbelt:{
+    name:"Convoyeur rapide",
+    icon:"⚡",
+    price:1500,
+    energy:3,
+    speed:2.2,
+    desc:"Transporte les colis plus rapidement.",
+    color:"#31546c",
+    research:"fastBelts"
+  },
 
-function drawBackground() {
+  splitter:{
+    name:"Splitter",
+    icon:"🔀",
+    price:3200,
+    energy:4,
+    speed:1,
+    desc:"Divise le flux entre plusieurs sorties.",
+    research:"splitters"
+  },
 
-    ctx.fillStyle = "#0d1014";
-    ctx.fillRect(0, 0, W, H);
+  merger:{
+    name:"Mergeur",
+    icon:"🔁",
+    price:4500,
+    energy:4,
+    speed:1,
+    desc:"Fusionne plusieurs flux.",
+    research:"mergers"
+  },
 
-    ctx.strokeStyle = "rgba(255,255,255,.035)";
-    ctx.lineWidth = 1;
+  sorter:{
+    name:"Trieur",
+    icon:"🎯",
+    price:8000,
+    energy:6,
+    speed:1,
+    desc:"Trie les colis selon leur couleur.",
+    research:"sorters"
+  },
 
-    for(let x = 0; x <= COLS; x++) {
+  scanner:{
+    name:"Scanner",
+    icon:"📡",
+    price:12500,
+    energy:8,
+    speed:1,
+    desc:"Améliore la valeur des colis.",
+    research:"scanners"
+  },
 
-        const px = offsetX + x * TILE;
+  storage:{
+    name:"Stockage",
+    icon:"📦",
+    price:25000,
+    energy:5,
+    capacity:10,
+    desc:"Stocke temporairement les colis.",
+    research:"storage"
+  },
 
-        ctx.beginPath();
-        ctx.moveTo(px, offsetY);
-        ctx.lineTo(px, offsetY + ROWS * TILE);
-        ctx.stroke();
+  charger:{
+    name:"Chargeur",
+    icon:"🔋",
+    price:18000,
+    energy:-15,
+    desc:"Produit de l'énergie.",
+    research:"energy"
+  },
+
+  dock:{
+    name:"Quai d'expédition",
+    icon:"🚚",
+    price:40000,
+    energy:10,
+    desc:"Expédie les commandes.",
+    research:"docks"
+  }
+};
+
+const PACKAGE_TYPES = [
+  {
+    id:"standard",
+    name:"Standard",
+    color:"#7f8da3",
+    value:50,
+    weight:1
+  },
+  {
+    id:"fragile",
+    name:"Fragile",
+    color:"#f0a04b",
+    value:90,
+    weight:1
+  },
+  {
+    id:"priority",
+    name:"Prioritaire",
+    color:"#e85d75",
+    value:150,
+    weight:1
+  },
+  {
+    id:"premium",
+    name:"Premium",
+    color:"#a477ff",
+    value:300,
+    weight:2
+  }
+];
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+let state = {
+  money:1500,
+  xp:0,
+  level:1,
+
+  shipped:0,
+  delivered:0,
+  rejected:0,
+
+  revenue:0,
+  expenses:0,
+
+  energyUsed:0,
+  energyProduced:0,
+
+  totalPackages:0,
+
+  gameTime:0,
+  realTime:0,
+
+  paused:false,
+  speed:1,
+
+  camera:{
+    x:-10,
+    y:-4,
+    zoom:1
+  },
+
+  selectedTool:"belt",
+  rotation:1,
+
+  grid:[],
+
+  packages:[],
+  trucks:[],
+
+  contracts:[],
+
+  research:{
+    fastBelts:false,
+    splitters:false,
+    mergers:false,
+    sorters:false,
+    scanners:false,
+    storage:false,
+    energy:false,
+    docks:false,
+    automation:false,
+    logistics:false,
+    robotics:false,
+    express:false,
+    megaStorage:false,
+    trains:false,
+    regional:false
+  },
+
+  stats:{
+    bestPPM:0,
+    maxMoney:1500,
+    totalBuilt:0,
+    totalDestroyed:0,
+    playSeconds:0,
+    contractsCompleted:0,
+    researchBought:0
+  },
+
+  tutorialStep:0,
+  nextPackage:2.5,
+  nextTruck:45,
+  contractTimer:0,
+  autosave:0
+};
+
+/* =========================================================
+   GRID
+========================================================= */
+
+function createGrid(){
+  state.grid = [];
+
+  for(let y=0;y<WORLD_H;y++){
+    const row = [];
+
+    for(let x=0;x<WORLD_W;x++){
+      row.push(null);
     }
 
-    for(let y = 0; y <= ROWS; y++) {
+    state.grid.push(row);
+  }
+}
 
-        const py = offsetY + y * TILE;
+createGrid();
 
-        ctx.beginPath();
-        ctx.moveTo(offsetX, py);
-        ctx.lineTo(offsetX + COLS * TILE, py);
-        ctx.stroke();
+/* =========================================================
+   STARTER FACTORY
+========================================================= */
+
+function placeInitial(){
+
+  // Entrance
+  state.grid[30][4] = {
+    type:"input",
+    rotation:1,
+    level:1
+  };
+
+  // Starter line
+  for(let x=5;x<=12;x++){
+    state.grid[30][x] = {
+      type:"belt",
+      rotation:1,
+      level:1
+    };
+  }
+
+  state.grid[30][13] = {
+    type:"dock",
+    rotation:1,
+    level:1,
+    free:true
+  };
+
+  // Small storage
+  state.grid[34][8] = {
+    type:"storage",
+    rotation:0,
+    level:1,
+    free:true
+  };
+
+  state.stats.totalBuilt = 9;
+}
+
+placeInitial();
+
+/* =========================================================
+   WORLD / COORDINATES
+========================================================= */
+
+function screenToWorld(px,py){
+  return {
+    x:(px - W/2) / state.camera.zoom + state.camera.x,
+    y:(py - H/2) / state.camera.zoom + state.camera.y
+  };
+}
+
+function worldToScreen(wx,wy){
+  return {
+    x:(wx - state.camera.x) * state.camera.zoom + W/2,
+    y:(wy - state.camera.y) * state.camera.zoom + H/2
+  };
+}
+
+function worldToCell(wx,wy){
+  return {
+    x:Math.floor(wx / TILE),
+    y:Math.floor(wy / TILE)
+  };
+}
+
+function cellCenter(x,y){
+  return {
+    x:x*TILE + TILE/2,
+    y:y*TILE + TILE/2
+  };
+}
+
+function validCell(x,y){
+  return x>=0 && y>=0 && x<WORLD_W && y<WORLD_H;
+}
+
+/* =========================================================
+   MONEY
+========================================================= */
+
+function formatMoney(n){
+  n = Math.floor(n);
+
+  if(n>=1e12) return (n/1e12).toFixed(2)+" T€";
+  if(n>=1e9) return (n/1e9).toFixed(2)+" Md€";
+  if(n>=1e6) return (n/1e6).toFixed(2)+" M€";
+  if(n>=1e3) return (n/1e3).toFixed(1)+" k€";
+
+  return n.toLocaleString("fr-FR")+" €";
+}
+
+function spend(amount){
+  if(state.money < amount){
+    notify("💸 Pas assez d'argent.", "red");
+    return false;
+  }
+
+  state.money -= amount;
+  state.expenses += amount;
+
+  return true;
+}
+
+function earn(amount){
+  state.money += amount;
+  state.revenue += amount;
+
+  state.stats.maxMoney =
+    Math.max(state.stats.maxMoney,state.money);
+}
+
+/* =========================================================
+   XP / LEVEL
+========================================================= */
+
+function xpNeeded(){
+  return Math.floor(
+    100 * Math.pow(1.22,state.level-1)
+  );
+}
+
+function addXP(amount){
+
+  state.xp += amount;
+
+  while(state.xp >= xpNeeded()){
+    state.xp -= xpNeeded();
+    state.level++;
+
+    notify(
+      "🎉 Niveau "+state.level+" atteint !",
+      "green"
+    );
+
+    if(state.level===3){
+      notify("🔬 De nouvelles recherches sont disponibles.");
     }
+
+    if(state.level===5){
+      notify("🚚 Les contrats industriels arrivent.");
+    }
+
+    if(state.level===10){
+      notify("🏭 Tu peux maintenant viser le méga-centre.");
+    }
+  }
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
 
-function drawCellBase(x, y) {
+function notify(text,type="normal"){
 
-    const px = offsetX + x * TILE;
-    const py = offsetY + y * TILE;
+  const wrap =
+    document.getElementById("notifications");
 
-    ctx.fillStyle = "#12171d";
+  const div = document.createElement("div");
 
-    ctx.fillRect(
-        px + 1,
-        py + 1,
-        TILE - 2,
-        TILE - 2
+  div.className = "note";
+
+  if(type==="red"){
+    div.style.borderColor="#71353b";
+  }
+
+  if(type==="green"){
+    div.style.borderColor="#2e7354";
+  }
+
+  div.textContent = text;
+
+  wrap.appendChild(div);
+
+  setTimeout(()=>{
+    div.style.opacity="0";
+    div.style.transform="translateY(-8px)";
+
+    setTimeout(()=>div.remove(),220);
+  },2600);
+}
+
+/* =========================================================
+   BUILDING HELPERS
+========================================================= */
+
+function getBuilding(x,y){
+  if(!validCell(x,y)) return null;
+  return state.grid[y][x];
+}
+
+function setBuilding(x,y,b){
+  if(!validCell(x,y)) return false;
+
+  state.grid[y][x] = b;
+
+  return true;
+}
+
+function isFree(x,y){
+  return validCell(x,y) && !state.grid[y][x];
+}
+
+function buildingPrice(type){
+
+  const b = BUILDINGS[type];
+
+  if(!b) return 0;
+
+  const inflation =
+    1 +
+    Math.min(
+      .55,
+      state.stats.totalBuilt / 1000
+    );
+
+  return Math.floor(b.price * inflation);
+}
+
+function canBuild(type){
+
+  const b = BUILDINGS[type];
+
+  if(!b) return false;
+
+  if(b.research && !state.research[b.research]){
+    notify("🔒 Recherche nécessaire.");
+    return false;
+  }
+
+  return true;
+}
+
+function buildAt(x,y,type,rotation=1){
+
+  if(!canBuild(type)) return false;
+
+  if(!isFree(x,y)){
+    return false;
+  }
+
+  const price = buildingPrice(type);
+
+  if(!spend(price)){
+    return false;
+  }
+
+  setBuilding(x,y,{
+    type,
+    rotation,
+    level:1,
+    age:0
+  });
+
+  state.stats.totalBuilt++;
+
+  addXP(Math.max(1,Math.floor(price/100)));
+
+  return true;
+}
+
+function destroyAt(x,y){
+
+  const b = getBuilding(x,y);
+
+  if(!b) return false;
+
+  if(b.free){
+    state.grid[y][x]=null;
+    return true;
+  }
+
+  // Partial refund
+  const base =
+    BUILDINGS[b.type]?.price || 0;
+
+  const refund =
+    Math.floor(base * .25);
+
+  state.money += refund;
+
+  state.grid[y][x]=null;
+
+  state.stats.totalDestroyed++;
+
+  notify(
+    "🗑️ Détruit : +"+formatMoney(refund),
+    "green"
+  );
+
+  return true;
+}
+
+function rotateAt(x,y){
+
+  const b = getBuilding(x,y);
+
+  if(!b) return;
+
+  if(
+    b.type==="input" ||
+    b.type==="dock" ||
+    b.type==="storage" ||
+    b.type==="scanner" ||
+    b.type==="charger"
+  ){
+    b.rotation =
+      (b.rotation+1)%4;
+    return;
+  }
+
+  b.rotation =
+    (b.rotation+1)%4;
+}
+
+/* =========================================================
+   DIRECTIONS
+========================================================= */
+
+const DIRS = [
+  {x:0,y:-1},
+  {x:1,y:0},
+  {x:0,y:1},
+  {x:-1,y:0}
+];
+
+function dirVector(rotation){
+  return DIRS[rotation%4];
+}
+
+function opposite(r){
+  return (r+2)%4;
+}
+
+function nextCell(x,y,rotation){
+  const d=dirVector(rotation);
+
+  return {
+    x:x+d.x,
+    y:y+d.y
+  };
+}
+
+/* =========================================================
+   CONNECTIONS
+========================================================= */
+
+function connectedFrom(x,y,rotation){
+
+  const n = nextCell(x,y,rotation);
+
+  if(!validCell(n.x,n.y)) return false;
+
+  const b = getBuilding(n.x,n.y);
+
+  if(!b) return false;
+
+  if(b.type==="dock") return true;
+
+  if(
+    b.type==="belt" ||
+    b.type==="fastbelt" ||
+    b.type==="splitter" ||
+    b.type==="merger" ||
+    b.type==="sorter" ||
+    b.type==="scanner"
+  ){
+
+    return (
+      b.rotation === opposite(rotation)
+      ||
+      b.type==="splitter"
+      ||
+      b.type==="merger"
+      ||
+      b.type==="sorter"
+    );
+  }
+
+  return false;
+}
+
+/* =========================================================
+   PACKAGE CREATION
+========================================================= */
+
+function randomPackageType(){
+
+  const r=Math.random();
+
+  if(r<.58) return PACKAGE_TYPES[0];
+  if(r<.78) return PACKAGE_TYPES[1];
+  if(r<.94) return PACKAGE_TYPES[2];
+
+  return PACKAGE_TYPES[3];
+}
+
+function createPackage(){
+
+  const type=randomPackageType();
+
+  const p={
+    id:state.totalPackages++,
+    type:type.id,
+    x:4,
+    y:30,
+    progress:.1,
+    rotation:1,
+    speed:1,
+    alive:true,
+    age:0,
+    scanned:false,
+    stored:false,
+    routeCount:0,
+    value:type.value,
+    createdAt:state.gameTime
+  };
+
+  state.packages.push(p);
+}
+
+/* =========================================================
+   PACKAGE LOOKUP
+========================================================= */
+
+function packageType(id){
+  return PACKAGE_TYPES.find(x=>x.id===id)
+    || PACKAGE_TYPES[0];
+}
+
+/* =========================================================
+   PACKAGE MOVEMENT
+========================================================= */
+
+function movePackage(p,dt){
+
+  p.age += dt;
+
+  const cx=Math.floor(p.x);
+  const cy=Math.floor(p.y);
+
+  const b=getBuilding(cx,cy);
+
+  if(!b){
+    p.x=4;
+    p.y=30;
+    p.progress=0;
+    return;
+  }
+
+  let speed=1;
+
+  if(b.type==="belt"){
+    speed=1;
+  }
+
+  if(b.type==="fastbelt"){
+    speed=2.2;
+  }
+
+  if(b.type==="scanner"){
+    speed=.8;
+
+    if(!p.scanned){
+      p.scanned=true;
+      p.value=Math.floor(p.value*1.35);
+    }
+  }
+
+  if(b.type==="storage"){
+    handleStorage(p,cx,cy);
+    return;
+  }
+
+  if(b.type==="splitter"){
+    handleSplitter(p,cx,cy,b);
+    return;
+  }
+
+  if(b.type==="sorter"){
+    handleSorter(p,cx,cy,b);
+    return;
+  }
+
+  if(b.type==="merger"){
+    speed=.9;
+  }
+
+  if(b.type==="dock"){
+    shipPackage(p,cx,cy);
+    return;
+  }
+
+  p.speed=speed;
+
+  const step =
+    dt *
+    speed *
+    .85;
+
+  p.progress += step;
+
+  if(p.progress>=1){
+
+    p.progress=0;
+
+    const n=nextCell(
+      cx,
+      cy,
+      b.rotation
+    );
+
+    if(validCell(n.x,n.y)){
+
+      const nb=getBuilding(n.x,n.y);
+
+      if(nb){
+
+        p.x=n.x;
+        p.y=n.y;
+        p.rotation=b.rotation;
+        p.routeCount++;
+
+      }else{
+
+        // Lost package -> return to input
+        p.x=4;
+        p.y=30;
+        p.progress=0;
+
+        state.rejected++;
+
+        notify(
+          "⚠️ Colis bloqué : réseau incomplet.",
+          "red"
+        );
+      }
+
+    }else{
+
+      p.x=4;
+      p.y=30;
+      p.progress=0;
+    }
+  }
+}
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const storageContents=new Map();
+
+function storageKey(x,y){
+  return x+"_"+y;
+}
+
+function handleStorage(p,x,y){
+
+  const key=storageKey(x,y);
+
+  if(!storageContents.has(key)){
+    storageContents.set(key,[]);
+  }
+
+  const arr=storageContents.get(key);
+
+  if(arr.length<10){
+
+    arr.push({
+      type:p.type,
+      value:p.value
+    });
+
+    p.stored=true;
+
+    p.x=-100;
+    p.y=-100;
+
+    setTimeout(()=>{
+      const index=state.packages.indexOf(p);
+
+      if(index>=0){
+        state.packages.splice(index,1);
+      }
+    },0);
+
+  }else{
+
+    p.progress=.5;
+  }
+}
+
+/* =========================================================
+   SPLITTER
+========================================================= */
+
+const splitterMemory=new Map();
+
+function handleSplitter(p,x,y,b){
+
+  const key=x+"_"+y;
+
+  let count=splitterMemory.get(key)||0;
+
+  const choices=[
+    (b.rotation+1)%4,
+    (b.rotation+3)%4
+  ];
+
+  const chosen =
+    choices[count%choices.length];
+
+  splitterMemory.set(key,count+1);
+
+  const n=nextCell(x,y,chosen);
+
+  if(getBuilding(n.x,n.y)){
+
+    p.x=n.x;
+    p.y=n.y;
+    p.rotation=chosen;
+    p.progress=0;
+    p.routeCount++;
+  }
+}
+
+/* =========================================================
+   SORTER
+========================================================= */
+
+function handleSorter(p,x,y,b){
+
+  let r=b.rotation;
+
+  const type=packageType(p.type);
+
+  if(type.id==="priority" || type.id==="premium"){
+    r=(b.rotation+1)%4;
+  }else{
+    r=(b.rotation+3)%4;
+  }
+
+  const n=nextCell(x,y,r);
+
+  if(getBuilding(n.x,n.y)){
+
+    p.x=n.x;
+    p.y=n.y;
+    p.rotation=r;
+    p.progress=0;
+    p.routeCount++;
+  }
+}
+
+/* =========================================================
+   SHIPPING
+========================================================= */
+
+function shipPackage(p,x,y){
+
+  const value =
+    p.value *
+    (1 + Math.min(.5,p.routeCount*.01));
+
+  earn(value);
+
+  state.shipped++;
+  state.delivered++;
+
+  addXP(
+    Math.max(
+      2,
+      Math.floor(value/20)
+    )
+  );
+
+  updateContracts(p);
+
+  p.alive=false;
+}
+
+/* =========================================================
+   CLEAN PACKAGES
+========================================================= */
+
+function cleanPackages(){
+
+  state.packages =
+    state.packages.filter(
+      p=>p.alive && p.x>-50
     );
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   TRUCKS
+========================================================= */
 
-function drawBelt(x, y, belt) {
+function spawnTruck(){
 
-    const c = cellCenter(x,y);
+  state.trucks.push({
+    id:Date.now()+Math.random(),
+    x:0,
+    y:0,
+    progress:0,
+    order:null,
+    arrived:false,
+    depart:0
+  });
+}
 
-    const px = offsetX + x*TILE;
-    const py = offsetY + y*TILE;
+function updateTrucks(dt){
 
-    ctx.fillStyle = "#20262d";
+  for(const truck of state.trucks){
 
-    ctx.fillRect(
-        px + 5,
-        py + 5,
-        TILE - 10,
-        TILE - 10
+    truck.progress += dt*.08;
+
+    if(
+      !truck.arrived &&
+      truck.progress>=1
+    ){
+
+      truck.arrived=true;
+      truck.depart=state.gameTime+35;
+
+      notify(
+        "🚚 Un camion vient d'arriver !"
+      );
+
+      createTruckContract();
+    }
+
+    if(
+      truck.arrived &&
+      state.gameTime>truck.depart
+    ){
+
+      truck.remove=true;
+    }
+  }
+
+  state.trucks =
+    state.trucks.filter(t=>!t.remove);
+}
+
+/* =========================================================
+   CONTRACTS
+========================================================= */
+
+let contractId=1;
+
+function createContract(){
+
+  const amount =
+    8+
+    Math.floor(
+      Math.random() *
+      (12+state.level*3)
     );
 
-    ctx.strokeStyle = "#303943";
-    ctx.lineWidth = 2;
+  const type=
+    PACKAGE_TYPES[
+      Math.floor(
+        Math.random()*PACKAGE_TYPES.length
+      )
+    ];
 
-    ctx.strokeRect(
-        px + 5,
-        py + 5,
-        TILE - 10,
-        TILE - 10
+  const reward =
+    Math.floor(
+      amount *
+      type.value *
+      (1.8+state.level*.05)
     );
+
+  state.contracts.push({
+    id:contractId++,
+    title:"Commande "+String(contractId).padStart(4,"0"),
+    type:type.id,
+    required:amount,
+    current:0,
+    reward,
+    time:120+state.level*10,
+    maxTime:120+state.level*10,
+    active:true
+  });
+}
+
+function createTruckContract(){
+
+  const amount=
+    25+
+    state.level*5;
+
+  const type=
+    PACKAGE_TYPES[
+      Math.floor(
+        Math.random()*PACKAGE_TYPES.length
+      )
+    ];
+
+  state.contracts.push({
+    id:contractId++,
+    title:"Contrat camion",
+    type:type.id,
+    required:amount,
+    current:0,
+    reward:Math.floor(
+      amount*type.value*2.5
+    ),
+    time:180,
+    maxTime:180,
+    active:true,
+    truck:true
+  });
+
+  notify("📋 Nouveau contrat urgent !");
+}
+
+function updateContracts(p){
+
+  for(const c of state.contracts){
+
+    if(
+      c.active &&
+      c.type===p.type &&
+      c.current<c.required
+    ){
+
+      c.current++;
+
+      if(c.current>=c.required){
+
+        c.active=false;
+
+        earn(c.reward);
+
+        state.stats.contractsCompleted++;
+
+        addXP(
+          Math.floor(c.reward/50)
+        );
+
+        notify(
+          "💰 Contrat terminé : +"+
+          formatMoney(c.reward),
+          "green"
+        );
+      }
+
+      break;
+    }
+  }
+}
+
+function updateContractsTime(dt){
+
+  for(const c of state.contracts){
+
+    if(!c.active) continue;
+
+    c.time-=dt;
+
+    if(c.time<=0){
+
+      c.active=false;
+
+      notify(
+        "❌ Contrat échoué : "+c.title,
+        "red"
+      );
+    }
+  }
+}
+
+/* =========================================================
+   RESEARCH
+========================================================= */
+
+const RESEARCH = [
+
+  {
+    id:"fastBelts",
+    name:"Convoyeurs rapides",
+    desc:"Débloque les convoyeurs rapides.",
+    cost:2500,
+    level:2
+  },
+
+  {
+    id:"splitters",
+    name:"Division de flux",
+    desc:"Débloque les splitters.",
+    cost:5000,
+    level:3
+  },
+
+  {
+    id:"mergers",
+    name:"Fusion de flux",
+    desc:"Débloque les mergeurs.",
+    cost:7000,
+    level:4
+  },
+
+  {
+    id:"sorters",
+    name:"Tri automatisé",
+    desc:"Débloque les trieurs.",
+    cost:12000,
+    level:5
+  },
+
+  {
+    id:"scanners",
+    name:"Scanner RFID",
+    desc:"Les colis scannés valent davantage.",
+    cost:20000,
+    level:6
+  },
+
+  {
+    id:"storage",
+    name:"Logistique de stockage",
+    desc:"Débloque les grands systèmes de stockage.",
+    cost:30000,
+    level:7
+  },
+
+  {
+    id:"energy",
+    name:"Réseau énergétique",
+    desc:"Débloque les chargeurs.",
+    cost:40000,
+    level:8
+  },
+
+  {
+    id:"docks",
+    name:"Expédition industrielle",
+    desc:"Débloque les quais d'expédition.",
+    cost:65000,
+    level:10
+  },
+
+  {
+    id:"automation",
+    name:"Automatisation",
+    desc:"Réduit légèrement les temps d'attente.",
+    cost:100000,
+    level:12
+  },
+
+  {
+    id:"logistics",
+    name:"Optimisation logistique",
+    desc:"Les contrats rapportent +15%.",
+    cost:175000,
+    level:15
+  },
+
+  {
+    id:"robotics",
+    name:"Robotique",
+    desc:"Débloque une automatisation avancée.",
+    cost:300000,
+    level:20
+  },
+
+  {
+    id:"express",
+    name:"Réseau Express",
+    desc:"Débloque les très grands flux.",
+    cost:750000,
+    level:25
+  },
+
+  {
+    id:"megaStorage",
+    name:"Méga-entrepôts",
+    desc:"Capacité de stockage considérablement augmentée.",
+    cost:1500000,
+    level:30
+  },
+
+  {
+    id:"trains",
+    name:"Fret ferroviaire",
+    desc:"Débloque les futures extensions ferroviaires.",
+    cost:5000000,
+    level:40
+  },
+
+  {
+    id:"regional",
+    name:"Réseau régional",
+    desc:"Débloque les centres régionaux.",
+    cost:15000000,
+    level:50
+  }
+
+];
+
+function buyResearch(id){
+
+  const r=
+    RESEARCH.find(x=>x.id===id);
+
+  if(!r) return;
+
+  if(state.research[id]){
+    notify("Déjà recherché.");
+    return;
+  }
+
+  if(state.level<r.level){
+    notify(
+      "🔒 Niveau "+r.level+" requis."
+    );
+    return;
+  }
+
+  if(!spend(r.cost)){
+    return;
+  }
+
+  state.research[id]=true;
+  state.stats.researchBought++;
+
+  addXP(r.cost/100);
+
+  notify(
+    "🔬 Recherche terminée : "+r.name,
+    "green"
+  );
+
+  renderResearch();
+}
+
+/* =========================================================
+   ENERGY
+========================================================= */
+
+function calculateEnergy(){
+
+  let used=0;
+  let produced=0;
+
+  for(let y=0;y<WORLD_H;y++){
+
+    for(let x=0;x<WORLD_W;x++){
+
+      const b=state.grid[y][x];
+
+      if(!b) continue;
+
+      const def=BUILDINGS[b.type];
+
+      if(!def) continue;
+
+      let e=def.energy||0;
+
+      e *= b.level||1;
+
+      if(b.type==="charger"){
+        produced+=15*b.level;
+      }else{
+        used+=Math.max(0,e);
+      }
+    }
+  }
+
+  state.energyUsed=used;
+  state.energyProduced=produced;
+
+  return {
+    used,
+    produced
+  };
+}
+
+/* =========================================================
+   PPM
+========================================================= */
+
+let ppmTimer=0;
+let ppmCounter=0;
+let currentPPM=0;
+
+function recordShipment(){
+  ppmCounter++;
+}
+
+function updatePPM(dt){
+
+  ppmTimer+=dt;
+
+  if(ppmTimer>=10){
+
+    currentPPM =
+      ppmCounter*6;
+
+    ppmCounter=0;
+    ppmTimer=0;
+
+    state.stats.bestPPM =
+      Math.max(
+        state.stats.bestPPM,
+        currentPPM
+      );
+  }
+}
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+let lastTime=performance.now();
+
+function gameLoop(now){
+
+  const rawDt=
+    Math.min(
+      .05,
+      (now-lastTime)/1000
+    );
+
+  lastTime=now;
+
+  const dt =
+    state.paused
+      ? 0
+      : rawDt*state.speed;
+
+  state.realTime+=rawDt;
+
+  if(!state.paused){
+
+    state.gameTime+=dt;
+
+    state.stats.playSeconds+=rawDt;
+
+    state.nextPackage-=dt;
+
+    if(state.nextPackage<=0){
+
+      createPackage();
+
+      const difficulty =
+        Math.min(
+          1.8,
+          1+state.level*.025
+        );
+
+      state.nextPackage =
+        (2.8/difficulty) +
+        Math.random()*1.7;
+    }
+
+    state.nextTruck-=dt;
+
+    if(state.nextTruck<=0){
+
+      spawnTruck();
+
+      state.nextTruck =
+        90 +
+        Math.random()*80 -
+        Math.min(
+          40,
+          state.level
+        );
+    }
+
+    for(const p of state.packages){
+      movePackage(p,dt);
+    }
+
+    cleanPackages();
+
+    updateTrucks(dt);
+
+    updateContractsTime(dt);
+
+    updatePPM(dt);
+
+    state.contractTimer+=dt;
+
+    if(
+      state.contractTimer>45 &&
+      state.contracts.filter(c=>c.active).length<4
+    ){
+
+      createContract();
+      state.contractTimer=0;
+    }
+
+    state.autosave+=rawDt;
+
+    if(state.autosave>20){
+
+      saveGame(true);
+
+      state.autosave=0;
+    }
+  }
+
+  draw();
+
+  updateHUD();
+
+  requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
+
+/* =========================================================
+   DRAW WORLD
+========================================================= */
+
+function draw(){
+
+  ctx.clearRect(0,0,W,H);
+
+  drawBackground();
+  drawGrid();
+  drawBuildings();
+  drawPackages();
+  drawTrucks();
+  drawBuildPreview();
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+function drawBackground(){
+
+  ctx.fillStyle=COLORS.bg;
+  ctx.fillRect(0,0,W,H);
+
+  // World area
+  const topLeft=
+    worldToScreen(0,0);
+
+  const bottomRight=
+    worldToScreen(
+      WORLD_W*TILE,
+      WORLD_H*TILE
+    );
+
+  ctx.fillStyle="#0b111a";
+
+  ctx.fillRect(
+    topLeft.x,
+    topLeft.y,
+    bottomRight.x-topLeft.x,
+    bottomRight.y-topLeft.y
+  );
+
+  // subtle industrial blocks
+  ctx.globalAlpha=.15;
+
+  for(let y=0;y<15;y++){
+
+    for(let x=0;x<22;x++){
+
+      const p=
+        worldToScreen(
+          x*260,
+          y*220
+        );
+
+      ctx.strokeStyle="#304057";
+
+      ctx.strokeRect(
+        p.x,
+        p.y,
+        240*state.camera.zoom,
+        200*state.camera.zoom
+      );
+    }
+  }
+
+  ctx.globalAlpha=1;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+function drawGrid(){
+
+  const zoom=state.camera.zoom;
+
+  const start=
+    worldToScreen(0,0);
+
+  const end=
+    worldToScreen(
+      WORLD_W*TILE,
+      WORLD_H*TILE
+    );
+
+  ctx.save();
+
+  ctx.beginPath();
+
+  for(
+    let x=0;
+    x<=WORLD_W;
+    x++
+  ){
+
+    const sx=
+      start.x+x*TILE*zoom;
+
+    ctx.moveTo(
+      sx,
+      Math.max(0,start.y)
+    );
+
+    ctx.lineTo(
+      sx,
+      Math.min(H,end.y)
+    );
+  }
+
+  for(
+    let y=0;
+    y<=WORLD_H;
+    y++
+  ){
+
+    const sy=
+      start.y+y*TILE*zoom;
+
+    ctx.moveTo(
+      Math.max(0,start.x),
+      sy
+    );
+
+    ctx.lineTo(
+      Math.min(W,end.x),
+      sy
+    );
+  }
+
+  ctx.strokeStyle=
+    zoom>.65
+      ? COLORS.grid
+      : "#121a26";
+
+  ctx.lineWidth=1;
+
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
+
+function drawBuildings(){
+
+  for(let y=0;y<WORLD_H;y++){
+
+    for(let x=0;x<WORLD_W;x++){
+
+      const b=state.grid[y][x];
+
+      if(!b) continue;
+
+      drawBuilding(x,y,b);
+    }
+  }
+}
+
+function drawBuilding(x,y,b){
+
+  const p=
+    worldToScreen(
+      x*TILE,
+      y*TILE
+    );
+
+  const s=
+    TILE*state.camera.zoom;
+
+  if(
+    p.x+s<0 ||
+    p.y+s<0 ||
+    p.x>W ||
+    p.y>H
+  ){
+    return;
+  }
+
+  ctx.save();
+
+  ctx.translate(
+    p.x+s/2,
+    p.y+s/2
+  );
+
+  const r=10*state.camera.zoom;
+
+  /* BASE */
+
+  if(b.type==="belt"){
+    drawBelt(s,r,b);
+  }
+  else if(b.type==="fastbelt"){
+    drawFastBelt(s,r,b);
+  }
+  else if(b.type==="splitter"){
+    drawSplitter(s,r,b);
+  }
+  else if(b.type==="merger"){
+    drawMerger(s,r,b);
+  }
+  else if(b.type==="sorter"){
+    drawSorter(s,r,b);
+  }
+  else if(b.type==="scanner"){
+    drawScanner(s,r,b);
+  }
+  else if(b.type==="storage"){
+    drawStorage(s,r,b);
+  }
+  else if(b.type==="charger"){
+    drawCharger(s,r,b);
+  }
+  else if(b.type==="dock"){
+    drawDock(s,r,b);
+  }
+  else if(b.type==="input"){
+    drawInput(s,r,b);
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   BELT
+========================================================= */
+
+function drawBelt(s,r,b){
+
+  ctx.fillStyle=COLORS.belt;
+  roundRect(
+    -s*.46,
+    -s*.46,
+    s*.92,
+    s*.92,
+    r
+  );
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.beltEdge;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  drawDirectionArrow(
+    b.rotation,
+    s*.18,
+    "#70839c"
+  );
+
+  // moving stripes
+  ctx.save();
+
+  ctx.rotate(
+    b.rotation*Math.PI/2
+  );
+
+  const offset=
+    (state.gameTime*35)%
+    (s*.28);
+
+  ctx.strokeStyle="#53657c";
+  ctx.lineWidth=Math.max(2,s*.035);
+
+  for(
+    let i=-s;
+    i<s;
+    i+=s*.28
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      -s*.5,
+      i+offset
+    );
+
+    ctx.lineTo(
+      s*.5,
+      i+offset
+    );
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawFastBelt(s,r,b){
+
+  ctx.fillStyle=COLORS.fast;
+
+  roundRect(
+    -s*.46,
+    -s*.46,
+    s*.92,
+    s*.92,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.fastEdge;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  drawDirectionArrow(
+    b.rotation,
+    s*.2,
+    "#8bd4ff"
+  );
+
+  ctx.save();
+
+  ctx.rotate(
+    b.rotation*Math.PI/2
+  );
+
+  ctx.strokeStyle="#75c3ec";
+  ctx.lineWidth=2;
+
+  const off=
+    (state.gameTime*90)%
+    (s*.25);
+
+  for(
+    let i=-s;
+    i<s;
+    i+=s*.25
+  ){
+
+    ctx.beginPath();
+    ctx.moveTo(
+      -s*.5,
+      i+off
+    );
+    ctx.lineTo(
+      s*.5,
+      i+off
+    );
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/* =========================================================
+   SPECIAL MACHINES
+========================================================= */
+
+function drawSplitter(s,r,b){
+
+  ctx.fillStyle="#493c20";
+
+  roundRect(
+    -s*.43,
+    -s*.43,
+    s*.86,
+    s*.86,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.yellow;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.yellow;
+  ctx.font=`bold ${s*.27}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("Y",0,0);
+}
+
+function drawMerger(s,r,b){
+
+  ctx.fillStyle="#233d3c";
+
+  roundRect(
+    -s*.43,
+    -s*.43,
+    s*.86,
+    s*.86,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.cyan;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.cyan;
+  ctx.font=`bold ${s*.27}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("M",0,0);
+}
+
+function drawSorter(s,r,b){
+
+  ctx.fillStyle="#382b4c";
+
+  roundRect(
+    -s*.43,
+    -s*.43,
+    s*.86,
+    s*.86,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.purple;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.purple;
+  ctx.font=`bold ${s*.25}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("TRI",0,0);
+}
+
+function drawScanner(s,r,b){
+
+  ctx.fillStyle="#17333c";
+
+  roundRect(
+    -s*.43,
+    -s*.43,
+    s*.86,
+    s*.86,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.cyan;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.strokeStyle=
+    `rgba(80,219,232,${.35+.3*Math.sin(state.gameTime*4)})`;
+
+  ctx.lineWidth=4;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -s*.28,
+    s*.15
+  );
+
+  ctx.lineTo(
+    s*.28,
+    -s*.15
+  );
+
+  ctx.stroke();
+}
+
+function drawStorage(s,r,b){
+
+  ctx.fillStyle="#3a3030";
+
+  roundRect(
+    -s*.43,
+    -s*.43,
+    s*.86,
+    s*.86,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle="#e09b64";
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.fillStyle="#e09b64";
+  ctx.font=`${s*.28}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("▣",0,0);
+}
+
+function drawCharger(s,r,b){
+
+  ctx.fillStyle="#163b31";
+
+  roundRect(
+    -s*.43,
+    -s*.43,
+    s*.86,
+    s*.86,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.green;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.green;
+  ctx.font=`bold ${s*.3}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("⚡",0,0);
+}
+
+function drawDock(s,r,b){
+
+  ctx.fillStyle="#3e2b1b";
+
+  roundRect(
+    -s*.46,
+    -s*.46,
+    s*.92,
+    s*.92,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.gold;
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.gold;
+  ctx.font=`${s*.32}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("🚚",0,0);
+}
+
+function drawInput(s,r,b){
+
+  ctx.fillStyle="#193b35";
+
+  roundRect(
+    -s*.46,
+    -s*.46,
+    s*.92,
+    s*.92,
+    r
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=COLORS.green;
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.green;
+  ctx.font=`bold ${s*.24}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("ENTRÉE",0,0);
+}
+
+/* =========================================================
+   ARROWS
+========================================================= */
+
+function drawDirectionArrow(rotation,size,color){
+
+  ctx.save();
+
+  ctx.rotate(
+    rotation*Math.PI/2
+  );
+
+  ctx.fillStyle=color;
+
+  ctx.beginPath();
+
+  ctx.moveTo(size,-size*.6);
+  ctx.lineTo(size,size*.6);
+  ctx.lineTo(-size*.25,size*.6);
+  ctx.lineTo(-size*.25,-size*.6);
+  ctx.closePath();
+
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/* =========================================================
+   PACKAGE RENDER
+========================================================= */
+
+function drawPackages(){
+
+  for(const p of state.packages){
+
+    if(p.x<0) continue;
+
+    const pos=
+      worldToScreen(
+        p.x*TILE+TILE/2,
+        p.y*TILE+TILE/2
+      );
+
+    const type=
+      packageType(p.type);
+
+    const size=
+      Math.max(
+        8,
+        12*state.camera.zoom
+      );
 
     ctx.save();
 
-    ctx.translate(c.x,c.y);
+    ctx.translate(pos.x,pos.y);
 
-    const rotation = [
-        0,
-        Math.PI/2,
-        Math.PI,
-        -Math.PI/2
-    ][belt.dir];
+    ctx.rotate(
+      Math.sin(
+        state.gameTime*7+p.id
+      )*.035
+    );
 
-    ctx.rotate(rotation);
+    ctx.shadowBlur=10;
+    ctx.shadowColor=type.color;
 
-    ctx.fillStyle = "#4b5661";
+    ctx.fillStyle=type.color;
 
-    for(let i=-1;i<=1;i++) {
-
-        ctx.fillRect(
-            -20,
-            i*10-2,
-            40,
-            4
-        );
-    }
-
-    ctx.fillStyle = "#697582";
-
-    const phase =
-        (performance.now()/90)%16;
-
-    for(let i=-1;i<=1;i++) {
-
-        ctx.fillRect(
-            -20 + phase,
-            i*10-3,
-            7,
-            6
-        );
-
-        ctx.fillRect(
-            -20 + phase - 16,
-            i*10-3,
-            7,
-            6
-        );
-    }
-
-    ctx.restore();
-}
-
-/* ------------------------------------------------ */
-
-function drawInput(x,y) {
-
-    const c = cellCenter(x,y);
-
-    ctx.fillStyle = "#17271f";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        c.x-21,
-        c.y-21,
-        42,
-        42,
-        9
+    roundRect(
+      -size,
+      -size,
+      size*2,
+      size*2,
+      4
     );
 
     ctx.fill();
 
-    ctx.strokeStyle = "#55d99a";
-    ctx.lineWidth = 2;
+    ctx.shadowBlur=0;
+
+    ctx.strokeStyle="rgba(255,255,255,.55)";
+    ctx.lineWidth=1;
 
     ctx.stroke();
 
-    ctx.fillStyle = "#55d99a";
-
-    ctx.font = "bold 22px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.fillText("↓",c.x,c.y);
-
-    ctx.font = "bold 8px Arial";
-
-    ctx.fillText(
-        "ARRIVÉE",
-        c.x,
-        c.y+31
-    );
-}
-
-/* ------------------------------------------------ */
-
-function drawOutput(x,y) {
-
-    const c = cellCenter(x,y);
-
-    ctx.fillStyle = "#19222a";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        c.x-21,
-        c.y-21,
-        42,
-        42,
-        9
-    );
-
-    ctx.fill();
-
-    ctx.strokeStyle = "#5d91c9";
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-
-    ctx.fillStyle = "#7fb4eb";
-
-    ctx.font = "bold 19px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.fillText("✈",c.x,c.y);
-
-    ctx.font = "bold 8px Arial";
-
-    ctx.fillText(
-        "EXPÉDITION",
-        c.x,
-        c.y+31
-    );
-}
-
-/* ------------------------------------------------ */
-
-function drawSplitter(x,y) {
-
-    const c = cellCenter(x,y);
-
-    ctx.fillStyle = "#2a2416";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        c.x-20,
-        c.y-20,
-        40,
-        40,
-        8
-    );
-
-    ctx.fill();
-
-    ctx.strokeStyle = "#d8b75c";
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-
-    ctx.strokeStyle = "#e9ca6c";
-    ctx.lineWidth = 3;
-
-    ctx.beginPath();
-    ctx.moveTo(c.x-12,c.y);
-    ctx.lineTo(c.x+12,c.y);
-    ctx.moveTo(c.x,c.y);
-    ctx.lineTo(c.x+8,c.y-10);
-    ctx.moveTo(c.x,c.y);
-    ctx.lineTo(c.x+8,c.y+10);
-    ctx.stroke();
-}
-
-/* ------------------------------------------------ */
-
-function drawMerger(x,y) {
-
-    const c = cellCenter(x,y);
-
-    ctx.fillStyle = "#20252d";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        c.x-20,
-        c.y-20,
-        40,
-        40,
-        8
-    );
-
-    ctx.fill();
-
-    ctx.strokeStyle = "#9d91d7";
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-
-    ctx.strokeStyle = "#b6a9ef";
-    ctx.lineWidth = 3;
-
-    ctx.beginPath();
-    ctx.moveTo(c.x-10,c.y-10);
-    ctx.lineTo(c.x,c.y);
-    ctx.lineTo(c.x+12,c.y);
-    ctx.moveTo(c.x-10,c.y+10);
-    ctx.lineTo(c.x,c.y);
-    ctx.stroke();
-}
-
-/* ------------------------------------------------ */
-
-function drawSorter(x,y) {
-
-    const c = cellCenter(x,y);
-
-    ctx.fillStyle = "#20252b";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        c.x-22,
-        c.y-22,
-        44,
-        44,
-        10
-    );
-
-    ctx.fill();
-
-    ctx.strokeStyle = "#d46bff";
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-
-    ctx.fillStyle = "#d46bff";
-
-    ctx.beginPath();
-
-    ctx.moveTo(c.x,c.y-12);
-    ctx.lineTo(c.x+12,c.y);
-    ctx.lineTo(c.x,c.y+12);
-    ctx.lineTo(c.x-12,c.y);
-    ctx.closePath();
-
-    ctx.fill();
-}
-
-/* ------------------------------------------------ */
-
-function drawStorage(x,y) {
-
-    const c = cellCenter(x,y);
-
-    ctx.fillStyle = "#242b32";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        c.x-21,
-        c.y-21,
-        42,
-        42,
-        7
-    );
-
-    ctx.fill();
-
-    ctx.strokeStyle = "#70a6d8";
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-
-    ctx.fillStyle = "#70a6d8";
+    ctx.fillStyle="rgba(0,0,0,.28)";
 
     ctx.fillRect(
-        c.x-12,
-        c.y-9,
-        24,
-        18
+      -size*.75,
+      -size*.2,
+      size*1.5,
+      size*.4
     );
 
-    ctx.strokeStyle = "#0d1014";
-    ctx.strokeRect(
-        c.x-12,
-        c.y-9,
-        24,
-        18
-    );
+    ctx.restore();
+  }
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   TRUCK DRAW
+========================================================= */
 
-function drawGrid() {
+function drawTrucks(){
 
-    for(let y=0;y<ROWS;y++) {
+  for(const t of state.trucks){
 
-        for(let x=0;x<COLS;x++) {
+    if(!t.arrived) continue;
 
-            drawCellBase(x,y);
+    const dock=
+      findBuilding("dock");
 
-            const item = grid[y][x];
+    if(!dock) continue;
 
-            if(!item) continue;
-
-            if(item.type === "belt")
-                drawBelt(x,y,item);
-
-            if(item.type === "input")
-                drawInput(x,y);
-
-            if(item.type === "output")
-                drawOutput(x,y);
-
-            if(item.type === "splitter")
-                drawSplitter(x,y);
-
-            if(item.type === "merger")
-                drawMerger(x,y);
-
-            if(item.type === "sorter")
-                drawSorter(x,y);
-
-            if(item.type === "storage")
-                drawStorage(x,y);
-        }
-    }
-}
-
-/* ------------------------------------------------ */
-
-function drawParcel(p) {
-
-    const c = cellCenter(p.x,p.y);
-
-    const size = 15;
+    const p=
+      worldToScreen(
+        dock.x*TILE+TILE/2,
+        dock.y*TILE+TILE/2
+      );
 
     ctx.save();
 
     ctx.translate(
-        c.x + p.offsetX,
-        c.y + p.offsetY
+      p.x,
+      p.y-TILE*.7*state.camera.zoom
     );
 
-    ctx.rotate(
-        Math.sin(p.anim*2)*0.025
-    );
+    ctx.fillStyle="#5e6878";
 
-    ctx.shadowColor = "rgba(255,190,80,.25)";
-    ctx.shadowBlur = 8;
-
-    ctx.fillStyle = "#d9a55d";
-
-    ctx.beginPath();
-
-    ctx.roundRect(
-        -size/2,
-        -size/2,
-        size,
-        size,
-        3
+    roundRect(
+      -25*state.camera.zoom,
+      -13*state.camera.zoom,
+      50*state.camera.zoom,
+      26*state.camera.zoom,
+      5
     );
 
     ctx.fill();
 
-    ctx.shadowBlur = 0;
-
-    ctx.strokeStyle = "#9d7139";
-    ctx.lineWidth = 1;
-
-    ctx.stroke();
-
-    ctx.fillStyle = "#f0d09a";
+    ctx.fillStyle="#29313d";
 
     ctx.fillRect(
-        -1,
-        -size/2,
-        2,
-        size
+      9*state.camera.zoom,
+      -10*state.camera.zoom,
+      14*state.camera.zoom,
+      16*state.camera.zoom
     );
+
+    ctx.fillStyle="#111";
+
+    ctx.beginPath();
+    ctx.arc(
+      -13*state.camera.zoom,
+      14*state.camera.zoom,
+      5*state.camera.zoom,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(
+      14*state.camera.zoom,
+      14*state.camera.zoom,
+      5*state.camera.zoom,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
 
     ctx.restore();
+  }
 }
 
-/* ------------------------------------------------ */
+function findBuilding(type){
 
-function drawParcels() {
+  for(let y=0;y<WORLD_H;y++){
+    for(let x=0;x<WORLD_W;x++){
 
-    for(const p of parcels) {
+      const b=state.grid[y][x];
 
-        if(
-            p.x >= 0 &&
-            p.x < COLS &&
-            p.y >= 0 &&
-            p.y < ROWS
-        ) {
-            drawParcel(p);
-        }
+      if(b && b.type===type){
+        return {x,y,b};
+      }
     }
+  }
+
+  return null;
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   BUILD PREVIEW
+========================================================= */
 
-function directionVector(dir) {
+let pointer={
+  x:0,
+  y:0,
+  active:false
+};
 
-    return [
-        {x:1,y:0},
-        {x:0,y:1},
-        {x:-1,y:0},
-        {x:0,y:-1}
-    ][dir];
-}
+function drawBuildPreview(){
 
-/* ------------------------------------------------ */
+  if(!pointer.active) return;
 
-function spawnParcel() {
+  if(state.selectedTool==="erase"){
+    return;
+  }
 
-    const input = grid[5][1];
-
-    const p = {
-        x: 2,
-        y: 5,
-        progress: 0,
-        offsetX: 0,
-        offsetY: 0,
-        anim: Math.random()*10
-    };
-
-    parcels.push(p);
-
-    totalIncoming++;
-}
-
-/* ------------------------------------------------ */
-
-function getCell(x,y) {
-
-    if(
-        x < 0 ||
-        y < 0 ||
-        x >= COLS ||
-        y >= ROWS
-    ) {
-        return null;
-    }
-
-    return grid[y][x];
-}
-
-/* ------------------------------------------------ */
-
-function moveParcel(p, dt) {
-
-    const cell = getCell(
-        p.x,
-        p.y
+  const world=
+    screenToWorld(
+      pointer.x,
+      pointer.y
     );
 
-    if(!cell) {
-
-        p.dead = true;
-        return;
-    }
-
-    let dir = 0;
-
-    if(cell.type === "belt") {
-
-        dir = cell.dir;
-
-    } else {
-
-        if(cell.type === "input") {
-            dir = 0;
-        }
-
-        if(cell.type === "output") {
-
-            p.dead = true;
-
-            totalShipped++;
-
-            money += 12;
-
-            return;
-        }
-
-        if(cell.type === "splitter") {
-
-            dir = chooseSplitterDirection(
-                p.x,
-                p.y
-            );
-        }
-
-        if(cell.type === "merger") {
-
-            dir = cell.dir ?? 0;
-        }
-
-        if(cell.type === "sorter") {
-
-            dir = cell.dir ?? 0;
-        }
-
-        if(cell.type === "storage") {
-
-            p.waiting = true;
-
-            return;
-        }
-    }
-
-    if(p.waiting) {
-        p.waiting = false;
-    }
-
-    const v = directionVector(dir);
-
-    p.progress += dt * 1.25 * speed;
-
-    const start = cellCenter(
-        p.x,
-        p.y
+  const cell=
+    worldToCell(
+      world.x,
+      world.y
     );
 
-    p.offsetX = v.x * p.progress * TILE;
-    p.offsetY = v.y * p.progress * TILE;
+  if(!validCell(cell.x,cell.y)) return;
 
-    p.anim += dt * 5 * speed;
+  const p=
+    worldToScreen(
+      cell.x*TILE,
+      cell.y*TILE
+    );
 
-    if(p.progress >= 1) {
+  const s=
+    TILE*state.camera.zoom;
 
-        p.progress = 0;
+  const b=
+    BUILDINGS[state.selectedTool];
 
-        const nx = p.x + v.x;
-        const ny = p.y + v.y;
+  if(!b) return;
 
-        const next = getCell(nx,ny);
+  ctx.save();
 
-        if(next) {
+  ctx.globalAlpha=.42;
 
-            p.x = nx;
-            p.y = ny;
+  ctx.fillStyle=
+    isFree(cell.x,cell.y)
+      ? COLORS.green
+      : COLORS.red;
 
-        } else {
+  ctx.fillRect(
+    p.x+2,
+    p.y+2,
+    s-4,
+    s-4
+  );
 
-            p.progress = .95;
-        }
-    }
+  ctx.globalAlpha=.8;
+
+  ctx.fillStyle="#fff";
+  ctx.font=`${Math.max(14,s*.3)}px system-ui`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+  ctx.fillText(
+    b.icon,
+    p.x+s/2,
+    p.y+s/2
+  );
+
+  ctx.restore();
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   ROUND RECT
+========================================================= */
 
-function chooseSplitterDirection(x,y) {
+function roundRect(x,y,w,h,r){
 
-    const cell = grid[y][x];
+  ctx.beginPath();
 
-    cell.counter = (cell.counter || 0) + 1;
+  ctx.moveTo(x+r,y);
 
-    if(cell.counter % 2 === 0) {
+  ctx.arcTo(
+    x+w,
+    y,
+    x+w,
+    y+h,
+    r
+  );
 
-        if(getCell(x+1,y))
-            return 0;
+  ctx.arcTo(
+    x+w,
+    y+h,
+    x,
+    y+h,
+    r
+  );
 
-        if(getCell(x,y-1))
-            return 3;
+  ctx.arcTo(
+    x,
+    y+h,
+    x,
+    y,
+    r
+  );
 
-        if(getCell(x,y+1))
-            return 1;
+  ctx.arcTo(
+    x,
+    y,
+    x+w,
+    y,
+    r
+  );
 
-    } else {
-
-        if(getCell(x,y+1))
-            return 1;
-
-        if(getCell(x+1,y))
-            return 0;
-
-        if(getCell(x,y-1))
-            return 3;
-    }
-
-    return 0;
+  ctx.closePath();
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   POINTER / TOUCH
+========================================================= */
 
-function simulation(dt) {
+const pointers=new Map();
 
-    if(paused) return;
+let gesture={
+  mode:"none",
+  startX:0,
+  startY:0,
+  lastX:0,
+  lastY:0,
+  startCell:null,
+  moved:false,
+  timer:null,
+  pinchStartDistance:0,
+  pinchStartZoom:1,
+  pinchStartMidX:0,
+  pinchStartMidY:0,
+  pinchStartCamX:0,
+  pinchStartCamY:0
+};
 
-    spawnTimer += dt * speed;
+function distance(a,b){
+  return Math.hypot(
+    a.x-b.x,
+    a.y-b.y
+  );
+}
 
-    const spawnEvery = .85;
+function midpoint(a,b){
+  return {
+    x:(a.x+b.x)/2,
+    y:(a.y+b.y)/2
+  };
+}
 
-    if(spawnTimer >= spawnEvery) {
+function getPointers(){
 
-        spawnTimer -= spawnEvery;
+  return [...pointers.values()];
+}
 
-        if(parcels.length < 80) {
-            spawnParcel();
-        }
+canvas.addEventListener(
+  "pointerdown",
+  e=>{
+
+    e.preventDefault();
+
+    canvas.setPointerCapture(e.pointerId);
+
+    pointers.set(
+      e.pointerId,
+      {
+        id:e.pointerId,
+        x:e.clientX,
+        y:e.clientY
+      }
+    );
+
+    if(pointers.size>=2){
+
+      clearTimeout(gesture.timer);
+
+      const ps=getPointers();
+
+      const a=ps[0];
+      const b=ps[1];
+
+      gesture.mode="pinch";
+
+      gesture.pinchStartDistance=
+        distance(a,b);
+
+      gesture.pinchStartZoom=
+        state.camera.zoom;
+
+      const mid=
+        midpoint(a,b);
+
+      gesture.pinchStartMidX=mid.x;
+      gesture.pinchStartMidY=mid.y;
+
+      gesture.pinchStartCamX=
+        state.camera.x;
+
+      gesture.pinchStartCamY=
+        state.camera.y;
+
+      return;
     }
 
-    for(const p of parcels) {
+    gesture.mode="single";
 
-        if(!p.dead) {
-            moveParcel(p,dt);
-        }
-    }
+    gesture.startX=e.clientX;
+    gesture.startY=e.clientY;
 
-    for(let i=parcels.length-1;i>=0;i--) {
+    gesture.lastX=e.clientX;
+    gesture.lastY=e.clientY;
 
-        if(parcels[i].dead) {
-            parcels.splice(i,1);
-        }
-    }
+    gesture.moved=false;
 
-    currentPPM =
-        Math.round(
+    pointer.x=e.clientX;
+    pointer.y=e.clientY;
+    pointer.active=true;
+
+    const world=
+      screenToWorld(
+        e.clientX,
+        e.clientY
+      );
+
+    gesture.startCell=
+      worldToCell(
+        world.x,
+        world.y
+      );
+
+    gesture.timer=setTimeout(()=>{
+
+      if(
+        gesture.mode==="single" &&
+        !gesture.moved
+      ){
+
+        openCellPanel(
+          gesture.startCell.x,
+          gesture.startCell.y
+        );
+      }
+
+    },520);
+
+  },
+  {passive:false}
+);
+
+canvas.addEventListener(
+  "pointermove",
+  e=>{
+
+    e.preventDefault();
+
+    if(!pointers.has(e.pointerId)) return;
+
+    const p=pointers.get(e.pointerId);
+
+    p.x=e.clientX;
+    p.y=e.clientY;
+
+    pointer.x=e.clientX;
+    pointer.y=e.clientY;
+    pointer.active=true;
+
+    if(pointers.size>=2){
+
+      clearTimeout(gesture.timer);
+
+      const ps=getPointers();
+
+      const a=ps[0];
+      const b=ps[1];
+
+      const d=
+        distance(a,b);
+
+      const mid=
+        midpoint(a,b);
+
+      if(
+        gesture.pinchStartDistance>0
+      ){
+
+        const factor=
+          d/
+          gesture.pinchStartDistance;
+
+        state.camera.zoom=
+          Math.max(
+            .42,
             Math.min(
-                totalShipped,
-                999
+              2.25,
+              gesture.pinchStartZoom*factor
             )
+          );
+      }
+
+      const dx=
+        (mid.x-
+        gesture.pinchStartMidX)/
+        state.camera.zoom;
+
+      const dy=
+        (mid.y-
+        gesture.pinchStartMidY)/
+        state.camera.zoom;
+
+      state.camera.x=
+        gesture.pinchStartCamX-dx;
+
+      state.camera.y=
+        gesture.pinchStartCamY-dy;
+
+      return;
+    }
+
+    if(gesture.mode!=="single"){
+      return;
+    }
+
+    const dx=
+      e.clientX-gesture.startX;
+
+    const dy=
+      e.clientY-gesture.startY;
+
+    if(Math.hypot(dx,dy)>9){
+
+      gesture.moved=true;
+
+      clearTimeout(gesture.timer);
+
+      if(state.selectedTool==="belt" ||
+         state.selectedTool==="fastbelt"){
+
+        buildDragLine(
+          e.clientX,
+          e.clientY
         );
-
-    factoryValue = totalBuilt * 10;
-}
-
-/* ------------------------------------------------ */
-
-function render() {
-
-    drawBackground();
-
-    drawGrid();
-
-    drawParcels();
-
-    drawPlacementPreview();
-
-    updateHUD();
-}
-
-/* ------------------------------------------------ */
-
-function drawPlacementPreview() {
-
-    const c = mouseCell();
-
-    if(
-        c.x < 0 ||
-        c.x >= COLS ||
-        c.y < 0 ||
-        c.y >= ROWS
-    ) return;
-
-    if(
-        selectedTool === "select"
-    ) return;
-
-    const px = offsetX + c.x*TILE;
-    const py = offsetY + c.y*TILE;
-
-    let valid =
-        grid[c.y][c.x] === null;
-
-    ctx.fillStyle =
-        valid
-        ? "rgba(85,217,154,.15)"
-        : "rgba(255,90,90,.12)";
-
-    ctx.fillRect(
-        px+2,
-        py+2,
-        TILE-4,
-        TILE-4
-    );
-
-    ctx.strokeStyle =
-        valid
-        ? "rgba(85,217,154,.7)"
-        : "rgba(255,90,90,.6)";
-
-    ctx.lineWidth = 2;
-
-    ctx.strokeRect(
-        px+3,
-        py+3,
-        TILE-6,
-        TILE-6
-    );
-}
-
-/* ------------------------------------------------ */
-
-function updateHUD() {
-
-    document.getElementById("money")
-        .textContent =
-        Math.floor(money).toLocaleString("fr-FR") + " €";
-
-    document.getElementById("ppm")
-        .textContent =
-        currentPPM;
-
-    document.getElementById("shipped")
-        .textContent =
-        totalShipped;
-
-    document.getElementById("shipped2")
-        .textContent =
-        totalShipped;
-
-    document.getElementById("incoming")
-        .textContent =
-        totalIncoming + " total";
-
-    document.getElementById("waiting")
-        .textContent =
-        parcels.filter(p => p.waiting).length;
-
-    let efficiency = 100;
-
-    if(totalIncoming > 0) {
-
-        efficiency =
-            Math.round(
-                totalShipped /
-                totalIncoming *
-                100
-            );
+      }
     }
 
-    efficiency =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                efficiency
-            )
-        );
-
-    document.getElementById("efficiency")
-        .textContent =
-        efficiency + " %";
-
-    document.getElementById("factoryValue")
-        .textContent =
-        factoryValue.toLocaleString("fr-FR") + " €";
-
-    const progress =
-        Math.min(
-            100,
-            totalShipped / 20 * 100
-        );
-
-    document.getElementById("objectiveProgress")
-        .style.width =
-        progress + "%";
-
-    if(totalShipped >= 20) {
-
-        document.getElementById("objectiveTitle")
-            .textContent =
-            "Objectif terminé !";
-
-        document.getElementById("objectiveText")
-            .textContent =
-            "Tu as expédié 20 colis. Continue pour construire ton centre logistique.";
-
-    } else {
-
-        document.getElementById("objectiveTitle")
-            .textContent =
-            "Première expédition";
-
-        document.getElementById("objectiveText")
-            .textContent =
-            "Expédie " +
-            (20-totalShipped) +
-            " colis supplémentaires.";
-    }
-
-    document.getElementById("speedText")
-        .textContent =
-        "×" + speed;
-}
-
-/* ------------------------------------------------ */
-
-function toolPrice(tool) {
-
-    return {
-        belt: 10,
-        splitter: 80,
-        merger: 80,
-        sorter: 250,
-        storage: 300,
-        erase: 0,
-        select: 0
-    }[tool] || 0;
-}
-
-/* ------------------------------------------------ */
-
-function placeAt(x,y) {
-
-    if(
-        x < 0 ||
-        x >= COLS ||
-        y < 0 ||
-        y >= ROWS
-    ) return;
-
-    const existing = grid[y][x];
-
-    if(selectedTool === "erase") {
-
-        if(
-            existing &&
-            existing.type !== "input" &&
-            existing.type !== "output"
-        ) {
-
-            grid[y][x] = null;
-
-            toast("Élément supprimé");
-        }
-
-        return;
-    }
-
-    if(selectedTool === "select") {
-
-        if(existing) {
-
-            let name = {
-                belt: "Tapis roulant",
-                splitter: "Répartiteur",
-                merger: "Fusionneur",
-                sorter: "Centre de tri",
-                storage: "Stockage",
-                input: "Arrivée des colis",
-                output: "Expédition"
-            }[existing.type];
-
-            toast(name || "Élément");
-        }
-
-        return;
-    }
-
-    if(existing) {
-
-        if(existing.type === "belt") {
-
-            if(selectedTool === "belt") {
-
-                existing.dir =
-                    (existing.dir + 1) % 4;
-
-                toast("Tapis tourné");
-            }
-
-            return;
-        }
-
-        return;
-    }
-
-    const price = toolPrice(selectedTool);
-
-    if(money < price) {
-
-        toast("Pas assez d'argent");
-
-        return;
-    }
-
-    if(selectedTool === "belt") {
-
-        grid[y][x] =
-            makeBelt(0);
-
-    } else {
-
-        grid[y][x] = {
-            type: selectedTool,
-            parcels: [],
-            dir: 0,
-            counter: 0
-        };
-    }
-
-    money -= price;
-
-    totalBuilt++;
-
-    saveGame();
-
-    toast("Construction terminée");
-}
-
-/* ------------------------------------------------ */
-
-function setTool(tool) {
-
-    selectedTool = tool;
-
-    document.querySelectorAll(".tool")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.tool === tool
-            );
-        });
-
-    const labels = {
-        belt: "Construction",
-        splitter: "Construction",
-        merger: "Construction",
-        sorter: "Construction",
-        storage: "Construction",
-        erase: "Démolition",
-        select: "Inspection"
-    };
-
-    document.getElementById("modeText")
-        .textContent =
-        labels[tool] || "Construction";
-}
-
-/* ------------------------------------------------ */
-
-document.querySelectorAll(".tool")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => setTool(button.dataset.tool)
-        );
-    });
-
-/* ------------------------------------------------ */
-
-document.querySelectorAll(".control-btn")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                speed =
-                    Number(button.dataset.speed);
-
-                document
-                    .querySelectorAll(".control-btn")
-                    .forEach(b =>
-                        b.classList.remove("active")
-                    );
-
-                button.classList.add("active");
-            }
-        );
-    });
-
-/* ------------------------------------------------ */
-
-document.getElementById("pauseBtn")
-    .addEventListener(
-        "click",
-        () => {
-
-            paused = !paused;
-
-            document.getElementById("pauseBtn")
-                .textContent =
-                paused
-                ? "▶ Reprendre"
-                : "⏸ Pause";
-        }
-    );
-
-/* ------------------------------------------------ */
-
-document.getElementById("resetBtn")
-    .addEventListener(
-        "click",
-        () => {
-
-            if(!confirm(
-                "Recommencer complètement la partie ?"
-            )) return;
-
-            localStorage.removeItem(
-                "parcelflow_save"
-            );
-
-            location.reload();
-        }
-    );
-
-/* ------------------------------------------------ */
-
-function updatePointer(e) {
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-    mouse.x =
-        e.clientX - rect.left;
-
-    mouse.y =
-        e.clientY - rect.top;
-}
-
-/* ------------------------------------------------ */
-
-canvas.addEventListener(
-    "pointermove",
-    e => {
-
-        updatePointer(e);
-
-        if(e.pointerType === "mouse" && mouse.down) {
-
-            const c = mouseCell();
-
-            placeAt(
-                c.x,
-                c.y
-            );
-        }
-    }
+    gesture.lastX=e.clientX;
+    gesture.lastY=e.clientY;
+  },
+  {passive:false}
 );
 
 canvas.addEventListener(
-    "pointerdown",
-    e => {
+  "pointerup",
+  e=>{
 
-        updatePointer(e);
+    e.preventDefault();
 
-        mouse.down = true;
+    clearTimeout(gesture.timer);
 
-        canvas.setPointerCapture(
-            e.pointerId
+    const wasMoved=
+      gesture.moved;
+
+    const start=
+      gesture.startCell;
+
+    pointers.delete(e.pointerId);
+
+    if(pointers.size===0){
+
+      pointer.active=false;
+
+      if(
+        gesture.mode==="single" &&
+        !wasMoved &&
+        start
+      ){
+
+        handleTapCell(
+          start.x,
+          start.y
         );
+      }
 
-        const c = mouseCell();
-
-        placeAt(
-            c.x,
-            c.y
-        );
+      gesture.mode="none";
     }
+
+  },
+  {passive:false}
 );
 
 canvas.addEventListener(
-    "pointerup",
-    e => {
+  "pointercancel",
+  e=>{
 
-        mouse.down = false;
+    clearTimeout(gesture.timer);
 
-        try {
-            canvas.releasePointerCapture(
-                e.pointerId
-            );
-        } catch {}
+    pointers.delete(e.pointerId);
+
+    if(pointers.size===0){
+      gesture.mode="none";
+      pointer.active=false;
     }
+  },
+  {passive:false}
 );
 
-/* ------------------------------------------------ */
+/* =========================================================
+   TAP ACTION
+========================================================= */
 
-document.addEventListener(
-    "keydown",
-    e => {
+function handleTapCell(x,y){
 
-        if(e.key === "Escape") {
-            setTool("select");
-        }
+  if(!validCell(x,y)) return;
 
-        if(e.key === "1") setTool("belt");
-        if(e.key === "2") setTool("splitter");
-        if(e.key === "3") setTool("merger");
-        if(e.key === "4") setTool("sorter");
-        if(e.key === "5") setTool("storage");
+  const b=getBuilding(x,y);
 
-        if(e.key === "x" || e.key === "Delete")
-            setTool("erase");
+  if(state.selectedTool==="erase"){
 
-        if(e.code === "Space") {
-
-            e.preventDefault();
-
-            document.getElementById("pauseBtn")
-                .click();
-        }
+    if(b){
+      destroyAt(x,y);
     }
-);
 
-/* ------------------------------------------------ */
+    return;
+  }
 
-function toast(message) {
+  if(state.selectedTool==="belt" ||
+     state.selectedTool==="fastbelt"){
 
-    const element =
-        document.getElementById("toast");
+    if(b){
 
-    element.textContent = message;
+      if(
+        b.type==="belt" ||
+        b.type==="fastbelt"
+      ){
 
-    element.classList.add("show");
+        rotateAt(x,y);
 
-    clearTimeout(
-        toast.timeout
+        return;
+      }
+
+      openCellPanel(x,y);
+      return;
+    }
+
+    buildAt(
+      x,
+      y,
+      state.selectedTool,
+      state.rotation
     );
 
-    toast.timeout =
-        setTimeout(
-            () => {
-                element.classList.remove("show");
-            },
-            1000
-        );
+    return;
+  }
+
+  if(b){
+
+    openCellPanel(x,y);
+    return;
+  }
+
+  buildAt(
+    x,
+    y,
+    state.selectedTool,
+    state.rotation
+  );
 }
 
-/* ------------------------------------------------ */
+/* =========================================================
+   DRAG BUILD
+========================================================= */
 
-function saveGame() {
+let lastDragCell=null;
 
-    const data = {
+function buildDragLine(px,py){
 
-        money,
-        totalShipped,
-        totalIncoming,
-        totalBuilt,
+  const world=
+    screenToWorld(px,py);
 
-        grid: grid.map(row =>
-            row.map(cell => {
+  const cell=
+    worldToCell(
+      world.x,
+      world.y
+    );
 
-                if(!cell) return null;
+  if(!validCell(cell.x,cell.y)) return;
 
-                return {
-                    type: cell.type,
-                    dir: cell.dir || 0,
-                    counter: cell.counter || 0
-                };
-            })
-        )
-    };
+  if(
+    lastDragCell &&
+    lastDragCell.x===cell.x &&
+    lastDragCell.y===cell.y
+  ){
+    return;
+  }
+
+  lastDragCell={
+    x:cell.x,
+    y:cell.y
+  };
+
+  if(!gesture.startCell) return;
+
+  const dx=
+    cell.x-gesture.startCell.x;
+
+  const dy=
+    cell.y-gesture.startCell.y;
+
+  if(Math.abs(dx)>=Math.abs(dy)){
+
+    state.rotation=
+      dx>=0
+        ? 1
+        : 3;
+
+  }else{
+
+    state.rotation=
+      dy>=0
+        ? 2
+        : 0;
+  }
+
+  const path=
+    lineCells(
+      gesture.startCell.x,
+      gesture.startCell.y,
+      cell.x,
+      cell.y
+    );
+
+  for(const c of path){
+
+    if(
+      c.x===gesture.startCell.x &&
+      c.y===gesture.startCell.y
+    ) continue;
+
+    buildAt(
+      c.x,
+      c.y,
+      state.selectedTool,
+      state.rotation
+    );
+  }
+}
+
+function lineCells(x0,y0,x1,y1){
+
+  const cells=[];
+
+  const dx=Math.abs(x1-x0);
+  const dy=Math.abs(y1-y0);
+
+  const sx=x0<x1?1:-1;
+  const sy=y0<y1?1:-1;
+
+  let err=dx-dy;
+
+  let x=x0;
+  let y=y0;
+
+  while(true){
+
+    cells.push({x,y});
+
+    if(x===x1 && y===y1) break;
+
+    const e2=2*err;
+
+    if(e2>-dy){
+      err-=dy;
+      x+=sx;
+    }
+
+    if(e2<dx){
+      err+=dx;
+      y+=sy;
+    }
+  }
+
+  return cells;
+}
+
+/* =========================================================
+   CELL PANEL
+========================================================= */
+
+function openCellPanel(x,y){
+
+  const b=getBuilding(x,y);
+
+  if(!b){
+
+    openPanel(
+      "Construction",
+      `
+      <div class="card">
+        <h3>Zone vide</h3>
+        <p>
+          Sélectionne une machine en bas
+          pour construire ici.
+        </p>
+      </div>
+      `
+    );
+
+    return;
+  }
+
+  const def=
+    BUILDINGS[b.type];
+
+  const price=
+    buildingPrice(b.type);
+
+  let html=`
+    <div class="card">
+      <h3>${def.icon} ${def.name}</h3>
+      <div class="row">
+        <span>Niveau</span>
+        <strong>${b.level}</strong>
+      </div>
+      <p>${def.desc}</p>
+    </div>
+  `;
+
+  if(b.type==="storage"){
+
+    let total=0;
+
+    for(const arr of storageContents.values()){
+      total+=arr.length;
+    }
+
+    html+=`
+      <div class="card">
+        <h3>Stock actuel</h3>
+        <div class="big">${total}</div>
+        <p>Capacité de base : 10 colis par stockage.</p>
+      </div>
+    `;
+  }
+
+  html+=`
+    <div class="card">
+      <h3>Amélioration</h3>
+      <p>
+        Améliorer cette machine augmente
+        ses performances.
+      </p>
+      <button class="action goldBtn"
+        onclick="upgradeBuilding(${x},${y})">
+        ⬆️ Améliorer — ${formatMoney(
+          Math.floor(
+            price*Math.pow(3,b.level)
+          )
+        )}
+      </button>
+
+      <button class="action"
+        onclick="rotateSelected(${x},${y})">
+        🔄 Tourner
+      </button>
+
+      <button class="action redBtn"
+        onclick="deleteSelected(${x},${y})">
+        🗑️ Détruire
+      </button>
+    </div>
+  `;
+
+  openPanel(
+    def.name,
+    html
+  );
+}
+
+function upgradeBuilding(x,y){
+
+  const b=getBuilding(x,y);
+
+  if(!b) return;
+
+  const def=BUILDINGS[b.type];
+
+  const cost=
+    Math.floor(
+      def.price*
+      Math.pow(3,b.level)
+    );
+
+  if(!spend(cost)){
+    return;
+  }
+
+  b.level++;
+
+  addXP(
+    Math.floor(cost/100)
+  );
+
+  notify(
+    "⬆️ "+def.name+
+    " niveau "+b.level,
+    "green"
+  );
+
+  openCellPanel(x,y);
+}
+
+function rotateSelected(x,y){
+
+  rotateAt(x,y);
+  openCellPanel(x,y);
+}
+
+function deleteSelected(x,y){
+
+  destroyAt(x,y);
+  closePanel();
+}
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+function openPanel(title,html){
+
+  document.getElementById(
+    "panelTitle"
+  ).textContent=title;
+
+  document.getElementById(
+    "panelContent"
+  ).innerHTML=html;
+
+  document.getElementById(
+    "panel"
+  ).classList.add("open");
+}
+
+function closePanel(){
+
+  document.getElementById(
+    "panel"
+  ).classList.remove("open");
+}
+
+document.getElementById(
+  "panelClose"
+).onclick=closePanel;
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+document.querySelectorAll(
+  ".tool[data-tool]"
+).forEach(btn=>{
+
+  btn.addEventListener(
+    "click",
+    ()=>{
+
+      const tool=
+        btn.dataset.tool;
+
+      state.selectedTool=tool;
+
+      document.querySelectorAll(
+        ".tool[data-tool]"
+      ).forEach(x=>
+        x.classList.remove("active")
+      );
+
+      btn.classList.add("active");
+
+      closePanel();
+
+      notify(
+        "Outil : "+
+        BUILDINGS[tool]?.name
+      );
+    }
+  );
+});
+
+document.getElementById(
+  "rotateTool"
+).onclick=()=>{
+
+  state.rotation=
+    (state.rotation+1)%4;
+
+  notify(
+    "↻ Direction : "+
+    ["haut","droite","bas","gauche"][
+      state.rotation
+    ]
+  );
+};
+
+document.getElementById(
+  "researchTool"
+).onclick=()=>{
+  openResearch();
+};
+
+/* =========================================================
+   RESEARCH UI
+========================================================= */
+
+function openResearch(){
+
+  renderResearch();
+
+  document.getElementById(
+    "researchModal"
+  ).classList.add("show");
+}
+
+function renderResearch(){
+
+  const grid=
+    document.getElementById(
+      "researchGrid"
+    );
+
+  grid.innerHTML="";
+
+  for(const r of RESEARCH){
+
+    const unlocked=
+      state.level>=r.level;
+
+    const bought=
+      !!state.research[r.id];
+
+    const div=
+      document.createElement("div");
+
+    div.className=
+      "research "+
+      (bought?"done":"")+
+      (!unlocked?"locked":"");
+
+    div.innerHTML=`
+
+      <h3>
+        ${bought?"✅ ":"🔬 "}
+        ${r.name}
+      </h3>
+
+      <small>
+        ${r.desc}
+        <br>
+        Niveau requis : ${r.level}
+      </small>
+
+      <button
+        ${bought||!unlocked?"disabled":""}
+        onclick="buyResearch('${r.id}')"
+      >
+        ${
+          bought
+          ? "Débloqué"
+          : formatMoney(r.cost)
+        }
+      </button>
+
+    `;
+
+    grid.appendChild(div);
+  }
+
+  document.getElementById(
+    "techLevel"
+  ).textContent=state.level;
+
+  const needed=xpNeeded();
+
+  document.getElementById(
+    "xpBar"
+  ).style.width=
+    Math.min(
+      100,
+      state.xp/needed*100
+    )+"%";
+
+  document.getElementById(
+    "xpText"
+  ).textContent=
+    Math.floor(state.xp)+
+    " / "+
+    needed+
+    " XP";
+}
+
+/* =========================================================
+   CONTRACT UI
+========================================================= */
+
+function openContracts(){
+
+  renderContracts();
+
+  document.getElementById(
+    "contractsModal"
+  ).classList.add("show");
+}
+
+function renderContracts(){
+
+  const list=
+    document.getElementById(
+      "contractsList"
+    );
+
+  list.innerHTML="";
+
+  const active=
+    state.contracts.filter(
+      c=>c.active
+    );
+
+  if(active.length===0){
+
+    list.innerHTML=`
+      <div class="card">
+        <h3>Aucun contrat actif</h3>
+        <p>
+          De nouvelles commandes
+          arriveront bientôt.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  for(const c of active){
+
+    const type=
+      packageType(c.type);
+
+    const percent=
+      c.current/c.required*100;
+
+    const div=
+      document.createElement("div");
+
+    div.className="contract";
+
+    div.innerHTML=`
+
+      <div class="contractTop">
+        <span class="contractTitle">
+          ${c.title}
+        </span>
+
+        <span class="contractReward">
+          +${formatMoney(c.reward)}
+        </span>
+      </div>
+
+      <div class="contractDesc">
+        ${c.required} colis
+        ${type.name}
+        <br>
+        Temps restant :
+        ${Math.ceil(c.time)} s
+      </div>
+
+      <div class="contractBar">
+
+        <div class="progress">
+          <i style="width:${percent}%"></i>
+        </div>
+
+        <span class="contractStatus">
+          ${c.current}/${c.required}
+        </span>
+
+      </div>
+    `;
+
+    list.appendChild(div);
+  }
+}
+
+/* =========================================================
+   STATS UI
+========================================================= */
+
+function openStats(){
+
+  const e=
+    calculateEnergy();
+
+  const storage=
+    [...storageContents.values()]
+      .reduce(
+        (sum,a)=>sum+a.length,
+        0
+      );
+
+  document.getElementById(
+    "statsContent"
+  ).innerHTML=`
+
+    <div class="card">
+      <h3>💰 Économie</h3>
+
+      <div class="row">
+        <span>Argent actuel</span>
+        <strong>${formatMoney(state.money)}</strong>
+      </div>
+
+      <div class="row">
+        <span>Chiffre d'affaires</span>
+        <strong class="green">
+          ${formatMoney(state.revenue)}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Dépenses</span>
+        <strong class="red">
+          ${formatMoney(state.expenses)}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Plus grosse trésorerie</span>
+        <strong>
+          ${formatMoney(state.stats.maxMoney)}
+        </strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📦 Logistique</h3>
+
+      <div class="row">
+        <span>Colis traités</span>
+        <strong>${state.totalPackages}</strong>
+      </div>
+
+      <div class="row">
+        <span>Colis expédiés</span>
+        <strong class="green">
+          ${state.shipped}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Colis bloqués</span>
+        <strong class="red">
+          ${state.rejected}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Record colis/min</span>
+        <strong>${state.stats.bestPPM}</strong>
+      </div>
+
+      <div class="row">
+        <span>Colis en stock</span>
+        <strong>${storage}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⚡ Énergie</h3>
+
+      <div class="row">
+        <span>Production</span>
+        <strong class="green">
+          ${e.produced}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Consommation</span>
+        <strong class="cyan">
+          ${e.used}
+        </strong>
+      </div>
+
+      <div class="row">
+        <span>Balance</span>
+        <strong>
+          ${e.produced-e.used}
+        </strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🏭 Construction</h3>
+
+      <div class="row">
+        <span>Machines construites</span>
+        <strong>${state.stats.totalBuilt}</strong>
+      </div>
+
+      <div class="row">
+        <span>Machines détruites</span>
+        <strong>${state.stats.totalDestroyed}</strong>
+      </div>
+
+      <div class="row">
+        <span>Recherches</span>
+        <strong>${state.stats.researchBought}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⏱️ Temps de jeu</h3>
+
+      <div class="big">
+        ${formatDuration(
+          state.stats.playSeconds
+        )}
+      </div>
+    </div>
+  `;
+
+  document.getElementById(
+    "statsModal"
+  ).classList.add("show");
+}
+
+function formatDuration(sec){
+
+  sec=Math.floor(sec);
+
+  const h=
+    Math.floor(sec/3600);
+
+  const m=
+    Math.floor((sec%3600)/60);
+
+  const s=
+    sec%60;
+
+  if(h>0){
+    return `${h}h ${m}m`;
+  }
+
+  if(m>0){
+    return `${m}m ${s}s`;
+  }
+
+  return `${s}s`;
+}
+
+/* =========================================================
+   MODAL BUTTONS
+========================================================= */
+
+document.getElementById(
+  "researchBtn"
+).onclick=openResearch;
+
+document.getElementById(
+  "contractsBtn"
+).onclick=openContracts;
+
+document.getElementById(
+  "statsBtn"
+).onclick=openStats;
+
+document.getElementById(
+  "settingsBtn"
+).onclick=()=>{
+
+  document.getElementById(
+    "settingsModal"
+  ).classList.add("show");
+};
+
+document.querySelectorAll(
+  ".modalClose"
+).forEach(btn=>{
+
+  btn.onclick=()=>{
+
+    btn.closest(".modal")
+      .classList.remove("show");
+  };
+});
+
+/* =========================================================
+   PAUSE / SPEED
+========================================================= */
+
+document.getElementById(
+  "pauseBtn"
+).onclick=()=>{
+
+  state.paused=!state.paused;
+
+  document.getElementById(
+    "pauseBtn"
+  ).textContent=
+    state.paused
+      ? "▶️ Reprendre"
+      : "⏸️ Pause";
+};
+
+document.getElementById(
+  "speedBtn"
+).onclick=()=>{
+
+  const speeds=[1,2,4];
+
+  const i=
+    speeds.indexOf(
+      state.speed
+    );
+
+  state.speed=
+    speeds[
+      (i+1)%speeds.length
+    ];
+
+  document.getElementById(
+    "speedBtn"
+  ).textContent=
+    "Vitesse : ×"+
+    state.speed;
+};
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+  document.getElementById(
+    "money"
+  ).textContent=
+    formatMoney(state.money);
+
+  document.getElementById(
+    "ppm"
+  ).textContent=
+    currentPPM;
+
+  document.getElementById(
+    "shipped"
+  ).textContent=
+    state.shipped.toLocaleString("fr-FR");
+
+  document.getElementById(
+    "level"
+  ).textContent=
+    state.level;
+
+  const energy=
+    calculateEnergy();
+
+  document.getElementById(
+    "energy"
+  ).textContent=
+    Math.floor(
+      energy.produced
+    )+
+    " / "+
+    Math.floor(
+      energy.used
+    );
+}
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+function serialiseGrid(){
+
+  return state.grid.map(
+    row=>row.map(
+      b=>b
+        ? {
+            type:b.type,
+            rotation:b.rotation,
+            level:b.level,
+            free:b.free||false
+          }
+        : null
+    )
+  );
+}
+
+function saveGame(silent=false){
+
+  const data={
+    version:3,
+    state:{
+      ...state,
+      grid:serialiseGrid(),
+      packages:[],
+      trucks:[]
+    },
+
+    storage:
+      [...storageContents.entries()]
+  };
+
+  try{
 
     localStorage.setItem(
-        "parcelflow_save",
-        JSON.stringify(data)
+      "parcelflow_v3_save",
+      JSON.stringify(data)
+    );
+
+    if(!silent){
+      notify(
+        "💾 Partie sauvegardée.",
+        "green"
+      );
+    }
+
+  }catch(e){
+
+    notify(
+      "❌ Impossible de sauvegarder.",
+      "red"
+    );
+  }
+}
+
+function loadGame(){
+
+  try{
+
+    const raw=
+      localStorage.getItem(
+        "parcelflow_v3_save"
+      );
+
+    if(!raw){
+
+      notify(
+        "Aucune sauvegarde trouvée."
+      );
+
+      return;
+    }
+
+    const data=
+      JSON.parse(raw);
+
+    if(
+      !data.state ||
+      !data.state.grid
+    ){
+      throw new Error("save");
+    }
+
+    state={
+      ...state,
+      ...data.state,
+      grid:data.state.grid
+    };
+
+    storageContents.clear();
+
+    if(data.storage){
+
+      for(
+        const [key,value]
+        of data.storage
+      ){
+
+        storageContents.set(
+          key,
+          value
+        );
+      }
+    }
+
+    notify(
+      "↩️ Sauvegarde chargée.",
+      "green"
+    );
+
+  }catch(e){
+
+    notify(
+      "❌ Sauvegarde invalide.",
+      "red"
+    );
+  }
+}
+
+function resetGame(){
+
+  if(
+    !confirm(
+      "Supprimer toute la progression ?"
+    )
+  ){
+    return;
+  }
+
+  localStorage.removeItem(
+    "parcelflow_v3_save"
+  );
+
+  location.reload();
+}
+
+document.getElementById(
+  "saveBtn"
+).onclick=()=>saveGame(false);
+
+document.getElementById(
+  "loadBtn"
+).onclick=loadGame;
+
+document.getElementById(
+  "resetBtn"
+).onclick=resetGame;
+
+/* =========================================================
+   TUTORIAL
+========================================================= */
+
+function showTutorial(){
+
+  const tut=
+    document.getElementById(
+      "tutorial"
+    );
+
+  tut.classList.add("show");
+
+  document.getElementById(
+    "tutorialTitle"
+  ).textContent=
+    "Bienvenue dans ParcelFlow";
+
+  document.getElementById(
+    "tutorialText"
+  ).textContent=
+    "Ton centre commence avec une petite ligne. "+
+    "Construis autour, expédie des colis et "+
+    "investis dans de nouvelles technologies.";
+
+}
+
+document.getElementById(
+  "tutorialOk"
+).onclick=()=>{
+
+  document.getElementById(
+    "tutorial"
+  ).classList.remove("show");
+};
+
+setTimeout(()=>{
+
+  if(!localStorage.getItem(
+    "parcelflow_v3_save"
+  )){
+    showTutorial();
+  }
+
+},700);
+
+/* =========================================================
+   FIRST CONTRACT
+========================================================= */
+
+createContract();
+
+/* =========================================================
+   CAMERA BOUNDS
+========================================================= */
+
+function clampCamera(){
+
+  const visibleWorldW=
+    W/state.camera.zoom;
+
+  const visibleWorldH=
+    H/state.camera.zoom;
+
+  const halfW=
+    visibleWorldW/2;
+
+  const halfH=
+    visibleWorldH/2;
+
+  const maxX=
+    WORLD_W*TILE-halfW;
+
+  const maxY=
+    WORLD_H*TILE-halfH;
+
+  state.camera.x=
+    Math.max(
+      -halfW,
+      Math.min(
+        maxX,
+        state.camera.x
+      )
+    );
+
+  state.camera.y=
+    Math.max(
+      -halfH,
+      Math.min(
+        maxY,
+        state.camera.y
+      )
     );
 }
 
-/* ------------------------------------------------ */
-
-function loadGame() {
-
-    const raw =
-        localStorage.getItem(
-            "parcelflow_save"
-        );
-
-    if(!raw) return;
-
-    try {
-
-        const data =
-            JSON.parse(raw);
-
-        money =
-            data.money ?? money;
-
-        totalShipped =
-            data.totalShipped ?? totalShipped;
-
-        totalIncoming =
-            data.totalIncoming ?? totalIncoming;
-
-        totalBuilt =
-            data.totalBuilt ?? totalBuilt;
-
-        if(data.grid) {
-
-            for(let y=0;y<ROWS;y++) {
-
-                for(let x=0;x<COLS;x++) {
-
-                    const saved =
-                        data.grid[y]?.[x];
-
-                    if(!saved) {
-
-                        grid[y][x] = null;
-
-                        continue;
-                    }
-
-                    grid[y][x] = {
-                        type: saved.type,
-                        dir: saved.dir || 0,
-                        counter: saved.counter || 0,
-                        parcels: []
-                    };
-                }
-            }
-        }
-
-    } catch(e) {
-
-        console.log(
-            "Sauvegarde invalide"
-        );
-    }
-}
-
-/* ------------------------------------------------ */
+/* =========================================================
+   KEEP CAMERA VALID
+========================================================= */
 
 setInterval(
-    saveGame,
-    5000
+  clampCamera,
+  100
 );
 
-/* ------------------------------------------------ */
+/* =========================================================
+   INITIAL CAMERA
+========================================================= */
 
-function loop(now) {
+state.camera.x=
+  9*TILE;
 
-    const dt =
-        Math.min(
-            .05,
-            (now-lastTime)/1000
-        );
+state.camera.y=
+  30*TILE;
 
-    lastTime = now;
+/* =========================================================
+   EXTRA GAMEPLAY:
+   DAILY CHALLENGES
+========================================================= */
 
-    simulation(dt);
+const dailyChallenges=[
+  {
+    id:"ship50",
+    name:"50 colis expédiés",
+    target:50,
+    reward:5000
+  },
+  {
+    id:"ship200",
+    name:"200 colis expédiés",
+    target:200,
+    reward:25000
+  },
+  {
+    id:"ship1000",
+    name:"1000 colis expédiés",
+    target:1000,
+    reward:150000
+  }
+];
 
-    render();
+/* =========================================================
+   PACKAGE DIFFICULTY
+========================================================= */
 
-    requestAnimationFrame(loop);
+function packageBonus(p){
+
+  let bonus=1;
+
+  if(
+    p.type==="priority"
+  ){
+    bonus+=.25;
+  }
+
+  if(
+    p.type==="premium"
+  ){
+    bonus+=.6;
+  }
+
+  if(
+    p.scanned
+  ){
+    bonus+=.35;
+  }
+
+  if(
+    state.research.logistics
+  ){
+    bonus+=.15;
+  }
+
+  return bonus;
 }
 
-loadGame();
+/* =========================================================
+   OVERRIDE SHIPPING WITH BONUS
+========================================================= */
 
-requestAnimationFrame(loop);
+const originalShipPackage=shipPackage;
+
+shipPackage=function(p,x,y){
+
+  const oldValue=p.value;
+
+  p.value=
+    Math.floor(
+      p.value*
+      packageBonus(p)
+    );
+
+  originalShipPackage(
+    p,
+    x,
+    y
+  );
+
+  recordShipment();
+
+  p.value=oldValue;
+};
+
+/* =========================================================
+   ADVANCED ECONOMY EVENTS
+========================================================= */
+
+let eventTimer=75;
+
+function randomBusinessEvent(){
+
+  const events=[
+
+    {
+      title:"📈 Pic de commandes",
+      text:"Le marché demande beaucoup de colis.",
+      effect:()=>{
+        state.nextPackage=
+          Math.min(
+            state.nextPackage,
+            .8
+          );
+      }
+    },
+
+    {
+      title:"⚡ Tarif énergétique",
+      text:"L'énergie coûte temporairement plus cher.",
+      effect:()=>{
+        state.money=
+          Math.max(
+            0,
+            state.money-
+            Math.floor(
+              state.energyUsed*30
+            )
+          );
+      }
+    },
+
+    {
+      title:"🎁 Client premium",
+      text:"Un client premium augmente la valeur des colis.",
+      effect:()=>{
+        for(const p of state.packages){
+          p.value=
+            Math.floor(
+              p.value*1.2
+            );
+        }
+      }
+    },
+
+    {
+      title:"📦 Afflux logistique",
+      text:"Une vague de colis arrive.",
+      effect:()=>{
+        for(let i=0;i<5;i++){
+          createPackage();
+        }
+      }
+    }
+
+  ];
+
+  const e=
+    events[
+      Math.floor(
+        Math.random()*events.length
+      )
+    ];
+
+  e.effect();
+
+  notify(
+    e.title+" — "+e.text
+  );
+}
+
+setInterval(()=>{
+
+  if(state.paused) return;
+
+  eventTimer-=5;
+
+  if(eventTimer<=0){
+
+    randomBusinessEvent();
+
+    eventTimer=
+      100+
+      Math.random()*100;
+  }
+
+},5000);
+
+/* =========================================================
+   AUTO CONTRACT DISPLAY
+========================================================= */
+
+setInterval(()=>{
+
+  if(
+    document.getElementById(
+      "contractsModal"
+    ).classList.contains("show")
+  ){
+    renderContracts();
+  }
+
+},1000);
+
+/* =========================================================
+   KEYBOARD FALLBACK
+   Not required on tablet.
+========================================================= */
+
+window.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.key==="Escape"){
+      closePanel();
+    }
+
+    if(e.key===" "){
+      state.paused=!state.paused;
+    }
+  }
+);
+
+/* =========================================================
+   STARTUP MESSAGE
+========================================================= */
+
+setTimeout(()=>{
+
+  notify(
+    "📦 Les premiers colis arrivent..."
+  );
+
+},1200);
+
+setTimeout(()=>{
+
+  notify(
+    "💡 Astuce : les convoyeurs peuvent être construits en glissant."
+  );
+
+},4000);
 
 </script>
-
 </body>
 </html>
