@@ -2,7562 +2,2419 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
-
-<title>ParcelFlow V3.1</title>
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Chain Reaction</title>
 
 <style>
-
-:root{
-  --bg:#070b11;
-  --panel:#101722;
-  --panel2:#161f2c;
-  --panel3:#202b3b;
-  --line:#2b394d;
-  --text:#edf3fb;
-  --muted:#8492a7;
-  --gold:#f4bd4c;
-  --green:#49d18c;
-  --red:#ef6262;
-  --blue:#5ca8ff;
-  --purple:#a477ff;
-  --cyan:#50dbe8;
-  --orange:#f08b4f;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-*{
-  box-sizing:border-box;
-  user-select:none;
-  -webkit-user-select:none;
-  -webkit-tap-highlight-color:transparent;
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0b0e13;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
 }
 
-html,
-body{
-  width:100%;
-  height:100%;
-  margin:0;
-  overflow:hidden;
-  background:var(--bg);
-  color:var(--text);
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+body {
+    touch-action: none;
 }
 
-body{
-  touch-action:none;
+#game {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 40%, #151b25 0%, #090c11 70%);
 }
 
-button{
-  font:inherit;
-  color:inherit;
-  border:0;
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.96);
-}
-
-#app{
-  width:100%;
-  height:100%;
-  position:relative;
-  overflow:hidden;
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
 }
 
 /* =========================================================
-   GAME CANVAS
+   TOP BAR
 ========================================================= */
 
-#gameWrap{
-  position:absolute;
-  inset:0;
-  overflow:hidden;
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      #172131 0,
-      #080c13 68%
-    );
+#topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(10,13,18,.92);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    z-index: 20;
+    backdrop-filter: blur(10px);
 }
 
-#game{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-  touch-action:none;
+.logo {
+    font-size: 20px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.logo span {
+    color: #7ee787;
+}
+
+.stat {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #151a22;
+    border: 1px solid #252c38;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.topButton {
+    min-width: 48px;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: #171d27;
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+    border: 1px solid #29313d;
+}
+
+.topButton:active {
+    transform: scale(.94);
 }
 
 /* =========================================================
-   TOP HUD
+   BOTTOM BUILD BAR
 ========================================================= */
 
-#topbar{
-  position:absolute;
-  z-index:30;
-  top:9px;
-  left:9px;
-  right:9px;
-  height:64px;
-
-  display:flex;
-  align-items:center;
-  gap:8px;
-
-  pointer-events:none;
+#buildBar {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    height: 106px;
+    border-radius: 20px;
+    background: rgba(12,16,22,.94);
+    border: 1px solid #29313d;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    backdrop-filter: blur(12px);
 }
 
-.brand{
-  pointer-events:auto;
-
-  height:58px;
-  min-width:170px;
-
-  padding:0 17px;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-
-  border:1px solid var(--line);
-  border-radius:17px;
-
-  background:rgba(12,17,25,.95);
-
-  box-shadow:
-    0 10px 35px rgba(0,0,0,.3);
+#buildBar::-webkit-scrollbar {
+    display: none;
 }
 
-.brand strong{
-  font-size:17px;
-  letter-spacing:.4px;
+.tool {
+    flex: 0 0 92px;
+    height: 82px;
+    border-radius: 15px;
+    border: 1px solid #303947;
+    background: #171d27;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    font-size: 12px;
 }
 
-.brand span{
-  margin-top:2px;
-  color:var(--muted);
-  font-size:9px;
-  letter-spacing:1.3px;
+.tool .icon {
+    font-size: 29px;
 }
 
-.stats{
-  flex:1;
-
-  display:flex;
-  gap:7px;
-
-  overflow:hidden;
+.tool .cost {
+    color: #9aa5b5;
+    font-size: 10px;
 }
 
-.stat{
-  min-width:103px;
-  height:58px;
-
-  padding:7px 11px;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-
-  border:1px solid var(--line);
-  border-radius:15px;
-
-  background:rgba(12,17,25,.95);
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.2);
+.tool.active {
+    border-color: #7ee787;
+    box-shadow: 0 0 0 2px rgba(126,231,135,.14),
+                0 0 18px rgba(126,231,135,.15);
+    background: #17251c;
 }
 
-.stat .label{
-  color:var(--muted);
-  font-size:8px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-
-.stat .value{
-  margin-top:2px;
-  font-size:15px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.gold{
-  color:var(--gold);
-}
-
-.green{
-  color:var(--green);
-}
-
-.red{
-  color:var(--red);
-}
-
-.blue{
-  color:var(--blue);
-}
-
-.purple{
-  color:var(--purple);
-}
-
-.cyan{
-  color:var(--cyan);
-}
-
-.topButtons{
-  display:flex;
-  gap:7px;
-  pointer-events:auto;
-}
-
-.iconBtn{
-  width:52px;
-  height:52px;
-
-  border-radius:15px;
-
-  border:1px solid var(--line);
-
-  background:rgba(13,18,27,.96);
-
-  font-size:20px;
-}
-
-.iconBtn.chest{
-  border-color:#76551b;
-  background:#282012;
+.tool:active {
+    transform: scale(.95);
 }
 
 /* =========================================================
-   TOOLBAR
+   INFO
 ========================================================= */
 
-#toolbar{
-  position:absolute;
-  z-index:25;
-
-  left:10px;
-  right:10px;
-  bottom:10px;
-
-  height:91px;
-
-  display:flex;
-  align-items:center;
-  gap:8px;
-
-  padding:9px;
-
-  overflow-x:auto;
-  overflow-y:hidden;
-
-  border:1px solid var(--line);
-  border-radius:22px;
-
-  background:rgba(12,17,25,.97);
-
-  box-shadow:
-    0 18px 55px rgba(0,0,0,.5);
-
-  touch-action:pan-x;
+#hint {
+    position: absolute;
+    top: 86px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: rgba(12,16,22,.85);
+    border: 1px solid #29313d;
+    color: #b8c1ce;
+    font-size: 13px;
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
 }
 
-#toolbar::-webkit-scrollbar{
-  display:none;
+#message {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(.9);
+    opacity: 0;
+    padding: 18px 25px;
+    border-radius: 18px;
+    background: rgba(14,18,25,.96);
+    border: 1px solid #354050;
+    box-shadow: 0 15px 60px rgba(0,0,0,.5);
+    font-size: 20px;
+    font-weight: 800;
+    z-index: 50;
+    pointer-events: none;
+    transition: .25s ease;
 }
 
-.tool{
-  flex:0 0 83px;
-  height:71px;
-
-  border-radius:16px;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-
-  border:1px solid #2b384b;
-  background:#171f2c;
-}
-
-.tool .ico{
-  font-size:24px;
-}
-
-.tool .name{
-  font-size:9px;
-  color:#aeb9c8;
-}
-
-.tool .price{
-  font-size:9px;
-  color:var(--gold);
-  font-weight:800;
-}
-
-.tool.active{
-  border-color:var(--gold);
-  background:#2c2414;
-  box-shadow:
-    0 0 0 2px rgba(244,189,76,.12);
-}
-
-/* =========================================================
-   PANEL
-========================================================= */
-
-#panel{
-  position:absolute;
-  z-index:45;
-
-  right:10px;
-  top:83px;
-  bottom:115px;
-
-  width:min(390px,93vw);
-
-  overflow:hidden;
-
-  border:1px solid var(--line);
-  border-radius:22px;
-
-  background:rgba(13,18,27,.98);
-
-  box-shadow:
-    0 25px 80px rgba(0,0,0,.6);
-
-  transform:translateX(calc(100% + 30px));
-
-  transition:
-    transform .23s ease;
-}
-
-#panel.open{
-  transform:translateX(0);
-}
-
-#panelHead{
-  height:59px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:0 14px 0 18px;
-
-  border-bottom:1px solid var(--line);
-}
-
-#panelTitle{
-  font-size:17px;
-  font-weight:900;
-}
-
-#panelClose{
-  width:40px;
-  height:40px;
-
-  border-radius:12px;
-
-  background:#202a39;
-}
-
-#panelContent{
-  height:calc(100% - 59px);
-
-  padding:13px;
-
-  overflow-y:auto;
-
-  touch-action:pan-y;
-}
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.card{
-  margin-bottom:10px;
-
-  padding:13px;
-
-  border-radius:16px;
-
-  border:1px solid #2a3749;
-
-  background:#171f2c;
-}
-
-.card h3{
-  margin:0 0 7px;
-  font-size:14px;
-}
-
-.card p{
-  margin:5px 0;
-
-  color:#a8b4c4;
-
-  font-size:12px;
-  line-height:1.45;
-}
-
-.big{
-  font-size:25px;
-  font-weight:900;
-}
-
-.row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-
-  margin:7px 0;
-}
-
-.action{
-  width:100%;
-  min-height:45px;
-
-  margin-top:7px;
-
-  border-radius:12px;
-
-  border:1px solid #35445a;
-
-  background:#263346;
-
-  font-weight:800;
-}
-
-.action.goldBtn{
-  background:#4a3614;
-  border-color:#86621e;
-}
-
-.action.greenBtn{
-  background:#173d2c;
-  border-color:#2d7150;
-}
-
-.action.redBtn{
-  background:#402024;
-  border-color:#71353b;
-}
-
-.action.blueBtn{
-  background:#1b3550;
-  border-color:#315f88;
-}
-
-.action:disabled{
-  opacity:.38;
-}
-
-.progress{
-  width:100%;
-  height:8px;
-
-  margin-top:7px;
-
-  overflow:hidden;
-
-  border-radius:99px;
-
-  background:#0a0f16;
-}
-
-.progress i{
-  display:block;
-  width:0%;
-  height:100%;
-
-  border-radius:99px;
-
-  background:var(--gold);
+#message.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 /* =========================================================
    MODALS
 ========================================================= */
 
-.modal{
-  position:absolute;
-  z-index:90;
-  inset:0;
-
-  display:none;
-  align-items:center;
-  justify-content:center;
-
-  padding:15px;
-
-  background:rgba(0,0,0,.65);
-
-  backdrop-filter:blur(7px);
+.modal {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.62);
+    backdrop-filter: blur(7px);
 }
 
-.modal.show{
-  display:flex;
+.modal.show {
+    display: flex;
 }
 
-.modalBox{
-  width:min(760px,97vw);
-  max-height:91vh;
-
-  overflow:hidden;
-
-  border-radius:24px;
-
-  border:1px solid #35445a;
-
-  background:#111722;
-
-  box-shadow:
-    0 30px 110px rgba(0,0,0,.75);
+.panel {
+    width: min(680px, 94vw);
+    max-height: 88vh;
+    overflow-y: auto;
+    background: #11161e;
+    border: 1px solid #303946;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 25px 100px rgba(0,0,0,.6);
 }
 
-.modalHead{
-  height:62px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:0 17px;
-
-  border-bottom:1px solid var(--line);
+.panel h2 {
+    margin: 0 0 8px;
+    font-size: 25px;
 }
 
-.modalHead strong{
-  font-size:19px;
+.panel p {
+    color: #aab4c2;
+    line-height: 1.5;
 }
 
-.modalBody{
-  max-height:calc(91vh - 62px);
-
-  padding:14px;
-
-  overflow-y:auto;
-
-  touch-action:pan-y;
+.levelBox {
+    padding: 15px;
+    background: #171d27;
+    border-radius: 15px;
+    margin: 15px 0;
 }
 
-/* =========================================================
-   ADMIN
-========================================================= */
-
-.adminDanger{
-  border-color:#793d42;
+.progress {
+    height: 10px;
+    background: #252c36;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
 }
 
-.adminGrid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
+.progress > div {
+    height: 100%;
+    width: 0;
+    background: #7ee787;
+    transition: width .3s;
 }
 
-.adminButton{
-  min-height:52px;
-
-  border-radius:13px;
-
-  border:1px solid #35445a;
-
-  background:#202c3d;
-
-  font-weight:800;
+.modalButtons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
 }
 
-.adminButton:active{
-  transform:scale(.97);
+.bigButton {
+    flex: 1;
+    min-width: 130px;
+    min-height: 52px;
+    border: 0;
+    border-radius: 14px;
+    background: #202936;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 10px 16px;
 }
 
-.adminWarning{
-  color:#ff8c8c;
-  font-size:11px;
+.bigButton.green {
+    background: #238636;
 }
 
-/* =========================================================
-   RESEARCH
-========================================================= */
-
-.researchGrid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:9px;
+.bigButton.red {
+    background: #b42332;
 }
 
-.research{
-  padding:13px;
-
-  border-radius:16px;
-
-  border:1px solid #2c394b;
-
-  background:#18202d;
-}
-
-.research.locked{
-  opacity:.48;
-}
-
-.research.done{
-  border-color:#2c865e;
-  background:#132a21;
-}
-
-.research h3{
-  margin:0 0 6px;
-  font-size:14px;
-}
-
-.research small{
-  color:#98a6b8;
-  line-height:1.4;
-}
-
-.research button{
-  width:100%;
-  height:40px;
-
-  margin-top:9px;
-
-  border-radius:10px;
-
-  background:#29364a;
-
-  font-weight:800;
-}
-
-/* =========================================================
-   CONTRACTS
-========================================================= */
-
-.contract{
-  margin-bottom:9px;
-
-  padding:13px;
-
-  border-radius:16px;
-
-  border:1px solid #2c394b;
-
-  background:#171f2c;
-}
-
-.contractTop{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-}
-
-.contractTitle{
-  font-weight:900;
-}
-
-.contractReward{
-  color:var(--gold);
-  font-weight:900;
-}
-
-.contractDesc{
-  margin:6px 0;
-
-  color:#9ba8b9;
-  font-size:12px;
-}
-
-.contractBar{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.contractBar .progress{
-  flex:1;
-}
-
-.contractStatus{
-  color:#aab6c5;
-  font-size:11px;
-}
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-#notifications{
-  position:absolute;
-  z-index:110;
-
-  top:80px;
-  left:50%;
-
-  width:min(440px,90vw);
-
-  transform:translateX(-50%);
-
-  pointer-events:none;
-}
-
-.note{
-  margin-bottom:7px;
-
-  padding:12px 15px;
-
-  border-radius:15px;
-
-  border:1px solid #344257;
-
-  background:rgba(17,23,34,.97);
-
-  box-shadow:
-    0 12px 35px rgba(0,0,0,.4);
-
-  font-size:13px;
-
-  animation:
-    noteIn .2s ease;
-}
-
-@keyframes noteIn{
-  from{
-    opacity:0;
-    transform:translateY(-12px);
-  }
-
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
+.bigButton:active {
+    transform: scale(.97);
 }
 
 /* =========================================================
    TUTORIAL
 ========================================================= */
 
-#tutorial{
-  position:absolute;
-  z-index:70;
-
-  left:50%;
-  bottom:118px;
-
-  width:min(500px,91vw);
-
-  transform:translateX(-50%);
-
-  padding:16px;
-
-  border-radius:19px;
-
-  border:1px solid #46566e;
-
-  background:rgba(15,21,31,.98);
-
-  box-shadow:
-    0 20px 70px rgba(0,0,0,.6);
-
-  display:none;
+#tutorialCard {
+    text-align: center;
 }
 
-#tutorial.show{
-  display:block;
+.tutoIcon {
+    font-size: 70px;
+    margin: 5px 0 10px;
 }
 
-.tutorialStep{
-  color:var(--gold);
-
-  font-size:10px;
-  font-weight:900;
-
-  letter-spacing:1px;
-
-  text-transform:uppercase;
+.tutoStep {
+    color: #7ee787;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 6px;
 }
 
-#tutorialTitle{
-  margin-top:4px;
-
-  font-size:17px;
-  font-weight:900;
+.tutoTitle {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 10px;
 }
 
-#tutorialText{
-  margin:7px 0 12px;
-
-  color:#aeb9c8;
-
-  font-size:12px;
-  line-height:1.5;
-}
-
-.tutorialButtons{
-  display:flex;
-  gap:8px;
-}
-
-.tutorialButtons button{
-  flex:1;
-
-  height:43px;
-
-  border-radius:12px;
-
-  background:#27354a;
-
-  font-weight:800;
+.tutoText {
+    font-size: 16px;
+    color: #adb7c5;
+    line-height: 1.55;
 }
 
 /* =========================================================
-   LOGIN
+   RESPONSIVE
 ========================================================= */
 
-.loginBox{
-  width:min(400px,94vw);
+@media (max-width: 700px) {
+    #topbar {
+        height: 62px;
+        padding: 8px;
+        gap: 6px;
+    }
 
-  padding:20px;
+    .logo {
+        font-size: 16px;
+    }
 
-  border-radius:22px;
+    .stat {
+        height: 40px;
+        padding: 0 9px;
+        font-size: 12px;
+    }
 
-  border:1px solid #46546b;
+    .topButton {
+        height: 40px;
+        min-width: 42px;
+        font-size: 17px;
+    }
 
-  background:#111722;
+    #hint {
+        top: 72px;
+        font-size: 11px;
+        max-width: 90vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-  box-shadow:
-    0 30px 100px rgba(0,0,0,.7);
+    #buildBar {
+        height: 96px;
+    }
+
+    .tool {
+        flex-basis: 82px;
+        height: 74px;
+    }
+
+    .tool .icon {
+        font-size: 25px;
+    }
 }
-
-.loginIcon{
-  text-align:center;
-  font-size:48px;
-}
-
-.loginBox h2{
-  text-align:center;
-  margin:7px 0;
-}
-
-.loginBox p{
-  text-align:center;
-
-  color:#8f9bad;
-
-  font-size:12px;
-}
-
-.passwordInput{
-  width:100%;
-  height:51px;
-
-  margin-top:10px;
-
-  padding:0 15px;
-
-  outline:none;
-
-  border-radius:13px;
-
-  border:1px solid #344257;
-
-  background:#0b1119;
-
-  color:white;
-
-  font-size:17px;
-
-  text-align:center;
-}
-
-.passwordInput:focus{
-  border-color:var(--gold);
-}
-
-.loginButtons{
-  display:flex;
-  gap:8px;
-
-  margin-top:10px;
-}
-
-.loginButtons button{
-  flex:1;
-
-  height:45px;
-
-  border-radius:12px;
-
-  background:#27364a;
-
-  font-weight:800;
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:700px){
-
-  #topbar{
-    top:6px;
-    left:6px;
-    right:6px;
-    height:53px;
-  }
-
-  .brand{
-    min-width:108px;
-    height:49px;
-    padding:0 11px;
-  }
-
-  .brand strong{
-    font-size:14px;
-  }
-
-  .brand span{
-    display:none;
-  }
-
-  .stats{
-    gap:5px;
-  }
-
-  .stat{
-    min-width:80px;
-    height:49px;
-    padding:6px 8px;
-  }
-
-  .stat .label{
-    font-size:7px;
-  }
-
-  .stat .value{
-    font-size:12px;
-  }
-
-  .topButtons{
-    display:none;
-  }
-
-  #toolbar{
-    left:6px;
-    right:6px;
-    bottom:6px;
-    height:83px;
-    border-radius:19px;
-    padding:7px;
-  }
-
-  .tool{
-    flex-basis:72px;
-    height:66px;
-  }
-
-  .tool .ico{
-    font-size:21px;
-  }
-
-  .tool .name{
-    font-size:8px;
-  }
-
-  #panel{
-    top:67px;
-    right:6px;
-    bottom:96px;
-    width:calc(100vw - 12px);
-  }
-
-  .researchGrid,
-  .adminGrid{
-    grid-template-columns:1fr;
-  }
-
-}
-
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div id="game">
 
-<!-- =======================================================
-     GAME
-======================================================== -->
+    <canvas id="canvas"></canvas>
 
-<div id="gameWrap">
-  <canvas id="game"></canvas>
-</div>
+    <!-- TOP -->
+    <div id="topbar">
+        <div class="logo">CHAIN<span>REACTION</span></div>
 
-<!-- =======================================================
-     HUD
-======================================================== -->
-
-<div id="topbar">
-
-  <div class="brand">
-    <strong>ParcelFlow</strong>
-    <span>CENTRE LOGISTIQUE</span>
-  </div>
-
-  <div class="stats">
-
-    <div class="stat">
-      <span class="label">Argent</span>
-      <span class="value gold" id="money">1 500 €</span>
-    </div>
-
-    <div class="stat">
-      <span class="label">Colis/min</span>
-      <span class="value green" id="ppm">0</span>
-    </div>
-
-    <div class="stat">
-      <span class="label">Expédiés</span>
-      <span class="value blue" id="shipped">0</span>
-    </div>
-
-    <div class="stat">
-      <span class="label">Niveau</span>
-      <span class="value purple" id="level">1</span>
-    </div>
-
-    <div class="stat">
-      <span class="label">Énergie</span>
-      <span class="value cyan" id="energy">0 / 0</span>
-    </div>
-
-  </div>
-
-  <div class="topButtons">
-
-    <button
-      class="iconBtn"
-      id="researchBtn">
-      🔬
-    </button>
-
-    <button
-      class="iconBtn"
-      id="contractsBtn">
-      📋
-    </button>
-
-    <button
-      class="iconBtn"
-      id="statsBtn">
-      📊
-    </button>
-
-    <button
-      class="iconBtn chest"
-      id="adminBtn">
-      🧰
-    </button>
-
-  </div>
-
-</div>
-
-<div id="notifications"></div>
-
-<!-- =======================================================
-     TOOLBAR
-======================================================== -->
-
-<div id="toolbar">
-
-  <button
-    class="tool active"
-    data-tool="belt">
-
-    <span class="ico">➡️</span>
-    <span class="name">Convoyeur</span>
-    <span class="price" data-price="belt"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="fastbelt">
-
-    <span class="ico">⚡</span>
-    <span class="name">Rapide</span>
-    <span class="price" data-price="fastbelt"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="splitter">
-
-    <span class="ico">🔀</span>
-    <span class="name">Splitter</span>
-    <span class="price" data-price="splitter"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="merger">
-
-    <span class="ico">🔁</span>
-    <span class="name">Mergeur</span>
-    <span class="price" data-price="merger"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="sorter">
-
-    <span class="ico">🎯</span>
-    <span class="name">Trieur</span>
-    <span class="price" data-price="sorter"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="scanner">
-
-    <span class="ico">📡</span>
-    <span class="name">Scanner</span>
-    <span class="price" data-price="scanner"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="storage">
-
-    <span class="ico">📦</span>
-    <span class="name">Stockage</span>
-    <span class="price" data-price="storage"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="charger">
-
-    <span class="ico">🔋</span>
-    <span class="name">Chargeur</span>
-    <span class="price" data-price="charger"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="dock">
-
-    <span class="ico">🚚</span>
-    <span class="name">Quai</span>
-    <span class="price" data-price="dock"></span>
-
-  </button>
-
-  <button
-    class="tool"
-    data-tool="erase">
-
-    <span class="ico">🗑️</span>
-    <span class="name">Détruire</span>
-    <span class="price">25% retour</span>
-
-  </button>
-
-  <button
-    class="tool"
-    id="rotateTool">
-
-    <span class="ico">↻</span>
-    <span class="name">Rotation</span>
-
-  </button>
-
-  <button
-    class="tool"
-    id="researchTool">
-
-    <span class="ico">🔬</span>
-    <span class="name">Recherche</span>
-
-  </button>
-
-</div>
-
-<!-- =======================================================
-     INFORMATION PANEL
-======================================================== -->
-
-<aside id="panel">
-
-  <div id="panelHead">
-
-    <span id="panelTitle">
-      Informations
-    </span>
-
-    <button id="panelClose">
-      ✕
-    </button>
-
-  </div>
-
-  <div id="panelContent"></div>
-
-</aside>
-
-<!-- =======================================================
-     TUTORIAL
-======================================================== -->
-
-<div id="tutorial">
-
-  <div
-    class="tutorialStep"
-    id="tutorialStep">
-    ÉTAPE 1 / 7
-  </div>
-
-  <div id="tutorialTitle">
-    Bienvenue dans ParcelFlow
-  </div>
-
-  <div id="tutorialText">
-    Construis ton premier centre logistique.
-  </div>
-
-  <div class="tutorialButtons">
-
-    <button id="tutorialSkip">
-      Fermer
-    </button>
-
-    <button id="tutorialNext">
-      Suivant
-    </button>
-
-  </div>
-
-</div>
-
-<!-- =======================================================
-     RESEARCH MODAL
-======================================================== -->
-
-<div class="modal" id="researchModal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <strong>
-        🔬 Centre de recherche
-      </strong>
-
-      <button class="iconBtn modalClose">
-        ✕
-      </button>
-
-    </div>
-
-    <div class="modalBody">
-
-      <div class="card">
-
-        <div class="row">
-
-          <span>
-            Niveau technologique
-          </span>
-
-          <strong id="techLevel">
-            1
-          </strong>
-
+        <div class="stat">
+            ⭐ <b id="levelText">Niv. 1</b>
         </div>
 
-        <div class="progress">
-          <i id="xpBar"></i>
+        <div class="stat">
+            🧩 <b id="pieceText">20</b>
         </div>
 
-        <p id="xpText">
-          0 / 100 XP
-        </p>
+        <div class="spacer"></div>
 
-      </div>
-
-      <div
-        class="researchGrid"
-        id="researchGrid">
-      </div>
-
+        <button class="topButton" id="runBtn">▶</button>
+        <button class="topButton" id="resetBtn">↻</button>
+        <button class="topButton" id="helpBtn">?</button>
     </div>
 
-  </div>
-
-</div>
-
-<!-- =======================================================
-     CONTRACTS
-======================================================== -->
-
-<div class="modal" id="contractsModal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <strong>
-        📋 Contrats
-      </strong>
-
-      <button class="iconBtn modalClose">
-        ✕
-      </button>
-
+    <div id="hint">
+        Place des objets, connecte-les puis appuie sur ▶
     </div>
 
-    <div class="modalBody">
+    <!-- BUILD BAR -->
+    <div id="buildBar">
 
-      <div id="contractsList"></div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =======================================================
-     STATS
-======================================================== -->
-
-<div class="modal" id="statsModal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <strong>
-        📊 Statistiques
-      </strong>
-
-      <button class="iconBtn modalClose">
-        ✕
-      </button>
-
-    </div>
-
-    <div
-      class="modalBody"
-      id="statsContent">
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =======================================================
-     SETTINGS
-======================================================== -->
-
-<div class="modal" id="settingsModal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <strong>
-        ⚙️ Paramètres
-      </strong>
-
-      <button class="iconBtn modalClose">
-        ✕
-      </button>
-
-    </div>
-
-    <div class="modalBody">
-
-      <div class="card">
-
-        <h3>
-          🎮 Simulation
-        </h3>
-
-        <button
-          class="action"
-          id="pauseBtn">
-          ⏸️ Pause
+        <button class="tool active" data-tool="select">
+            <div class="icon">👆</div>
+            <b>Sélection</b>
+            <div class="cost">gratuit</div>
         </button>
 
-        <button
-          class="action"
-          id="speedBtn">
-          Vitesse : ×1
+        <button class="tool" data-tool="domino">
+            <div class="icon">🟫</div>
+            <b>Domino</b>
+            <div class="cost">1 pièce</div>
         </button>
 
-      </div>
-
-      <div class="card">
-
-        <h3>
-          🔊 Audio
-        </h3>
-
-        <button
-          class="action"
-          id="soundBtn">
-          🔊 Sons : activés
+        <button class="tool" data-tool="ball">
+            <div class="icon">⚪</div>
+            <b>Bille</b>
+            <div class="cost">2 pièces</div>
         </button>
 
-        <button
-          class="action"
-          id="musicBtn">
-          🎵 Ambiance : activée
+        <button class="tool" data-tool="ramp">
+            <div class="icon">◢</div>
+            <b>Rampe</b>
+            <div class="cost">2 pièces</div>
         </button>
 
-      </div>
-
-      <div class="card">
-
-        <h3>
-          🎓 Tutoriel
-        </h3>
-
-        <p>
-          Tu peux recommencer le tutoriel
-          quand tu veux.
-        </p>
-
-        <button
-          class="action blueBtn"
-          id="replayTutorialBtn">
-          🔄 Refaire le tutoriel
+        <button class="tool" data-tool="wheel">
+            <div class="icon">⚙️</div>
+            <b>Roue</b>
+            <div class="cost">3 pièces</div>
         </button>
 
-      </div>
-
-      <div class="card">
-
-        <h3>
-          💾 Sauvegarde
-        </h3>
-
-        <button
-          class="action greenBtn"
-          id="saveBtn">
-          💾 Sauvegarder
+        <button class="tool" data-tool="spring">
+            <div class="icon">🌀</div>
+            <b>Ressort</b>
+            <div class="cost">3 pièces</div>
         </button>
 
-        <button
-          class="action"
-          id="loadBtn">
-          ↩️ Charger
+        <button class="tool" data-tool="button">
+            <div class="icon">🔘</div>
+            <b>Bouton</b>
+            <div class="cost">2 pièces</div>
         </button>
 
-        <button
-          class="action redBtn"
-          id="resetBtn">
-          ⚠️ Nouvelle partie
+        <button class="tool" data-tool="fan">
+            <div class="icon">💨</div>
+            <b>Ventilo</b>
+            <div class="cost">4 pièces</div>
         </button>
 
-      </div>
+        <button class="tool" data-tool="wall">
+            <div class="icon">🧱</div>
+            <b>Mur</b>
+            <div class="cost">1 pièce</div>
+        </button>
 
-      <div class="card">
+        <button class="tool" data-tool="goal">
+            <div class="icon">🎯</div>
+            <b>Objectif</b>
+            <div class="cost">2 pièces</div>
+        </button>
 
-        <h3>
-          📱 Contrôles tablette
-        </h3>
-
-        <p>👆 Appui : construire / sélectionner</p>
-        <p>👆 Glisser : construire une ligne</p>
-        <p>🤏 Deux doigts : déplacer / zoomer</p>
-        <p>🔄 Appuyer sur un convoyeur : tourner</p>
-        <p>🖐️ Appui long : informations</p>
-
-      </div>
+        <button class="tool" data-tool="eraser">
+            <div class="icon">🗑️</div>
+            <b>Supprimer</b>
+            <div class="cost">gratuit</div>
+        </button>
 
     </div>
 
-  </div>
+    <div id="message"></div>
 
-</div>
+    <!-- TUTORIAL -->
+    <div class="modal show" id="tutorialModal">
+        <div class="panel" id="tutorialCard">
 
-<!-- =======================================================
-     ADMIN LOGIN
-======================================================== -->
+            <div class="tutoStep" id="tutoStep">ÉTAPE 1 / 6</div>
+            <div class="tutoIcon" id="tutoIcon">🧩</div>
+            <div class="tutoTitle" id="tutoTitle">
+                Bienvenue
+            </div>
 
-<div class="modal" id="adminLoginModal">
+            <div class="tutoText" id="tutoText">
+                Ton objectif est de construire une machine où chaque objet
+                déclenche le suivant jusqu'à atteindre la cible.
+            </div>
 
-  <div class="loginBox">
+            <div class="modalButtons">
+                <button class="bigButton" id="skipTutorial">
+                    Passer
+                </button>
 
-    <div class="loginIcon">
-      🧰
-    </div>
-
-    <h2>
-      Panel administrateur
-    </h2>
-
-    <p>
-      Entre le mot de passe administrateur.
-    </p>
-
-    <input
-      class="passwordInput"
-      id="adminPassword"
-      type="password"
-      inputmode="numeric"
-      placeholder="Mot de passe">
-
-    <div class="loginButtons">
-
-      <button id="adminCancel">
-        Annuler
-      </button>
-
-      <button
-        class="action goldBtn"
-        id="adminLogin"
-        style="margin:0">
-        Entrer
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =======================================================
-     ADMIN PANEL
-======================================================== -->
-
-<div class="modal" id="adminModal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <strong>
-        🧰 Administration
-      </strong>
-
-      <button class="iconBtn modalClose">
-        ✕
-      </button>
-
-    </div>
-
-    <div class="modalBody">
-
-      <div class="card adminDanger">
-
-        <h3>
-          ⚠️ Zone administrateur
-        </h3>
-
-        <p>
-          Ces commandes modifient directement
-          la partie actuelle.
-        </p>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          💰 Économie
-        </h3>
-
-        <div class="adminGrid">
-
-          <button
-            class="adminButton"
-            onclick="adminMoney(1000)">
-            +1 000 €
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminMoney(10000)">
-            +10 000 €
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminMoney(100000)">
-            +100 000 €
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminMoney(1000000)">
-            +1 000 000 €
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminMoney(10000000)">
-            +10 M€
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminMoney(1000000000)">
-            +1 Md€
-          </button>
+                <button class="bigButton green" id="nextTutorial">
+                    Suivant
+                </button>
+            </div>
 
         </div>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          ⭐ Progression
-        </h3>
-
-        <div class="adminGrid">
-
-          <button
-            class="adminButton"
-            onclick="adminXP(1000)">
-            +1 000 XP
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminXP(100000)">
-            +100 000 XP
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminLevel(1)">
-            Niveau +1
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminLevel(10)">
-            Niveau +10
-          </button>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          🔬 Recherches
-        </h3>
-
-        <button
-          class="action greenBtn"
-          onclick="adminUnlockResearch()">
-          🔓 Débloquer toutes les recherches
-        </button>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          📦 Simulation
-        </h3>
-
-        <div class="adminGrid">
-
-          <button
-            class="adminButton"
-            onclick="adminSpawn(1)">
-            📦 +1 colis
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminSpawn(10)">
-            📦 +10 colis
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminSpawn(50)">
-            📦 +50 colis
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminContract()">
-            📋 Nouveau contrat
-          </button>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          ⚙️ Monde
-        </h3>
-
-        <div class="adminGrid">
-
-          <button
-            class="adminButton"
-            onclick="adminSetSpeed(10)">
-            ⚡ Vitesse ×10
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminSetSpeed(50)">
-            ⚡ Vitesse ×50
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminSetSpeed(1)">
-            ↩️ Vitesse normale
-          </button>
-
-          <button
-            class="adminButton"
-            onclick="adminFillEnergy()">
-            🔋 Énergie illimitée
-          </button>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          🏭 Construction
-        </h3>
-
-        <button
-          class="action blueBtn"
-          onclick="adminFreeBuild()">
-          🏗️ Mode construction gratuite
-        </button>
-
-        <p
-          class="adminWarning"
-          id="freeBuildStatus">
-          Désactivé
-        </p>
-
-      </div>
-
-      <div class="card">
-
-        <h3>
-          💾 Sauvegarde
-        </h3>
-
-        <button
-          class="action"
-          onclick="saveGame(false)">
-          💾 Sauvegarder maintenant
-        </button>
-
-        <button
-          class="action redBtn"
-          onclick="adminClearSave()">
-          🗑️ Effacer la sauvegarde
-        </button>
-
-      </div>
-
     </div>
 
-  </div>
+    <!-- HELP -->
+    <div class="modal" id="helpModal">
+        <div class="panel">
+
+            <h2>Comment jouer ?</h2>
+
+            <p>
+                Construis une réaction en chaîne. Les objets doivent
+                physiquement se toucher ou interagir pour déclencher
+                les suivants.
+            </p>
+
+            <div class="levelBox">
+                <b>👆 Sélection</b>
+                <p>
+                    Touche un objet pour le sélectionner.
+                    Fais-le glisser pour le déplacer.
+                </p>
+            </div>
+
+            <div class="levelBox">
+                <b>🧩 Construire</b>
+                <p>
+                    Choisis un objet dans la barre du bas puis touche
+                    l'endroit où tu veux le placer.
+                </p>
+            </div>
+
+            <div class="levelBox">
+                <b>▶ Lancer</b>
+                <p>
+                    Quand ta machine est prête, appuie sur ▶.
+                    Les objets commencent alors à bouger.
+                </p>
+            </div>
+
+            <div class="levelBox">
+                <b>📱 Gestes tablette</b>
+                <p>
+                    Un doigt : placer ou déplacer.<br>
+                    Deux doigts : déplacer la caméra.<br>
+                    Pincer : zoomer.
+                </p>
+            </div>
+
+            <div class="modalButtons">
+                <button class="bigButton green" id="replayTutorial">
+                    Revoir le tutoriel
+                </button>
+
+                <button class="bigButton" id="closeHelp">
+                    Fermer
+                </button>
+            </div>
+
+        </div>
+    </div>
 
 </div>
 
 <script>
-"use strict";
-
 /* =========================================================
-   PARCELFLOW V3.1
+   CHAIN REACTION
+   V1
 ========================================================= */
 
-/*
-   ========================================================
-   MOT DE PASSE ADMIN
-   ========================================================
-*/
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-const ADMIN_PASSWORD = "1234";
+let W = 0;
+let H = 0;
+let DPR = Math.min(window.devicePixelRatio || 1, 2);
 
-/*
-   Change "1234" par le mot de passe de ton choix.
-*/
+function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
 
-/* =========================================================
-   CANVAS
-========================================================= */
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
 
-const canvas =
-  document.getElementById("game");
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
 
-const ctx =
-  canvas.getContext("2d");
-
-let W=0;
-let H=0;
-let DPR=1;
-
-function resize(){
-
-  W=canvas.clientWidth;
-  H=canvas.clientHeight;
-
-  DPR=Math.min(
-    window.devicePixelRatio||1,
-    2
-  );
-
-  canvas.width=
-    Math.floor(W*DPR);
-
-  canvas.height=
-    Math.floor(H*DPR);
-
-  ctx.setTransform(
-    DPR,
-    0,
-    0,
-    DPR,
-    0,
-    0
-  );
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
 
-window.addEventListener(
-  "resize",
-  resize
-);
-
+window.addEventListener("resize", resize);
 resize();
 
 /* =========================================================
-   AUDIO ENGINE
+   GAME STATE
 ========================================================= */
 
-let audioContext=null;
+const state = {
+    level: 1,
+    pieces: 20,
+    running: false,
+    completed: false,
+    tool: "select",
 
-let soundsEnabled=true;
-let musicEnabled=true;
+    camera: {
+        x: 0,
+        y: 0,
+        zoom: 1
+    },
 
-function initAudio(){
+    objects: [],
 
-  if(!soundsEnabled){
-    return;
-  }
+    selected: null,
 
-  if(!audioContext){
+    particles: [],
 
-    const AC=
-      window.AudioContext ||
-      window.webkitAudioContext;
+    tutorialSeen: false
+};
 
-    if(!AC){
-      return;
+/* =========================================================
+   OBJECT TYPES
+========================================================= */
+
+const TYPES = {
+
+    domino: {
+        name: "Domino",
+        cost: 1,
+        color: "#a9784e",
+        radius: 19
+    },
+
+    ball: {
+        name: "Bille",
+        cost: 2,
+        color: "#e8edf4",
+        radius: 16
+    },
+
+    ramp: {
+        name: "Rampe",
+        cost: 2,
+        color: "#e0a23a",
+        radius: 25
+    },
+
+    wheel: {
+        name: "Roue",
+        cost: 3,
+        color: "#79889b",
+        radius: 28
+    },
+
+    spring: {
+        name: "Ressort",
+        cost: 3,
+        color: "#8dd6ff",
+        radius: 25
+    },
+
+    button: {
+        name: "Bouton",
+        cost: 2,
+        color: "#e24d5b",
+        radius: 23
+    },
+
+    fan: {
+        name: "Ventilateur",
+        cost: 4,
+        color: "#9b8cff",
+        radius: 27
+    },
+
+    wall: {
+        name: "Mur",
+        cost: 1,
+        color: "#66717f",
+        radius: 28
+    },
+
+    goal: {
+        name: "Objectif",
+        cost: 2,
+        color: "#61e294",
+        radius: 29
     }
-
-    audioContext=
-      new AC();
-  }
-
-  if(
-    audioContext.state==="suspended"
-  ){
-    audioContext.resume();
-  }
-}
-
-function tone(
-  frequency,
-  duration=.07,
-  volume=.035,
-  type="sine",
-  slide=0
-){
-
-  if(!soundsEnabled){
-    return;
-  }
-
-  initAudio();
-
-  if(!audioContext){
-    return;
-  }
-
-  const osc=
-    audioContext.createOscillator();
-
-  const gain=
-    audioContext.createGain();
-
-  osc.type=type;
-
-  osc.frequency.setValueAtTime(
-    frequency,
-    audioContext.currentTime
-  );
-
-  if(slide){
-    osc.frequency.linearRampToValueAtTime(
-      frequency+slide,
-      audioContext.currentTime+
-      duration
-    );
-  }
-
-  gain.gain.setValueAtTime(
-    0,
-    audioContext.currentTime
-  );
-
-  gain.gain.linearRampToValueAtTime(
-    volume,
-    audioContext.currentTime+.01
-  );
-
-  gain.gain.exponentialRampToValueAtTime(
-    .001,
-    audioContext.currentTime+
-    duration
-  );
-
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-
-  osc.start();
-
-  osc.stop(
-    audioContext.currentTime+
-    duration+.02
-  );
-}
-
-function soundClick(){
-  tone(480,.035,.018,"sine",30);
-}
-
-function soundBuild(){
-  tone(240,.055,.035,"square",100);
-  setTimeout(
-    ()=>tone(430,.07,.025,"sine",80),
-    35
-  );
-}
-
-function soundDestroy(){
-  tone(180,.08,.03,"sawtooth",-100);
-}
-
-function soundBuy(){
-  tone(520,.07,.03,"sine",100);
-  setTimeout(
-    ()=>tone(720,.1,.025,"sine",130),
-    65
-  );
-}
-
-function soundError(){
-  tone(130,.12,.035,"square",-40);
-}
-
-function soundShip(){
-
-  tone(440,.06,.025,"sine",80);
-
-  setTimeout(
-    ()=>tone(660,.08,.025,"sine",100),
-    55
-  );
-
-  setTimeout(
-    ()=>tone(880,.12,.025,"sine",150),
-    110
-  );
-}
-
-function soundLevel(){
-
-  tone(440,.08,.03,"sine",100);
-
-  setTimeout(
-    ()=>tone(550,.08,.03,"sine",120),
-    80
-  );
-
-  setTimeout(
-    ()=>tone(660,.13,.035,"sine",160),
-    160
-  );
-}
-
-function soundResearch(){
-
-  tone(330,.08,.025,"triangle",100);
-
-  setTimeout(
-    ()=>tone(495,.08,.025,"triangle",130),
-    80
-  );
-
-  setTimeout(
-    ()=>tone(660,.13,.03,"triangle",160),
-    160
-  );
-}
-
-/*
-  Audio activé uniquement après interaction utilisateur.
-  Cela évite les problèmes d'autoplay des navigateurs.
-*/
-
-document.addEventListener(
-  "pointerdown",
-  ()=>{
-    initAudio();
-  },
-  {once:true}
-);
-
-/* =========================================================
-   CONSTANTES
-========================================================= */
-
-const TILE=58;
-
-const WORLD_W=90;
-const WORLD_H=60;
-
-const COLORS={
-  bg:"#090d14",
-  grid:"#182130",
-  belt:"#39485c",
-  beltEdge:"#52647c",
-  fast:"#31546c",
-  fastEdge:"#63b2e8",
-  yellow:"#f5bd45",
-  green:"#49d18c",
-  red:"#ef6262",
-  blue:"#5ca8ff",
-  purple:"#a477ff",
-  cyan:"#50dbe8"
 };
 
 /* =========================================================
-   BUILDINGS
+   LEVEL DATA
 ========================================================= */
 
-const BUILDINGS={
+const LEVELS = [
 
-  belt:{
-    name:"Convoyeur",
-    icon:"➡️",
-    price:75,
-    energy:1,
-    speed:1,
-    desc:"Convoyeur standard."
-  },
+    {
+        title: "Le premier domino",
+        description: "Fais tomber le domino pour atteindre la cible.",
+        pieces: 8
+    },
 
-  fastbelt:{
-    name:"Convoyeur rapide",
-    icon:"⚡",
-    price:1500,
-    energy:3,
-    speed:2.2,
-    desc:"Transport rapide.",
-    research:"fastBelts"
-  },
+    {
+        title: "La bille",
+        description: "Utilise une bille pour atteindre la cible.",
+        pieces: 10
+    },
 
-  splitter:{
-    name:"Splitter",
-    icon:"🔀",
-    price:3200,
-    energy:4,
-    speed:1,
-    desc:"Divise le flux.",
-    research:"splitters"
-  },
+    {
+        title: "La roue",
+        description: "Fais tourner la roue avant d'atteindre la cible.",
+        pieces: 12
+    },
 
-  merger:{
-    name:"Mergeur",
-    icon:"🔁",
-    price:4500,
-    energy:4,
-    speed:.9,
-    desc:"Fusionne les flux.",
-    research:"mergers"
-  },
+    {
+        title: "Le ressort",
+        description: "Utilise le ressort pour envoyer la réaction.",
+        pieces: 15
+    },
 
-  sorter:{
-    name:"Trieur",
-    icon:"🎯",
-    price:8000,
-    energy:6,
-    speed:1,
-    desc:"Trie les colis.",
-    research:"sorters"
-  },
+    {
+        title: "Le ventilateur",
+        description: "Utilise le vent pour déplacer la bille.",
+        pieces: 18
+    },
 
-  scanner:{
-    name:"Scanner",
-    icon:"📡",
-    price:12500,
-    energy:8,
-    speed:.8,
-    desc:"Augmente la valeur des colis.",
-    research:"scanners"
-  },
-
-  storage:{
-    name:"Stockage",
-    icon:"📦",
-    price:25000,
-    energy:5,
-    speed:0,
-    capacity:10,
-    desc:"Stocke les colis.",
-    research:"storage"
-  },
-
-  charger:{
-    name:"Chargeur",
-    icon:"🔋",
-    price:18000,
-    energy:-15,
-    speed:0,
-    desc:"Produit de l'énergie.",
-    research:"energy"
-  },
-
-  dock:{
-    name:"Quai",
-    icon:"🚚",
-    price:40000,
-    energy:10,
-    speed:1,
-    desc:"Expédie les colis.",
-    research:"docks"
-  }
-
-};
-
-/* =========================================================
-   PACKAGE TYPES
-========================================================= */
-
-const PACKAGE_TYPES=[
-
-  {
-    id:"standard",
-    name:"Standard",
-    color:"#7f8da3",
-    value:50
-  },
-
-  {
-    id:"fragile",
-    name:"Fragile",
-    color:"#f0a04b",
-    value:90
-  },
-
-  {
-    id:"priority",
-    name:"Prioritaire",
-    color:"#e85d75",
-    value:150
-  },
-
-  {
-    id:"premium",
-    name:"Premium",
-    color:"#a477ff",
-    value:300
-  }
-
+    {
+        title: "La vraie machine",
+        description: "Combine plusieurs objets.",
+        pieces: 25
+    }
 ];
 
 /* =========================================================
-   STATE
+   CAMERA
 ========================================================= */
 
-let state={
+function worldToScreen(x, y) {
 
-  money:1500,
-
-  xp:0,
-
-  level:1,
-
-  shipped:0,
-
-  delivered:0,
-
-  rejected:0,
-
-  revenue:0,
-
-  expenses:0,
-
-  totalPackages:0,
-
-  energyUsed:0,
-
-  energyProduced:0,
-
-  gameTime:0,
-
-  realTime:0,
-
-  paused:false,
-
-  speed:1,
-
-  camera:{
-    x:9*TILE,
-    y:30*TILE,
-    zoom:1
-  },
-
-  selectedTool:"belt",
-
-  rotation:1,
-
-  grid:[],
-
-  packages:[],
-
-  trucks:[],
-
-  contracts:[],
-
-  reputation:50,
-
-  combo:0,
-
-  comboTimer:0,
-
-  stats:{
-
-    bestPPM:0,
-
-    maxMoney:1500,
-
-    totalBuilt:9,
-
-    totalDestroyed:0,
-
-    playSeconds:0,
-
-    contractsCompleted:0,
-
-    researchBought:0
-
-  },
-
-  research:{
-
-    fastBelts:false,
-    splitters:false,
-    mergers:false,
-    sorters:false,
-    scanners:false,
-    storage:false,
-    energy:false,
-    docks:false,
-    automation:false,
-    logistics:false,
-    robotics:false,
-    express:false,
-    megaStorage:false,
-    trains:false,
-    regional:false
-
-  },
-
-  autosave:0
-
-};
-
-/* =========================================================
-   ADMIN STATE
-========================================================= */
-
-let adminUnlocked=false;
-let freeBuild=false;
-let infiniteEnergy=false;
-
-/* =========================================================
-   GRID
-========================================================= */
-
-function createGrid(){
-
-  state.grid=[];
-
-  for(
-    let y=0;
-    y<WORLD_H;
-    y++
-  ){
-
-    const row=[];
-
-    for(
-      let x=0;
-      x<WORLD_W;
-      x++
-    ){
-      row.push(null);
-    }
-
-    state.grid.push(row);
-  }
-}
-
-createGrid();
-
-/* =========================================================
-   STARTER FACTORY
-========================================================= */
-
-function placeInitial(){
-
-  state.grid[30][4]={
-    type:"input",
-    rotation:1,
-    level:1,
-    free:true
-  };
-
-  for(
-    let x=5;
-    x<=12;
-    x++
-  ){
-
-    state.grid[30][x]={
-      type:"belt",
-      rotation:1,
-      level:1,
-      free:true
+    return {
+        x: W / 2 + (x + state.camera.x) * state.camera.zoom,
+        y: H / 2 + (y + state.camera.y) * state.camera.zoom
     };
-  }
 
-  state.grid[30][13]={
-    type:"dock",
-    rotation:1,
-    level:1,
-    free:true
-  };
-
-  state.grid[34][8]={
-    type:"storage",
-    rotation:0,
-    level:1,
-    free:true
-  };
 }
 
-placeInitial();
+function screenToWorld(x, y) {
 
-/* =========================================================
-   HELPERS
-========================================================= */
+    return {
+        x: (x - W / 2) / state.camera.zoom - state.camera.x,
+        y: (y - H / 2) / state.camera.zoom - state.camera.y
+    };
 
-function formatMoney(n){
-
-  n=Math.floor(n);
-
-  if(n>=1e12)
-    return (n/1e12).toFixed(2)+" T€";
-
-  if(n>=1e9)
-    return (n/1e9).toFixed(2)+" Md€";
-
-  if(n>=1e6)
-    return (n/1e6).toFixed(2)+" M€";
-
-  if(n>=1e3)
-    return (n/1e3).toFixed(1)+" k€";
-
-  return n.toLocaleString("fr-FR")+" €";
-}
-
-function formatNumber(n){
-
-  return Math.floor(n)
-    .toLocaleString("fr-FR");
-}
-
-function spend(amount){
-
-  if(freeBuild){
-    return true;
-  }
-
-  if(state.money<amount){
-
-    soundError();
-
-    notify(
-      "💸 Pas assez d'argent.",
-      "red"
-    );
-
-    return false;
-  }
-
-  state.money-=amount;
-
-  state.expenses+=amount;
-
-  return true;
-}
-
-function earn(amount){
-
-  state.money+=amount;
-
-  state.revenue+=amount;
-
-  state.stats.maxMoney=
-    Math.max(
-      state.stats.maxMoney,
-      state.money
-    );
 }
 
 /* =========================================================
-   XP
+   OBJECT CREATION
 ========================================================= */
 
-function xpNeeded(){
+let objectId = 1;
 
-  return Math.floor(
-    100*
-    Math.pow(
-      1.22,
-      state.level-1
-    )
-  );
-}
+function createObject(type, x, y) {
 
-function addXP(amount){
+    return {
+        id: objectId++,
+        type,
+        x,
+        y,
 
-  state.xp+=amount;
+        rotation: 0,
 
-  while(
-    state.xp>=xpNeeded()
-  ){
+        vx: 0,
+        vy: 0,
 
-    state.xp-=xpNeeded();
+        angle: 0,
+        angularVelocity: 0,
 
-    state.level++;
+        activated: false,
+        finished: false,
 
-    state.reputation=
-      Math.min(
-        100,
-        state.reputation+2
-      );
+        fall: 0,
 
-    soundLevel();
+        scale: 1,
 
-    notify(
-      "🎉 Niveau "+
-      state.level+
-      " atteint !",
-      "green"
-    );
-  }
+        flash: 0,
+
+        wait: 0
+    };
+
 }
 
 /* =========================================================
-   NOTIFY
+   LEVEL SETUP
 ========================================================= */
 
-function notify(
-  text,
-  type="normal"
-){
+function clearObjects() {
+    state.objects = [];
+    state.selected = null;
+    state.particles = [];
+}
 
-  const wrap=
-    document.getElementById(
-      "notifications"
-    );
+function loadLevel(levelNumber) {
 
-  const div=
-    document.createElement("div");
+    clearObjects();
 
-  div.className="note";
+    state.level = levelNumber;
+    state.running = false;
+    state.completed = false;
 
-  if(type==="red"){
-    div.style.borderColor="#71353b";
-  }
+    const level = LEVELS[levelNumber - 1] || LEVELS[0];
 
-  if(type==="green"){
-    div.style.borderColor="#2e7354";
-  }
+    state.pieces = level.pieces;
 
-  div.textContent=text;
+    /*
+       Chaque niveau possède une petite configuration
+       de départ.
+    */
 
-  wrap.appendChild(div);
+    if (levelNumber === 1) {
 
-  setTimeout(()=>{
+        addObject("domino", -230, 0);
+        addObject("domino", -180, 0);
+        addObject("domino", -130, 0);
+        addObject("domino", -80, 0);
+        addObject("goal", 40, 0);
 
-    div.style.opacity="0";
+    } else if (levelNumber === 2) {
 
-    setTimeout(
-      ()=>div.remove(),
-      220
-    );
+        addObject("ramp", -220, 40);
+        addObject("ball", -220, 0);
+        addObject("goal", 100, 40);
 
-  },2600);
+    } else if (levelNumber === 3) {
+
+        addObject("domino", -240, 0);
+        addObject("wheel", -120, 0);
+        addObject("goal", 100, 0);
+
+    } else if (levelNumber === 4) {
+
+        addObject("domino", -250, 0);
+        addObject("spring", -100, 0);
+        addObject("ball", 20, 0);
+        addObject("goal", 160, 0);
+
+    } else if (levelNumber === 5) {
+
+        addObject("fan", -200, 0);
+        addObject("ball", -120, 0);
+        addObject("goal", 150, 0);
+
+    } else {
+
+        addObject("domino", -260, 0);
+        addObject("domino", -210, 0);
+        addObject("wheel", -100, 0);
+        addObject("spring", 0, 0);
+        addObject("ball", 100, 0);
+        addObject("goal", 220, 0);
+
+    }
+
+    updateUI();
 }
 
 /* =========================================================
-   WORLD COORDINATES
+   ADD OBJECT
 ========================================================= */
 
-function screenToWorld(px,py){
+function addObject(type, x, y) {
 
-  return {
+    if (!TYPES[type]) return null;
 
-    x:
-      (px-W/2)/
-      state.camera.zoom+
-      state.camera.x,
+    const data = TYPES[type];
 
-    y:
-      (py-H/2)/
-      state.camera.zoom+
-      state.camera.y
+    if (!state.running && state.pieces >= data.cost) {
 
-  };
-}
+        state.pieces -= data.cost;
 
-function worldToScreen(wx,wy){
+        const obj = createObject(type, x, y);
 
-  return {
+        state.objects.push(obj);
 
-    x:
-      (wx-state.camera.x)*
-      state.camera.zoom+
-      W/2,
+        updateUI();
 
-    y:
-      (wy-state.camera.y)*
-      state.camera.zoom+
-      H/2
+        return obj;
+    }
 
-  };
-}
-
-function worldToCell(wx,wy){
-
-  return {
-
-    x:Math.floor(wx/TILE),
-
-    y:Math.floor(wy/TILE)
-
-  };
-}
-
-function validCell(x,y){
-
-  return(
-    x>=0 &&
-    y>=0 &&
-    x<WORLD_W &&
-    y<WORLD_H
-  );
-}
-
-function getBuilding(x,y){
-
-  if(!validCell(x,y))
     return null;
-
-  return state.grid[y][x];
-}
-
-function isFree(x,y){
-
-  return(
-    validCell(x,y)&&
-    !state.grid[y][x]
-  );
 }
 
 /* =========================================================
-   BUILDING PRICE
+   DELETE OBJECT
 ========================================================= */
 
-function buildingPrice(type){
+function deleteObject(obj) {
 
-  const b=BUILDINGS[type];
+    const index = state.objects.indexOf(obj);
 
-  if(!b)
-    return 0;
+    if (index === -1) return;
 
-  const inflation=
-    1+
-    Math.min(
-      .55,
-      state.stats.totalBuilt/
-      1000
+    state.objects.splice(index, 1);
+
+    state.pieces += TYPES[obj.type].cost;
+
+    state.selected = null;
+
+    updateUI();
+
+}
+
+/* =========================================================
+   FIND OBJECT
+========================================================= */
+
+function findObjectAt(x, y) {
+
+    let found = null;
+
+    for (let i = state.objects.length - 1; i >= 0; i--) {
+
+        const obj = state.objects[i];
+
+        const dx = x - obj.x;
+        const dy = y - obj.y;
+
+        const r = TYPES[obj.type].radius + 8;
+
+        if (dx * dx + dy * dy <= r * r) {
+            found = obj;
+            break;
+        }
+    }
+
+    return found;
+}
+
+/* =========================================================
+   TOUCH / POINTER SYSTEM
+========================================================= */
+
+const pointers = new Map();
+
+let dragObject = null;
+let dragOffset = {x:0, y:0};
+
+let lastPinchDistance = null;
+
+function distance(a, b) {
+
+    return Math.hypot(
+        a.x - b.x,
+        a.y - b.y
     );
 
-  return Math.floor(
-    b.price*
-    inflation
-  );
 }
 
-function updateBuildingPrices(){
+function pointerPosition(e) {
 
-  document
-    .querySelectorAll("[data-price]")
-    .forEach(el=>{
+    const rect = canvas.getBoundingClientRect();
 
-      const type=
-        el.dataset.price;
+    return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+    };
 
-      el.textContent=
-        formatMoney(
-          buildingPrice(type)
-        );
-
-    });
 }
 
-/* =========================================================
-   BUILD
-========================================================= */
+canvas.addEventListener("pointerdown", e => {
 
-function canBuild(type){
+    pointers.set(e.pointerId, pointerPosition(e));
 
-  const b=BUILDINGS[type];
+    canvas.setPointerCapture(e.pointerId);
 
-  if(!b)
-    return false;
+    if (pointers.size >= 2) {
 
-  if(
-    b.research &&
-    !state.research[b.research]
-  ){
+        lastPinchDistance = null;
+        dragObject = null;
 
-    soundError();
+        return;
+    }
 
-    notify(
-      "🔒 Recherche nécessaire.",
-      "red"
+    if (state.running) return;
+
+    const p = pointerPosition(e);
+    const world = screenToWorld(p.x, p.y);
+
+    const hit = findObjectAt(world.x, world.y);
+
+    if (state.tool === "select") {
+
+        if (hit) {
+
+            state.selected = hit;
+            dragObject = hit;
+
+            dragOffset.x = hit.x - world.x;
+            dragOffset.y = hit.y - world.y;
+
+        } else {
+
+            state.selected = null;
+
+        }
+
+    } else if (state.tool === "eraser") {
+
+        if (hit) {
+            deleteObject(hit);
+        }
+
+    } else {
+
+        /*
+           Ne pas placer par-dessus un autre objet.
+        */
+
+        if (!hit) {
+
+            const created = addObject(
+                state.tool,
+                world.x,
+                world.y
+            );
+
+            if (created) {
+
+                state.selected = created;
+
+            }
+
+        }
+
+    }
+
+});
+
+canvas.addEventListener("pointermove", e => {
+
+    if (!pointers.has(e.pointerId)) return;
+
+    pointers.set(
+        e.pointerId,
+        pointerPosition(e)
     );
 
-    return false;
-  }
+    if (pointers.size >= 2) {
 
-  return true;
-}
+        const arr = [...pointers.values()];
 
-function buildAt(
-  x,
-  y,
-  type,
-  rotation=1
-){
+        const a = arr[0];
+        const b = arr[1];
 
-  if(!canBuild(type))
-    return false;
+        const centerX = (a.x + b.x) / 2;
+        const centerY = (a.y + b.y) / 2;
 
-  if(!isFree(x,y))
-    return false;
+        const dist = distance(a, b);
 
-  const price=
-    buildingPrice(type);
+        if (lastPinchDistance !== null) {
 
-  if(!spend(price))
-    return false;
+            const delta = dist - lastPinchDistance;
 
-  state.grid[y][x]={
+            const oldZoom = state.camera.zoom;
 
-    type:type,
+            state.camera.zoom += delta * 0.003;
 
-    rotation:rotation,
+            state.camera.zoom = Math.max(
+                .45,
+                Math.min(2.2, state.camera.zoom)
+            );
 
-    level:1,
+            /*
+               Petit déplacement de caméra avec deux doigts.
+            */
 
-    age:0
+            state.camera.x += 0;
+            state.camera.y += 0;
 
-  };
+        }
 
-  state.stats.totalBuilt++;
+        lastPinchDistance = dist;
 
-  addXP(
-    Math.max(
-      1,
-      Math.floor(price/100)
-    )
-  );
+        return;
+    }
 
-  soundBuild();
+    if (!dragObject) return;
 
-  return true;
-}
+    if (state.running) return;
 
-/* =========================================================
-   DESTROY
-========================================================= */
+    const p = pointerPosition(e);
+    const world = screenToWorld(p.x, p.y);
 
-function destroyAt(x,y){
+    dragObject.x = world.x + dragOffset.x;
+    dragObject.y = world.y + dragOffset.y;
 
-  const b=
-    getBuilding(x,y);
+});
 
-  if(!b)
-    return false;
+canvas.addEventListener("pointerup", e => {
 
-  if(b.free){
+    pointers.delete(e.pointerId);
 
-    state.grid[y][x]=null;
+    if (pointers.size < 2) {
+        lastPinchDistance = null;
+    }
 
-    soundDestroy();
+    dragObject = null;
 
-    return true;
-  }
+});
 
-  const base=
-    BUILDINGS[b.type]?.price||
-    0;
+canvas.addEventListener("pointercancel", e => {
 
-  const refund=
-    Math.floor(base*.25);
+    pointers.delete(e.pointerId);
+    dragObject = null;
 
-  state.money+=refund;
-
-  state.grid[y][x]=null;
-
-  state.stats.totalDestroyed++;
-
-  soundDestroy();
-
-  notify(
-    "🗑️ Détruit : +"+
-    formatMoney(refund),
-    "green"
-  );
-
-  return true;
-}
+});
 
 /* =========================================================
-   ROTATE
+   TOOL BUTTONS
 ========================================================= */
 
-function rotateAt(x,y){
+document.querySelectorAll(".tool").forEach(button => {
 
-  const b=
-    getBuilding(x,y);
+    button.addEventListener("pointerdown", e => {
 
-  if(!b)
-    return;
+        e.stopPropagation();
 
-  b.rotation=
-    (b.rotation+1)%4;
+        const tool = button.dataset.tool;
 
-  soundClick();
-}
+        state.tool = tool;
 
-/* =========================================================
-   DIRECTIONS
-========================================================= */
+        document.querySelectorAll(".tool")
+            .forEach(b => b.classList.remove("active"));
 
-const DIRS=[
-  {x:0,y:-1},
-  {x:1,y:0},
-  {x:0,y:1},
-  {x:-1,y:0}
-];
-
-function nextCell(
-  x,
-  y,
-  rotation
-){
-
-  const d=
-    DIRS[rotation%4];
-
-  return{
-    x:x+d.x,
-    y:y+d.y
-  };
-}
-
-/* =========================================================
-   PACKAGE SYSTEM
-========================================================= */
-
-function packageType(id){
-
-  return(
-    PACKAGE_TYPES.find(
-      x=>x.id===id
-    )||
-    PACKAGE_TYPES[0]
-  );
-}
-
-function randomPackageType(){
-
-  const r=Math.random();
-
-  if(r<.58)
-    return PACKAGE_TYPES[0];
-
-  if(r<.78)
-    return PACKAGE_TYPES[1];
-
-  if(r<.94)
-    return PACKAGE_TYPES[2];
-
-  return PACKAGE_TYPES[3];
-}
-
-function createPackage(){
-
-  const type=
-    randomPackageType();
-
-  state.packages.push({
-
-    id:state.totalPackages,
-
-    type:type.id,
-
-    x:4,
-
-    y:30,
-
-    progress:0,
-
-    rotation:1,
-
-    alive:true,
-
-    age:0,
-
-    scanned:false,
-
-    value:type.value,
-
-    routeCount:0
-
-  });
-
-  state.totalPackages++;
-}
-
-/* =========================================================
-   STORAGE
-========================================================= */
-
-const storageContents=
-  new Map();
-
-function storageKey(x,y){
-  return x+"_"+y;
-}
-
-function handleStorage(
-  p,
-  x,
-  y
-){
-
-  const key=
-    storageKey(x,y);
-
-  if(!storageContents.has(key)){
-    storageContents.set(
-      key,
-      []
-    );
-  }
-
-  const arr=
-    storageContents.get(key);
-
-  const capacity=
-    10+
-    state.research.megaStorage
-      ? 50
-      : 0;
-
-  if(arr.length<capacity){
-
-    arr.push({
-
-      type:p.type,
-
-      value:p.value
+        button.classList.add("active");
 
     });
 
-    p.alive=false;
-
-  }
-}
+});
 
 /* =========================================================
-   SPLITTER
+   PHYSICS HELPERS
 ========================================================= */
 
-const splitterMemory=
-  new Map();
+function distanceObjects(a, b) {
 
-function handleSplitter(
-  p,
-  x,
-  y,
-  b
-){
-
-  const key=
-    x+"_"+y;
-
-  const count=
-    splitterMemory.get(key)||0;
-
-  const choices=[
-
-    (b.rotation+1)%4,
-
-    (b.rotation+3)%4
-
-  ];
-
-  const r=
-    choices[
-      count%
-      choices.length
-    ];
-
-  splitterMemory.set(
-    key,
-    count+1
-  );
-
-  const n=
-    nextCell(
-      x,
-      y,
-      r
+    return Math.hypot(
+        a.x - b.x,
+        a.y - b.y
     );
 
-  if(
-    getBuilding(n.x,n.y)
-  ){
-
-    p.x=n.x;
-    p.y=n.y;
-    p.rotation=r;
-    p.progress=0;
-    p.routeCount++;
-  }
 }
 
-/* =========================================================
-   SORTER
-========================================================= */
+function trigger(obj) {
 
-function handleSorter(
-  p,
-  x,
-  y,
-  b
-){
+    if (!obj || obj.activated) return;
 
-  let r=b.rotation;
+    obj.activated = true;
+    obj.flash = 1;
 
-  if(
-    p.type==="priority"||
-    p.type==="premium"
-  ){
+    spawnBurst(obj.x, obj.y);
 
-    r=
-      (b.rotation+1)%4;
+    if (obj.type === "domino") {
 
-  }else{
+        obj.fall = 0.01;
 
-    r=
-      (b.rotation+3)%4;
-  }
-
-  const n=
-    nextCell(
-      x,
-      y,
-      r
-    );
-
-  if(
-    getBuilding(n.x,n.y)
-  ){
-
-    p.x=n.x;
-    p.y=n.y;
-    p.rotation=r;
-    p.progress=0;
-    p.routeCount++;
-  }
-}
-
-/* =========================================================
-   MOVE PACKAGE
-========================================================= */
-
-function movePackage(
-  p,
-  dt
-){
-
-  p.age+=dt;
-
-  const cx=
-    Math.floor(p.x);
-
-  const cy=
-    Math.floor(p.y);
-
-  const b=
-    getBuilding(cx,cy);
-
-  if(!b){
-
-    p.x=4;
-    p.y=30;
-    p.progress=0;
-
-    return;
-  }
-
-  if(
-    b.type==="storage"
-  ){
-
-    handleStorage(
-      p,
-      cx,
-      cy
-    );
-
-    return;
-  }
-
-  if(
-    b.type==="splitter"
-  ){
-
-    handleSplitter(
-      p,
-      cx,
-      cy,
-      b
-    );
-
-    return;
-  }
-
-  if(
-    b.type==="sorter"
-  ){
-
-    handleSorter(
-      p,
-      cx,
-      cy,
-      b
-    );
-
-    return;
-  }
-
-  if(
-    b.type==="scanner"
-  ){
-
-    if(!p.scanned){
-
-      p.scanned=true;
-
-      p.value=
-        Math.floor(
-          p.value*1.35
-        );
     }
-  }
 
-  if(
-    b.type==="dock"
-  ){
+    if (obj.type === "ball") {
 
-    shipPackage(p);
+        obj.vx += 140;
+        obj.vy -= 20;
 
-    return;
-  }
-
-  let speed=
-    BUILDINGS[b.type]?.speed||
-    1;
-
-  speed*=
-    1+
-    Math.min(
-      .5,
-      (b.level-1)*.12
-    );
-
-  if(
-    state.research.automation
-  ){
-    speed*=1.12;
-  }
-
-  p.progress+=
-    dt*
-    speed*
-    .82;
-
-  if(
-    p.progress>=1
-  ){
-
-    p.progress=0;
-
-    const n=
-      nextCell(
-        cx,
-        cy,
-        b.rotation
-      );
-
-    if(
-      getBuilding(n.x,n.y)
-    ){
-
-      p.x=n.x;
-      p.y=n.y;
-
-      p.rotation=
-        b.rotation;
-
-      p.routeCount++;
-
-    }else{
-
-      p.x=4;
-      p.y=30;
-
-      p.progress=0;
-
-      state.rejected++;
-
-      state.reputation=
-        Math.max(
-          0,
-          state.reputation-.1
-        );
     }
-  }
-}
 
-/* =========================================================
-   SHIPPING
-========================================================= */
+    if (obj.type === "wheel") {
 
-function shipPackage(p){
+        obj.angularVelocity = 8;
 
-  let multiplier=1;
-
-  if(p.type==="priority")
-    multiplier+=.25;
-
-  if(p.type==="premium")
-    multiplier+=.6;
-
-  if(p.scanned)
-    multiplier+=.35;
-
-  if(
-    state.research.logistics
-  ){
-    multiplier+=.15;
-  }
-
-  if(
-    state.combo>0
-  ){
-
-    multiplier+=
-      Math.min(
-        .5,
-        state.combo*.02
-      );
-  }
-
-  const value=
-    Math.floor(
-      p.value*multiplier
-    );
-
-  earn(value);
-
-  state.shipped++;
-
-  state.delivered++;
-
-  state.combo++;
-
-  state.comboTimer=10;
-
-  state.reputation=
-    Math.min(
-      100,
-      state.reputation+.015
-    );
-
-  addXP(
-    Math.max(
-      2,
-      Math.floor(value/20)
-    )
-  );
-
-  updateContracts(p);
-
-  p.alive=false;
-
-  soundShip();
-}
-
-/* =========================================================
-   CONTRACTS
-========================================================= */
-
-let contractId=1;
-
-function createContract(){
-
-  const amount=
-    8+
-    Math.floor(
-      Math.random()*
-      (12+
-      state.level*3)
-    );
-
-  const type=
-    PACKAGE_TYPES[
-      Math.floor(
-        Math.random()*
-        PACKAGE_TYPES.length
-      )
-    ];
-
-  let reward=
-    Math.floor(
-      amount*
-      type.value*
-      (1.8+
-      state.level*.05)
-    );
-
-  if(
-    state.research.logistics
-  ){
-    reward=
-      Math.floor(
-        reward*1.15
-      );
-  }
-
-  state.contracts.push({
-
-    id:contractId++,
-
-    title:
-      "Commande "+
-      String(contractId)
-      .padStart(4,"0"),
-
-    type:type.id,
-
-    required:amount,
-
-    current:0,
-
-    reward:reward,
-
-    time:
-      120+
-      state.level*10,
-
-    maxTime:
-      120+
-      state.level*10,
-
-    active:true
-
-  });
-}
-
-function updateContracts(p){
-
-  for(
-    const c of state.contracts
-  ){
-
-    if(
-      c.active&&
-      c.type===p.type&&
-      c.current<c.required
-    ){
-
-      c.current++;
-
-      if(
-        c.current>=
-        c.required
-      ){
-
-        c.active=false;
-
-        earn(c.reward);
-
-        state.stats
-          .contractsCompleted++;
-
-        addXP(
-          Math.floor(
-            c.reward/50
-          )
-        );
-
-        soundBuy();
-
-        notify(
-          "💰 Contrat terminé : +"+
-          formatMoney(c.reward),
-          "green"
-        );
-      }
-
-      break;
     }
-  }
+
+    if (obj.type === "spring") {
+
+        obj.vx += Math.cos(obj.rotation) * 350;
+        obj.vy += Math.sin(obj.rotation) * 350;
+
+    }
+
+    if (obj.type === "button") {
+
+        obj.scale = .75;
+
+    }
+
+    if (obj.type === "fan") {
+
+        obj.angularVelocity = 15;
+
+    }
+
+    if (obj.type === "goal") {
+
+        completeLevel();
+
+    }
+
 }
 
-function updateContractsTime(dt){
+/* =========================================================
+   COLLISION / REACTION LOGIC
+========================================================= */
 
-  for(
-    const c of state.contracts
-  ){
+function processInteractions(dt) {
 
-    if(!c.active)
-      continue;
+    for (let i = 0; i < state.objects.length; i++) {
 
-    c.time-=dt;
+        const a = state.objects[i];
 
-    if(c.time<=0){
+        for (let j = i + 1; j < state.objects.length; j++) {
 
-      c.active=false;
+            const b = state.objects[j];
 
-      state.reputation=
-        Math.max(
-          0,
-          state.reputation-3
+            const d = distanceObjects(a, b);
+
+            const limit =
+                TYPES[a.type].radius +
+                TYPES[b.type].radius;
+
+            if (d <= limit + 8) {
+
+                /*
+                   Les objets proches se déclenchent
+                   les uns les autres.
+                */
+
+                if (a.activated && !b.activated) {
+                    trigger(b);
+                }
+
+                if (b.activated && !a.activated) {
+                    trigger(a);
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+/* =========================================================
+   PHYSICS UPDATE
+========================================================= */
+
+function updatePhysics(dt) {
+
+    if (!state.running) return;
+
+    processInteractions(dt);
+
+    for (const obj of state.objects) {
+
+        if (obj.flash > 0) {
+            obj.flash -= dt * 2.5;
+        }
+
+        if (obj.type === "domino") {
+
+            if (obj.activated) {
+
+                obj.fall += dt * 5;
+
+                if (obj.fall > Math.PI / 2) {
+                    obj.fall = Math.PI / 2;
+                }
+
+            }
+
+        }
+
+        if (obj.type === "wheel") {
+
+            obj.angle += obj.angularVelocity * dt;
+
+            obj.angularVelocity *= Math.pow(.05, dt);
+
+        }
+
+        if (obj.type === "fan") {
+
+            obj.angle += obj.angularVelocity * dt;
+
+            obj.angularVelocity *= Math.pow(.05, dt);
+
+        }
+
+        if (obj.type === "spring") {
+
+            if (obj.activated) {
+
+                obj.vx *= Math.pow(.12, dt);
+                obj.vy *= Math.pow(.12, dt);
+
+                obj.x += obj.vx * dt;
+                obj.y += obj.vy * dt;
+
+            }
+
+        }
+
+        if (obj.type === "ball") {
+
+            if (obj.activated) {
+
+                obj.vy += 480 * dt;
+
+                obj.x += obj.vx * dt;
+                obj.y += obj.vy * dt;
+
+                obj.vx *= Math.pow(.45, dt);
+
+                /*
+                   Sol
+                */
+
+                if (obj.y > 230) {
+
+                    obj.y = 230;
+                    obj.vy *= -.48;
+                    obj.vx *= .82;
+
+                    if (Math.abs(obj.vy) < 35) {
+                        obj.vy = 0;
+                    }
+
+                }
+
+                /*
+                   Mur
+                */
+
+                for (const wall of state.objects) {
+
+                    if (wall.type !== "wall") continue;
+
+                    const d = distanceObjects(obj, wall);
+
+                    if (d < 40) {
+
+                        const dx = obj.x - wall.x;
+                        const dy = obj.y - wall.y;
+
+                        if (Math.abs(dx) > Math.abs(dy)) {
+                            obj.vx *= -0.7;
+                        } else {
+                            obj.vy *= -0.7;
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        if (obj.type === "button") {
+
+            if (obj.activated) {
+
+                obj.scale += (1 - obj.scale) * dt * 5;
+
+            }
+
+        }
+
+    }
+
+}
+
+/* =========================================================
+   LEVEL COMPLETE
+========================================================= */
+
+function completeLevel() {
+
+    if (state.completed) return;
+
+    state.completed = true;
+
+    setTimeout(() => {
+
+        state.running = false;
+
+        showMessage(
+            "🎉 Niveau réussi !"
         );
 
-      soundError();
+        setTimeout(() => {
 
-      notify(
-        "❌ Contrat échoué : "+
-        c.title,
-        "red"
-      );
+            if (state.level < LEVELS.length) {
+
+                loadLevel(state.level + 1);
+
+            }
+
+        }, 1200);
+
+    }, 100);
+
+}
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function spawnBurst(x, y) {
+
+    for (let i = 0; i < 18; i++) {
+
+        const angle =
+            Math.random() * Math.PI * 2;
+
+        const speed =
+            40 + Math.random() * 130;
+
+        state.particles.push({
+
+            x,
+            y,
+
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+
+            life: .7 + Math.random() * .5,
+
+            size: 2 + Math.random() * 4
+
+        });
+
     }
-  }
+
+}
+
+function updateParticles(dt) {
+
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+
+        const p = state.particles[i];
+
+        p.life -= dt;
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        p.vy += 160 * dt;
+
+        if (p.life <= 0) {
+            state.particles.splice(i, 1);
+        }
+
+    }
+
 }
 
 /* =========================================================
-   RESEARCH
+   DRAW BACKGROUND
 ========================================================= */
 
-const RESEARCH=[
+function drawBackground() {
 
-  {
-    id:"fastBelts",
-    name:"Convoyeurs rapides",
-    desc:"Débloque les convoyeurs rapides.",
-    cost:2500,
-    level:2
-  },
+    ctx.fillStyle = "#0b0f15";
+    ctx.fillRect(0, 0, W, H);
 
-  {
-    id:"splitters",
-    name:"Division de flux",
-    desc:"Débloque les splitters.",
-    cost:5000,
-    level:3
-  },
+    const gridSize = 50 * state.camera.zoom;
 
-  {
-    id:"mergers",
-    name:"Fusion de flux",
-    desc:"Débloque les mergeurs.",
-    cost:7000,
-    level:4
-  },
+    const offsetX =
+        ((W / 2 + state.camera.x * state.camera.zoom)
+        % gridSize + gridSize) % gridSize;
 
-  {
-    id:"sorters",
-    name:"Tri automatisé",
-    desc:"Débloque les trieurs.",
-    cost:12000,
-    level:5
-  },
+    const offsetY =
+        ((H / 2 + state.camera.y * state.camera.zoom)
+        % gridSize + gridSize) % gridSize;
 
-  {
-    id:"scanners",
-    name:"Scanner RFID",
-    desc:"Augmente la valeur des colis.",
-    cost:20000,
-    level:6
-  },
+    ctx.lineWidth = 1;
 
-  {
-    id:"storage",
-    name:"Logistique de stockage",
-    desc:"Débloque les stockages.",
-    cost:30000,
-    level:7
-  },
+    ctx.strokeStyle = "rgba(255,255,255,.045)";
 
-  {
-    id:"energy",
-    name:"Réseau énergétique",
-    desc:"Débloque les chargeurs.",
-    cost:40000,
-    level:8
-  },
+    for (
+        let x = offsetX;
+        x < W;
+        x += gridSize
+    ) {
 
-  {
-    id:"docks",
-    name:"Expédition industrielle",
-    desc:"Débloque les quais.",
-    cost:65000,
-    level:10
-  },
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
 
-  {
-    id:"automation",
-    name:"Automatisation",
-    desc:"Accélère le traitement.",
-    cost:100000,
-    level:12
-  },
+    }
 
-  {
-    id:"logistics",
-    name:"Optimisation logistique",
-    desc:"Contrats +15%.",
-    cost:175000,
-    level:15
-  },
+    for (
+        let y = offsetY;
+        y < H;
+        y += gridSize
+    ) {
 
-  {
-    id:"robotics",
-    name:"Robotique",
-    desc:"Technologies avancées.",
-    cost:300000,
-    level:20
-  },
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
 
-  {
-    id:"express",
-    name:"Réseau Express",
-    desc:"Très grands flux.",
-    cost:750000,
-    level:25
-  },
+    }
 
-  {
-    id:"megaStorage",
-    name:"Méga-entrepôts",
-    desc:"Capacité de stockage massive.",
-    cost:1500000,
-    level:30
-  },
-
-  {
-    id:"trains",
-    name:"Fret ferroviaire",
-    desc:"Prépare les transports ferroviaires.",
-    cost:5000000,
-    level:40
-  },
-
-  {
-    id:"regional",
-    name:"Réseau régional",
-    desc:"Centres régionaux.",
-    cost:15000000,
-    level:50
-  }
-
-];
-
-function buyResearch(id){
-
-  const r=
-    RESEARCH.find(
-      x=>x.id===id
-    );
-
-  if(!r)
-    return;
-
-  if(state.research[id]){
-
-    notify(
-      "Déjà débloqué."
-    );
-
-    return;
-  }
-
-  if(state.level<r.level){
-
-    soundError();
-
-    notify(
-      "🔒 Niveau "+
-      r.level+
-      " requis.",
-      "red"
-    );
-
-    return;
-  }
-
-  if(!spend(r.cost))
-    return;
-
-  state.research[id]=true;
-
-  state.stats.researchBought++;
-
-  addXP(
-    r.cost/100
-  );
-
-  soundResearch();
-
-  notify(
-    "🔬 Recherche : "+
-    r.name,
-    "green"
-  );
-
-  renderResearch();
 }
 
 /* =========================================================
-   ENERGY
+   DRAW OBJECT
 ========================================================= */
 
-function calculateEnergy(){
+function drawObject(obj) {
 
-  let used=0;
-  let produced=0;
+    const screen =
+        worldToScreen(obj.x, obj.y);
 
-  for(
-    let y=0;
-    y<WORLD_H;
-    y++
-  ){
+    const scale =
+        state.camera.zoom;
 
-    for(
-      let x=0;
-      x<WORLD_W;
-      x++
-    ){
+    const r =
+        TYPES[obj.type].radius * scale;
 
-      const b=
-        state.grid[y][x];
+    ctx.save();
 
-      if(!b)
-        continue;
+    ctx.translate(
+        screen.x,
+        screen.y
+    );
 
-      const def=
-        BUILDINGS[b.type];
+    /*
+       Selection
+    */
 
-      if(!def)
-        continue;
+    if (state.selected === obj) {
 
-      if(
-        b.type==="charger"
-      ){
+        ctx.beginPath();
 
-        produced+=
-          15*
-          b.level;
-
-      }else{
-
-        used+=
-          Math.max(
+        ctx.arc(
             0,
-            (def.energy||0)*
-            b.level
-          );
-      }
-    }
-  }
-
-  if(infiniteEnergy){
-    produced=used+10000;
-  }
-
-  state.energyUsed=used;
-  state.energyProduced=produced;
-
-  return{
-    used,
-    produced
-  };
-}
-
-/* =========================================================
-   PPM
-========================================================= */
-
-let ppmTimer=0;
-let ppmCounter=0;
-let currentPPM=0;
-
-function recordShipment(){
-  ppmCounter++;
-}
-
-function updatePPM(dt){
-
-  ppmTimer+=dt;
-
-  if(
-    ppmTimer>=10
-  ){
-
-    currentPPM=
-      ppmCounter*6;
-
-    ppmCounter=0;
-    ppmTimer=0;
-
-    state.stats.bestPPM=
-      Math.max(
-        state.stats.bestPPM,
-        currentPPM
-      );
-  }
-}
-
-/* =========================================================
-   TRUCKS
-========================================================= */
-
-function spawnTruck(){
-
-  state.trucks.push({
-
-    progress:0,
-
-    arrived:false,
-
-    depart:0
-
-  });
-}
-
-function updateTrucks(dt){
-
-  for(
-    const truck of state.trucks
-  ){
-
-    if(!truck.arrived){
-
-      truck.progress+=
-        dt*.08;
-
-      if(
-        truck.progress>=1
-      ){
-
-        truck.arrived=true;
-
-        truck.depart=
-          state.gameTime+35;
-
-        notify(
-          "🚚 Un camion vient d'arriver !"
+            0,
+            r + 9,
+            0,
+            Math.PI * 2
         );
 
-        createContract();
-      }
+        ctx.strokeStyle = "#7ee787";
+        ctx.lineWidth = 3;
 
-    }else{
+        ctx.stroke();
 
-      if(
-        state.gameTime>
-        truck.depart
-      ){
-
-        truck.remove=true;
-      }
     }
-  }
 
-  state.trucks=
-    state.trucks.filter(
-      x=>!x.remove
-    );
+    /*
+       Flash
+    */
+
+    if (obj.flash > 0) {
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            r + (1 - obj.flash) * 30,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.strokeStyle =
+            `rgba(126,231,135,${obj.flash})`;
+
+        ctx.lineWidth = 4;
+
+        ctx.stroke();
+
+    }
+
+    if (obj.type === "domino") {
+
+        drawDomino(obj, r);
+
+    } else if (obj.type === "ball") {
+
+        drawBall(obj, r);
+
+    } else if (obj.type === "ramp") {
+
+        drawRamp(obj, r);
+
+    } else if (obj.type === "wheel") {
+
+        drawWheel(obj, r);
+
+    } else if (obj.type === "spring") {
+
+        drawSpring(obj, r);
+
+    } else if (obj.type === "button") {
+
+        drawButton(obj, r);
+
+    } else if (obj.type === "fan") {
+
+        drawFan(obj, r);
+
+    } else if (obj.type === "wall") {
+
+        drawWall(obj, r);
+
+    } else if (obj.type === "goal") {
+
+        drawGoal(obj, r);
+
+    }
+
+    ctx.restore();
+
 }
 
 /* =========================================================
-   CLEAN
+   DOMINO
 ========================================================= */
 
-function cleanPackages(){
+function drawDomino(obj, r) {
 
-  state.packages=
-    state.packages.filter(
-      p=>p.alive
+    ctx.rotate(-obj.fall);
+
+    ctx.fillStyle = "#9b6944";
+
+    roundRect(
+        -r * .55,
+        -r * 1.3,
+        r * 1.1,
+        r * 2.6,
+        r * .12
     );
+
+    ctx.fill();
+
+    ctx.fillStyle = "#c68c5b";
+
+    ctx.fillRect(
+        -r * .35,
+        -r * 1.05,
+        r * .7,
+        r * .08
+    );
+
+    ctx.fillRect(
+        -r * .35,
+        r * .95,
+        r * .7,
+        r * .08
+    );
+
+}
+
+/* =========================================================
+   BALL
+========================================================= */
+
+function drawBall(obj, r) {
+
+    const grad =
+        ctx.createRadialGradient(
+            -r * .35,
+            -r * .35,
+            1,
+            0,
+            0,
+            r
+        );
+
+    grad.addColorStop(0, "#ffffff");
+    grad.addColorStop(1, "#aeb9c7");
+
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#707b89";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+}
+
+/* =========================================================
+   RAMP
+========================================================= */
+
+function drawRamp(obj, r) {
+
+    ctx.fillStyle = "#b87a24";
+
+    ctx.beginPath();
+
+    ctx.moveTo(-r, r);
+    ctx.lineTo(r, r);
+    ctx.lineTo(r, -r);
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#eab557";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255,255,255,.3)";
+    ctx.lineWidth = 2;
+
+    for (let i = -r + 8; i < r; i += 9) {
+
+        ctx.beginPath();
+        ctx.moveTo(i, r);
+        ctx.lineTo(r, i);
+        ctx.stroke();
+
+    }
+
+}
+
+/* =========================================================
+   WHEEL
+========================================================= */
+
+function drawWheel(obj, r) {
+
+    ctx.rotate(obj.angle);
+
+    ctx.strokeStyle = "#8f9cad";
+    ctx.lineWidth = r * .18;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r * .7,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.strokeStyle = "#667484";
+    ctx.lineWidth = 4;
+
+    for (let i = 0; i < 8; i++) {
+
+        const a =
+            i * Math.PI / 4;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            Math.cos(a) * r * .18,
+            Math.sin(a) * r * .18
+        );
+
+        ctx.lineTo(
+            Math.cos(a) * r * .7,
+            Math.sin(a) * r * .7
+        );
+
+        ctx.stroke();
+
+    }
+
+    ctx.fillStyle = "#495563";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r * .2,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+}
+
+/* =========================================================
+   SPRING
+========================================================= */
+
+function drawSpring(obj, r) {
+
+    ctx.strokeStyle = "#83d8ff";
+    ctx.lineWidth = 5;
+
+    ctx.beginPath();
+
+    const coils = 7;
+
+    for (let i = 0; i <= coils; i++) {
+
+        const t = i / coils;
+
+        const x =
+            -r * .55 +
+            t * r * 1.1;
+
+        const y =
+            Math.sin(t * Math.PI * 2 * 3)
+            * r * .35;
+
+        if (i === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+
+    }
+
+    ctx.stroke();
+
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+function drawButton(obj, r) {
+
+    const rr = r * obj.scale;
+
+    ctx.fillStyle =
+        obj.activated
+        ? "#f36a75"
+        : "#b72f3e";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        rr,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#ff8990";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255,255,255,.25)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        -rr * .25,
+        -rr * .3,
+        rr * .25,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+}
+
+/* =========================================================
+   FAN
+========================================================= */
+
+function drawFan(obj, r) {
+
+    ctx.rotate(obj.angle);
+
+    ctx.fillStyle = "#766bd1";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r * .25,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    for (let i = 0; i < 4; i++) {
+
+        ctx.rotate(Math.PI / 2);
+
+        ctx.fillStyle = "#9a91ff";
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            0,
+            -r * .48,
+            r * .17,
+            r * .43,
+            0,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+/* =========================================================
+   WALL
+========================================================= */
+
+function drawWall(obj, r) {
+
+    ctx.fillStyle = "#596473";
+
+    roundRect(
+        -r,
+        -r * .65,
+        r * 2,
+        r * 1.3,
+        6
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#8792a0";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255,255,255,.1)";
+    ctx.lineWidth = 3;
+
+    for (let i = -r; i < r; i += 12) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(i, -r * .6);
+        ctx.lineTo(i + 12, r * .6);
+
+        ctx.stroke();
+
+    }
+
+}
+
+/* =========================================================
+   GOAL
+========================================================= */
+
+function drawGoal(obj, r) {
+
+    ctx.strokeStyle =
+        obj.activated
+        ? "#a7ffbd"
+        : "#61e294";
+
+    ctx.lineWidth = 5;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r * .75,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r * .45,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#61e294";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        r * .12,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+}
+
+/* =========================================================
+   PARTICLE DRAW
+========================================================= */
+
+function drawParticles() {
+
+    for (const p of state.particles) {
+
+        const s =
+            worldToScreen(p.x, p.y);
+
+        ctx.globalAlpha =
+            Math.max(0, p.life);
+
+        ctx.fillStyle = "#7ee787";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            s.x,
+            s.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+    ctx.globalAlpha = 1;
+
+}
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function draw() {
+
+    drawBackground();
+
+    for (const obj of state.objects) {
+        drawObject(obj);
+    }
+
+    drawParticles();
+
+}
+
+/* =========================================================
+   UTILITY ROUND RECT
+========================================================= */
+
+function roundRect(x, y, w, h, r) {
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        x,
+        y,
+        w,
+        h,
+        r
+    );
+
 }
 
 /* =========================================================
    GAME LOOP
 ========================================================= */
 
-let lastTime=
-  performance.now();
+let lastTime = performance.now();
 
-function gameLoop(now){
+function loop(now) {
 
-  const rawDt=
-    Math.min(
-      .05,
-      (now-lastTime)/1000
-    );
-
-  lastTime=now;
-
-  const dt=
-    state.paused
-      ? 0
-      : rawDt*state.speed;
-
-  state.realTime+=rawDt;
-
-  if(!state.paused){
-
-    state.gameTime+=dt;
-
-    state.stats.playSeconds+=
-      rawDt;
-
-    state.nextPackage=
-      (state.nextPackage||2.5)-
-      dt;
-
-    if(
-      state.nextPackage<=0
-    ){
-
-      createPackage();
-
-      state.nextPackage=
-        2.8+
-        Math.random()*1.7;
-
-      if(
-        state.level>=10
-      ){
-
-        state.nextPackage=
-          Math.max(
-            .8,
-            state.nextPackage-
-            state.level*.04
-          );
-      }
-    }
-
-    state.nextTruck=
-      (state.nextTruck||45)-
-      dt;
-
-    if(
-      state.nextTruck<=0
-    ){
-
-      spawnTruck();
-
-      state.nextTruck=
-        90+
-        Math.random()*80-
+    const dt =
         Math.min(
-          40,
-          state.level
-        );
-    }
-
-    for(
-      const p of state.packages
-    ){
-
-      movePackage(
-        p,
-        dt
-      );
-    }
-
-    cleanPackages();
-
-    updateTrucks(dt);
-
-    updateContractsTime(dt);
-
-    updatePPM(dt);
-
-    if(
-      state.comboTimer>0
-    ){
-
-      state.comboTimer-=dt;
-
-      if(
-        state.comboTimer<=0
-      ){
-        state.combo=0;
-      }
-    }
-
-    state.autosave+=rawDt;
-
-    if(
-      state.autosave>20
-    ){
-
-      saveGame(true);
-
-      state.autosave=0;
-    }
-  }
-
-  draw();
-
-  updateHUD();
-
-  requestAnimationFrame(
-    gameLoop
-  );
-}
-
-requestAnimationFrame(
-  gameLoop
-);
-
-/* =========================================================
-   DRAW
-========================================================= */
-
-function draw(){
-
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-  drawBackground();
-
-  drawGrid();
-
-  drawBuildings();
-
-  drawPackages();
-
-  drawTrucks();
-
-  drawBuildPreview();
-}
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-function drawBackground(){
-
-  ctx.fillStyle=
-    COLORS.bg;
-
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-  const a=
-    worldToScreen(
-      0,
-      0
-    );
-
-  const b=
-    worldToScreen(
-      WORLD_W*TILE,
-      WORLD_H*TILE
-    );
-
-  ctx.fillStyle="#0b111a";
-
-  ctx.fillRect(
-    a.x,
-    a.y,
-    b.x-a.x,
-    b.y-a.y
-  );
-}
-
-/* =========================================================
-   GRID
-========================================================= */
-
-function drawGrid(){
-
-  const start=
-    worldToScreen(
-      0,
-      0
-    );
-
-  const zoom=
-    state.camera.zoom;
-
-  ctx.strokeStyle=
-    zoom>.65
-      ? COLORS.grid
-      : "#111923";
-
-  ctx.lineWidth=1;
-
-  ctx.beginPath();
-
-  for(
-    let x=0;
-    x<=WORLD_W;
-    x++
-  ){
-
-    const sx=
-      start.x+
-      x*TILE*zoom;
-
-    ctx.moveTo(
-      sx,
-      Math.max(
-        0,
-        start.y
-      )
-    );
-
-    ctx.lineTo(
-      sx,
-      Math.min(
-        H,
-        start.y+
-        WORLD_H*TILE*zoom
-      )
-    );
-  }
-
-  for(
-    let y=0;
-    y<=WORLD_H;
-    y++
-  ){
-
-    const sy=
-      start.y+
-      y*TILE*zoom;
-
-    ctx.moveTo(
-      Math.max(
-        0,
-        start.x
-      ),
-      sy
-    );
-
-    ctx.lineTo(
-      Math.min(
-        W,
-        start.x+
-        WORLD_W*TILE*zoom
-      ),
-      sy
-    );
-  }
-
-  ctx.stroke();
-}
-
-/* =========================================================
-   BUILDINGS DRAW
-========================================================= */
-
-function drawBuildings(){
-
-  for(
-    let y=0;
-    y<WORLD_H;
-    y++
-  ){
-
-    for(
-      let x=0;
-      x<WORLD_W;
-      x++
-    ){
-
-      const b=
-        state.grid[y][x];
-
-      if(!b)
-        continue;
-
-      drawBuilding(
-        x,
-        y,
-        b
-      );
-    }
-  }
-}
-
-function drawBuilding(
-  x,
-  y,
-  b
-){
-
-  const p=
-    worldToScreen(
-      x*TILE,
-      y*TILE
-    );
-
-  const s=
-    TILE*
-    state.camera.zoom;
-
-  if(
-    p.x+s<0||
-    p.y+s<0||
-    p.x>W||
-    p.y>H
-  ){
-    return;
-  }
-
-  ctx.save();
-
-  ctx.translate(
-    p.x+s/2,
-    p.y+s/2
-  );
-
-  const r=
-    9*
-    state.camera.zoom;
-
-  if(b.type==="belt")
-    drawBelt(s,r,b);
-
-  else if(
-    b.type==="fastbelt"
-  )
-    drawFastBelt(s,r,b);
-
-  else if(
-    b.type==="splitter"
-  )
-    drawSplitter(s,r,b);
-
-  else if(
-    b.type==="merger"
-  )
-    drawMerger(s,r,b);
-
-  else if(
-    b.type==="sorter"
-  )
-    drawSorter(s,r,b);
-
-  else if(
-    b.type==="scanner"
-  )
-    drawScanner(s,r,b);
-
-  else if(
-    b.type==="storage"
-  )
-    drawStorage(s,r,b);
-
-  else if(
-    b.type==="charger"
-  )
-    drawCharger(s,r,b);
-
-  else if(
-    b.type==="dock"
-  )
-    drawDock(s,r,b);
-
-  else if(
-    b.type==="input"
-  )
-    drawInput(s,r,b);
-
-  ctx.restore();
-}
-
-/* =========================================================
-   BELTS
-========================================================= */
-
-function drawBelt(
-  s,
-  r,
-  b
-){
-
-  ctx.fillStyle=
-    COLORS.belt;
-
-  roundRect(
-    -s*.46,
-    -s*.46,
-    s*.92,
-    s*.92,
-    r
-  );
-
-  ctx.fill();
-
-  ctx.strokeStyle=
-    COLORS.beltEdge;
-
-  ctx.lineWidth=2;
-
-  ctx.stroke();
-
-  drawDirectionArrow(
-    b.rotation,
-    s*.18,
-    "#778ba5"
-  );
-
-  ctx.save();
-
-  ctx.rotate(
-    b.rotation*
-    Math.PI/2
-  );
-
-  const offset=
-    state.gameTime*35%
-    (s*.28);
-
-  ctx.strokeStyle=
-    "#596b83";
-
-  ctx.lineWidth=
-    Math.max(
-      2,
-      s*.035
-    );
-
-  for(
-    let i=-s;
-    i<s;
-    i+=s*.28
-  ){
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      -s*.5,
-      i+offset
-    );
-
-    ctx.lineTo(
-      s*.5,
-      i+offset
-    );
-
-    ctx.stroke();
-  }
-
-  ctx.restore();
-}
-
-function drawFastBelt(
-  s,
-  r,
-  b
-){
-
-  ctx.fillStyle=
-    COLORS.fast;
-
-  roundRect(
-    -s*.46,
-    -s*.46,
-    s*.92,
-    s*.92,
-    r
-  );
-
-  ctx.fill();
-
-  ctx.strokeStyle=
-    COLORS.fastEdge;
-
-  ctx.lineWidth=2;
-
-  ctx.stroke();
-
-  drawDirectionArrow(
-    b.rotation,
-    s*.2,
-    "#91dcff"
-  );
-
-  ctx.save();
-
-  ctx.rotate(
-    b.rotation*
-    Math.PI/2
-  );
-
-  const off=
-    state.gameTime*90%
-    (s*.25);
-
-  ctx.strokeStyle=
-    "#75c7ee";
-
-  ctx.lineWidth=2;
-
-  for(
-    let i=-s;
-    i<s;
-    i+=s*.25
-  ){
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      -s*.5,
-      i+off
-    );
-
-    ctx.lineTo(
-      s*.5,
-      i+off
-    );
-
-    ctx.stroke();
-  }
-
-  ctx.restore();
-}
-
-/* =========================================================
-   MACHINES
-========================================================= */
-
-function machineBox(
-  s,
-  fill,
-  stroke,
-  r
-){
-
-  ctx.fillStyle=fill;
-
-  roundRect(
-    -s*.43,
-    -s*.43,
-    s*.86,
-    s*.86,
-    r
-  );
-
-  ctx.fill();
-
-  ctx.strokeStyle=stroke;
-
-  ctx.lineWidth=2;
-
-  ctx.stroke();
-}
-
-function drawSplitter(s,r,b){
-
-  machineBox(
-    s,
-    "#493c20",
-    COLORS.yellow,
-    r
-  );
-
-  ctx.fillStyle=
-    COLORS.yellow;
-
-  ctx.font=
-    `bold ${s*.27}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "Y",
-    0,
-    0
-  );
-}
-
-function drawMerger(s,r,b){
-
-  machineBox(
-    s,
-    "#203c3a",
-    COLORS.cyan,
-    r
-  );
-
-  ctx.fillStyle=
-    COLORS.cyan;
-
-  ctx.font=
-    `bold ${s*.25}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "M",
-    0,
-    0
-  );
-}
-
-function drawSorter(s,r,b){
-
-  machineBox(
-    s,
-    "#382b4c",
-    COLORS.purple,
-    r
-  );
-
-  ctx.fillStyle=
-    COLORS.purple;
-
-  ctx.font=
-    `bold ${s*.23}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "TRI",
-    0,
-    0
-  );
-}
-
-function drawScanner(s,r,b){
-
-  machineBox(
-    s,
-    "#17333c",
-    COLORS.cyan,
-    r
-  );
-
-  const pulse=
-    .35+
-    .3*
-    Math.sin(
-      state.gameTime*4
-    );
-
-  ctx.strokeStyle=
-    `rgba(80,219,232,${pulse})`;
-
-  ctx.lineWidth=4;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    -s*.28,
-    s*.15
-  );
-
-  ctx.lineTo(
-    s*.28,
-    -s*.15
-  );
-
-  ctx.stroke();
-}
-
-function drawStorage(s,r,b){
-
-  machineBox(
-    s,
-    "#3a3030",
-    "#e09b64",
-    r
-  );
-
-  ctx.fillStyle=
-    "#e09b64";
-
-  ctx.font=
-    `${s*.29}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "▣",
-    0,
-    0
-  );
-}
-
-function drawCharger(s,r,b){
-
-  machineBox(
-    s,
-    "#163b31",
-    COLORS.green,
-    r
-  );
-
-  ctx.fillStyle=
-    COLORS.green;
-
-  ctx.font=
-    `${s*.3}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "⚡",
-    0,
-    0
-  );
-}
-
-function drawDock(s,r,b){
-
-  machineBox(
-    s,
-    "#3e2b1b",
-    COLORS.yellow,
-    r
-  );
-
-  ctx.fillStyle=
-    COLORS.yellow;
-
-  ctx.font=
-    `${s*.31}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "🚚",
-    0,
-    0
-  );
-}
-
-function drawInput(s,r,b){
-
-  machineBox(
-    s,
-    "#193b35",
-    COLORS.green,
-    r
-  );
-
-  ctx.fillStyle=
-    COLORS.green;
-
-  ctx.font=
-    `bold ${s*.22}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    "ENTRÉE",
-    0,
-    0
-  );
-}
-
-/* =========================================================
-   ARROW
-========================================================= */
-
-function drawDirectionArrow(
-  rotation,
-  size,
-  color
-){
-
-  ctx.save();
-
-  ctx.rotate(
-    rotation*
-    Math.PI/2
-  );
-
-  ctx.fillStyle=color;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    size,
-    0
-  );
-
-  ctx.lineTo(
-    -size*.5,
-    -size*.7
-  );
-
-  ctx.lineTo(
-    -size*.5,
-    size*.7
-  );
-
-  ctx.closePath();
-
-  ctx.fill();
-
-  ctx.restore();
-}
-
-/* =========================================================
-   PACKAGES
-========================================================= */
-
-function drawPackages(){
-
-  for(
-    const p of state.packages
-  ){
-
-    const pos=
-      worldToScreen(
-        p.x*TILE+
-        TILE/2,
-        p.y*TILE+
-        TILE/2
-      );
-
-    const type=
-      packageType(p.type);
-
-    const size=
-      Math.max(
-        7,
-        12*
-        state.camera.zoom
-      );
-
-    ctx.save();
-
-    ctx.translate(
-      pos.x,
-      pos.y
-    );
-
-    ctx.fillStyle=
-      type.color;
-
-    ctx.shadowBlur=10;
-
-    ctx.shadowColor=
-      type.color;
-
-    roundRect(
-      -size,
-      -size,
-      size*2,
-      size*2,
-      4
-    );
-
-    ctx.fill();
-
-    ctx.shadowBlur=0;
-
-    ctx.strokeStyle=
-      "rgba(255,255,255,.55)";
-
-    ctx.stroke();
-
-    ctx.fillStyle=
-      "rgba(0,0,0,.25)";
-
-    ctx.fillRect(
-      -size*.75,
-      -size*.2,
-      size*1.5,
-      size*.4
-    );
-
-    ctx.restore();
-  }
-}
-
-/* =========================================================
-   TRUCKS
-========================================================= */
-
-function findBuilding(
-  type
-){
-
-  for(
-    let y=0;
-    y<WORLD_H;
-    y++
-  ){
-
-    for(
-      let x=0;
-      x<WORLD_W;
-      x++
-    ){
-
-      const b=
-        state.grid[y][x];
-
-      if(
-        b &&
-        b.type===type
-      ){
-
-        return{
-          x,
-          y,
-          b
-        };
-      }
-    }
-  }
-
-  return null;
-}
-
-function drawTrucks(){
-
-  const dock=
-    findBuilding("dock");
-
-  if(!dock)
-    return;
-
-  for(
-    const t of state.trucks
-  ){
-
-    if(!t.arrived)
-      continue;
-
-    const p=
-      worldToScreen(
-        dock.x*TILE+
-        TILE/2,
-        dock.y*TILE+
-        TILE*.5
-      );
-
-    ctx.save();
-
-    ctx.translate(
-      p.x,
-      p.y-
-      TILE*.72*
-      state.camera.zoom
-    );
-
-    const z=
-      state.camera.zoom;
-
-    ctx.fillStyle="#606b7c";
-
-    roundRect(
-      -25*z,
-      -13*z,
-      50*z,
-      26*z,
-      5*z
-    );
-
-    ctx.fill();
-
-    ctx.fillStyle="#29313d";
-
-    ctx.fillRect(
-      8*z,
-      -10*z,
-      15*z,
-      16*z
-    );
-
-    ctx.fillStyle="#111";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      -13*z,
-      14*z,
-      5*z,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.beginPath();
-
-    ctx.arc(
-      14*z,
-      14*z,
-      5*z,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.restore();
-  }
-}
-
-/* =========================================================
-   BUILD PREVIEW
-========================================================= */
-
-let pointer={
-  x:0,
-  y:0,
-  active:false
-};
-
-function drawBuildPreview(){
-
-  if(!pointer.active)
-    return;
-
-  if(
-    state.selectedTool==="erase"
-  )
-    return;
-
-  const world=
-    screenToWorld(
-      pointer.x,
-      pointer.y
-    );
-
-  const cell=
-    worldToCell(
-      world.x,
-      world.y
-    );
-
-  if(
-    !validCell(
-      cell.x,
-      cell.y
-    )
-  )
-    return;
-
-  const p=
-    worldToScreen(
-      cell.x*TILE,
-      cell.y*TILE
-    );
-
-  const s=
-    TILE*
-    state.camera.zoom;
-
-  const b=
-    BUILDINGS[
-      state.selectedTool
-    ];
-
-  if(!b)
-    return;
-
-  ctx.save();
-
-  ctx.globalAlpha=.4;
-
-  ctx.fillStyle=
-    isFree(
-      cell.x,
-      cell.y
-    )
-      ? COLORS.green
-      : COLORS.red;
-
-  ctx.fillRect(
-    p.x+2,
-    p.y+2,
-    s-4,
-    s-4
-  );
-
-  ctx.globalAlpha=.8;
-
-  ctx.fillStyle="#fff";
-
-  ctx.font=
-    `${Math.max(
-      14,
-      s*.3
-    )}px system-ui`;
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    b.icon,
-    p.x+s/2,
-    p.y+s/2
-  );
-
-  ctx.restore();
-}
-
-/* =========================================================
-   ROUND RECT
-========================================================= */
-
-function roundRect(
-  x,
-  y,
-  w,
-  h,
-  r
-){
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    x+r,
-    y
-  );
-
-  ctx.arcTo(
-    x+w,
-    y,
-    x+w,
-    y+h,
-    r
-  );
-
-  ctx.arcTo(
-    x+w,
-    y+h,
-    x,
-    y+h,
-    r
-  );
-
-  ctx.arcTo(
-    x,
-    y+h,
-    x,
-    y,
-    r
-  );
-
-  ctx.arcTo(
-    x,
-    y,
-    x+w,
-    y,
-    r
-  );
-
-  ctx.closePath();
-}
-
-/* =========================================================
-   TOUCH CONTROLS
-========================================================= */
-
-const pointers=
-  new Map();
-
-let gesture={
-
-  mode:"none",
-
-  startX:0,
-  startY:0,
-
-  moved:false,
-
-  startCell:null,
-
-  timer:null,
-
-  pinchDistance:0,
-
-  pinchZoom:1,
-
-  pinchMidX:0,
-
-  pinchMidY:0,
-
-  camX:0,
-
-  camY:0
-
-};
-
-function distance(a,b){
-
-  return Math.hypot(
-    a.x-b.x,
-    a.y-b.y
-  );
-}
-
-function midpoint(a,b){
-
-  return{
-    x:(a.x+b.x)/2,
-    y:(a.y+b.y)/2
-  };
-}
-
-function pointerList(){
-
-  return[
-    ...pointers.values()
-  ];
-}
-
-canvas.addEventListener(
-  "pointerdown",
-  e=>{
-
-    e.preventDefault();
-
-    initAudio();
-
-    canvas.setPointerCapture(
-      e.pointerId
-    );
-
-    pointers.set(
-      e.pointerId,
-      {
-        id:e.pointerId,
-        x:e.clientX,
-        y:e.clientY
-      }
-    );
-
-    if(
-      pointers.size>=2
-    ){
-
-      clearTimeout(
-        gesture.timer
-      );
-
-      const ps=
-        pointerList();
-
-      const a=ps[0];
-      const b=ps[1];
-
-      const mid=
-        midpoint(a,b);
-
-      gesture.mode="pinch";
-
-      gesture.pinchDistance=
-        distance(a,b);
-
-      gesture.pinchZoom=
-        state.camera.zoom;
-
-      gesture.pinchMidX=
-        mid.x;
-
-      gesture.pinchMidY=
-        mid.y;
-
-      gesture.camX=
-        state.camera.x;
-
-      gesture.camY=
-        state.camera.y;
-
-      return;
-    }
-
-    gesture.mode="single";
-
-    gesture.startX=
-      e.clientX;
-
-    gesture.startY=
-      e.clientY;
-
-    gesture.moved=false;
-
-    pointer.x=
-      e.clientX;
-
-    pointer.y=
-      e.clientY;
-
-    pointer.active=true;
-
-    const world=
-      screenToWorld(
-        e.clientX,
-        e.clientY
-      );
-
-    gesture.startCell=
-      worldToCell(
-        world.x,
-        world.y
-      );
-
-    gesture.timer=
-      setTimeout(
-        ()=>{
-
-          if(
-            gesture.mode==="single"&&
-            !gesture.moved&&
-            gesture.startCell
-          ){
-
-            openCellPanel(
-              gesture.startCell.x,
-              gesture.startCell.y
-            );
-          }
-
-        },
-        520
-      );
-  },
-  {passive:false}
-);
-
-canvas.addEventListener(
-  "pointermove",
-  e=>{
-
-    e.preventDefault();
-
-    const p=
-      pointers.get(
-        e.pointerId
-      );
-
-    if(!p)
-      return;
-
-    p.x=e.clientX;
-    p.y=e.clientY;
-
-    pointer.x=e.clientX;
-    pointer.y=e.clientY;
-
-    if(
-      pointers.size>=2
-    ){
-
-      clearTimeout(
-        gesture.timer
-      );
-
-      const ps=
-        pointerList();
-
-      const a=ps[0];
-      const b=ps[1];
-
-      const d=
-        distance(a,b);
-
-      const mid=
-        midpoint(a,b);
-
-      const factor=
-        d/
-        gesture.pinchDistance;
-
-      state.camera.zoom=
-        Math.max(
-          .42,
-          Math.min(
-            2.25,
-            gesture.pinchZoom*
-            factor
-          )
+            (now - lastTime) / 1000,
+            .033
         );
 
-      const dx=
-        (mid.x-
-        gesture.pinchMidX)/
-        state.camera.zoom;
+    lastTime = now;
 
-      const dy=
-        (mid.y-
-        gesture.pinchMidY)/
-        state.camera.zoom;
+    updatePhysics(dt);
+    updateParticles(dt);
 
-      state.camera.x=
-        gesture.camX-dx;
+    draw();
 
-      state.camera.y=
-        gesture.camY-dy;
+    requestAnimationFrame(loop);
 
-      return;
-    }
-
-    if(
-      gesture.mode!=="single"
-    )
-      return;
-
-    const dx=
-      e.clientX-
-      gesture.startX;
-
-    const dy=
-      e.clientY-
-      gesture.startY;
-
-    if(
-      Math.hypot(dx,dy)>9
-    ){
-
-      gesture.moved=true;
-
-      clearTimeout(
-        gesture.timer
-      );
-
-      if(
-        state.selectedTool==="belt"||
-        state.selectedTool==="fastbelt"
-      ){
-
-        buildDragLine(
-          e.clientX,
-          e.clientY
-        );
-      }
-    }
-
-  },
-  {passive:false}
-);
-
-canvas.addEventListener(
-  "pointerup",
-  e=>{
-
-    e.preventDefault();
-
-    clearTimeout(
-      gesture.timer
-    );
-
-    const moved=
-      gesture.moved;
-
-    const start=
-      gesture.startCell;
-
-    pointers.delete(
-      e.pointerId
-    );
-
-    if(
-      pointers.size===0
-    ){
-
-      pointer.active=false;
-
-      if(
-        gesture.mode==="single"&&
-        !moved&&
-        start
-      ){
-
-        handleTapCell(
-          start.x,
-          start.y
-        );
-      }
-
-      gesture.mode="none";
-    }
-  },
-  {passive:false}
-);
-
-canvas.addEventListener(
-  "pointercancel",
-  e=>{
-
-    clearTimeout(
-      gesture.timer
-    );
-
-    pointers.delete(
-      e.pointerId
-    );
-
-    if(
-      pointers.size===0
-    ){
-
-      gesture.mode="none";
-
-      pointer.active=false;
-    }
-  }
-);
-
-/* =========================================================
-   TAP
-========================================================= */
-
-function handleTapCell(x,y){
-
-  if(
-    !validCell(x,y)
-  )
-    return;
-
-  const b=
-    getBuilding(x,y);
-
-  if(
-    state.selectedTool==="erase"
-  ){
-
-    if(b)
-      destroyAt(x,y);
-
-    return;
-  }
-
-  if(
-    state.selectedTool==="belt"||
-    state.selectedTool==="fastbelt"
-  ){
-
-    if(b){
-
-      if(
-        b.type==="belt"||
-        b.type==="fastbelt"
-      ){
-
-        rotateAt(x,y);
-
-        return;
-      }
-
-      openCellPanel(
-        x,
-        y
-      );
-
-      return;
-    }
-
-    buildAt(
-      x,
-      y,
-      state.selectedTool,
-      state.rotation
-    );
-
-    return;
-  }
-
-  if(b){
-
-    openCellPanel(
-      x,
-      y
-    );
-
-    return;
-  }
-
-  buildAt(
-    x,
-    y,
-    state.selectedTool,
-    state.rotation
-  );
 }
 
+requestAnimationFrame(loop);
+
 /* =========================================================
-   DRAG BUILD
+   RUN BUTTON
 ========================================================= */
 
-let lastDragCell=null;
+document.getElementById("runBtn")
+    .addEventListener("pointerdown", () => {
 
-function buildDragLine(
-  px,
-  py
-){
+        state.running = !state.running;
 
-  const world=
-    screenToWorld(
-      px,
-      py
-    );
+        if (state.running) {
 
-  const cell=
-    worldToCell(
-      world.x,
-      world.y
-    );
+            /*
+               On lance les objets déjà activés.
+               S'il n'y en a aucun, le premier objet
+               est automatiquement déclenché.
+            */
 
-  if(
-    !validCell(
-      cell.x,
-      cell.y
-    )
-  )
-    return;
+            if (!state.objects.some(o => o.activated)) {
 
-  if(
-    lastDragCell&&
-    lastDragCell.x===cell.x&&
-    lastDragCell.y===cell.y
-  ){
-    return;
-  }
+                const first =
+                    state.objects.find(
+                        o => o.type !== "goal" &&
+                             o.type !== "wall"
+                    );
 
-  lastDragCell={
-    x:cell.x,
-    y:cell.y
-  };
+                if (first) {
+                    trigger(first);
+                }
 
-  const start=
-    gesture.startCell;
+            }
 
-  if(!start)
-    return;
+            document.getElementById("runBtn").textContent = "⏸";
 
-  const dx=
-    cell.x-start.x;
+            showMessage("▶ Machine lancée");
 
-  const dy=
-    cell.y-start.y;
+        } else {
 
-  if(
-    Math.abs(dx)>=
-    Math.abs(dy)
-  ){
+            document.getElementById("runBtn").textContent = "▶";
 
-    state.rotation=
-      dx>=0
-        ?1
-        :3;
+            showMessage("⏸ Machine arrêtée");
 
-  }else{
+        }
 
-    state.rotation=
-      dy>=0
-        ?2
-        :0;
-  }
-
-  const path=
-    lineCells(
-      start.x,
-      start.y,
-      cell.x,
-      cell.y
-    );
-
-  for(
-    const c of path
-  ){
-
-    if(
-      c.x===start.x&&
-      c.y===start.y
-    )
-      continue;
-
-    buildAt(
-      c.x,
-      c.y,
-      state.selectedTool,
-      state.rotation
-    );
-  }
-}
-
-function lineCells(
-  x0,
-  y0,
-  x1,
-  y1
-){
-
-  const cells=[];
-
-  const dx=
-    Math.abs(x1-x0);
-
-  const dy=
-    Math.abs(y1-y0);
-
-  const sx=
-    x0<x1?1:-1;
-
-  const sy=
-    y0<y1?1:-1;
-
-  let err=
-    dx-dy;
-
-  let x=x0;
-  let y=y0;
-
-  while(true){
-
-    cells.push({
-      x,
-      y
     });
 
-    if(
-      x===x1&&
-      y===y1
-    )
-      break;
+/* =========================================================
+   RESET
+========================================================= */
 
-    const e2=
-      2*err;
+document.getElementById("resetBtn")
+    .addEventListener("pointerdown", () => {
 
-    if(
-      e2>-dy
-    ){
+        loadLevel(state.level);
 
-      err-=dy;
-      x+=sx;
+        document.getElementById("runBtn")
+            .textContent = "▶";
+
+    });
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+let messageTimer = null;
+
+function showMessage(text) {
+
+    const box =
+        document.getElementById("message");
+
+    box.textContent = text;
+
+    box.classList.add("show");
+
+    clearTimeout(messageTimer);
+
+    messageTimer =
+        setTimeout(() => {
+
+            box.classList.remove("show");
+
+        }, 1200);
+
+}
+
+/* =========================================================
+   UI
+========================================================= */
+
+function updateUI() {
+
+    document.getElementById("levelText")
+        .textContent =
+        "Niv. " + state.level;
+
+    document.getElementById("pieceText")
+        .textContent =
+        state.pieces;
+
+    const level =
+        LEVELS[state.level - 1];
+
+    if (level) {
+
+        document.getElementById("hint")
+            .textContent =
+            level.title +
+            " — " +
+            level.description;
+
     }
 
-    if(
-      e2<dx
-    ){
-
-      err+=dx;
-      y+=sy;
-    }
-  }
-
-  return cells;
 }
-
-/* =========================================================
-   BUILDING INFO PANEL
-========================================================= */
-
-function openCellPanel(
-  x,
-  y
-){
-
-  const b=
-    getBuilding(x,y);
-
-  if(!b){
-
-    openPanel(
-      "Construction",
-      `
-      <div class="card">
-        <h3>Zone vide</h3>
-        <p>
-          Choisis une machine dans la barre
-          du bas pour la construire ici.
-        </p>
-      </div>
-      `
-    );
-
-    return;
-  }
-
-  if(
-    b.type==="input"
-  ){
-
-    openPanel(
-      "Entrée logistique",
-      `
-      <div class="card">
-
-        <h3>📥 Entrée</h3>
-
-        <p>
-          Les colis apparaissent ici
-          avant d'être envoyés dans
-          ton réseau.
-        </p>
-
-      </div>
-      `
-    );
-
-    return;
-  }
-
-  const def=
-    BUILDINGS[b.type];
-
-  const price=
-    buildingPrice(
-      b.type
-    );
-
-  const upgradeCost=
-    Math.floor(
-      def.price*
-      Math.pow(
-        3,
-        b.level
-      )
-    );
-
-  openPanel(
-    def.name,
-    `
-
-    <div class="card">
-
-      <h3>
-        ${def.icon}
-        ${def.name}
-      </h3>
-
-      <div class="row">
-        <span>Niveau</span>
-        <strong>
-          ${b.level}
-        </strong>
-      </div>
-
-      <p>
-        ${def.desc}
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <h3>💰 Économie</h3>
-
-      <div class="row">
-        <span>Prix de base</span>
-        <strong class="gold">
-          ${formatMoney(def.price)}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Prix actuel</span>
-        <strong class="gold">
-          ${formatMoney(price)}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Prix amélioration</span>
-        <strong class="purple">
-          ${formatMoney(upgradeCost)}
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>⚡ Fonctionnement</h3>
-
-      <div class="row">
-        <span>Consommation</span>
-        <strong class="cyan">
-          ${def.energy||0}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Vitesse</span>
-        <strong>
-          ${def.speed||0}×
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <button
-        class="action goldBtn"
-        onclick="
-          upgradeBuilding(
-            ${x},
-            ${y}
-          )
-        ">
-        ⬆️ Améliorer —
-        ${formatMoney(upgradeCost)}
-      </button>
-
-      <button
-        class="action"
-        onclick="
-          rotateSelected(
-            ${x},
-            ${y}
-          )
-        ">
-        🔄 Tourner
-      </button>
-
-      <button
-        class="action redBtn"
-        onclick="
-          deleteSelected(
-            ${x},
-            ${y}
-          )
-        ">
-        🗑️ Détruire
-      </button>
-
-    </div>
-
-    `
-  );
-}
-
-function upgradeBuilding(
-  x,
-  y
-){
-
-  const b=
-    getBuilding(x,y);
-
-  if(!b)
-    return;
-
-  const def=
-    BUILDINGS[b.type];
-
-  const cost=
-    Math.floor(
-      def.price*
-      Math.pow(
-        3,
-        b.level
-      )
-    );
-
-  if(
-    !spend(cost)
-  )
-    return;
-
-  b.level++;
-
-  addXP(
-    Math.floor(
-      cost/100
-    )
-  );
-
-  soundBuy();
-
-  notify(
-    "⬆️ "+
-    def.name+
-    " niveau "+
-    b.level,
-    "green"
-  );
-
-  openCellPanel(
-    x,
-    y
-  );
-}
-
-function rotateSelected(
-  x,
-  y
-){
-
-  rotateAt(x,y);
-
-  openCellPanel(
-    x,
-    y
-  );
-}
-
-function deleteSelected(
-  x,
-  y
-){
-
-  destroyAt(x,y);
-
-  closePanel();
-}
-
-/* =========================================================
-   PANEL
-========================================================= */
-
-function openPanel(
-  title,
-  html
-){
-
-  document.getElementById(
-    "panelTitle"
-  ).textContent=title;
-
-  document.getElementById(
-    "panelContent"
-  ).innerHTML=html;
-
-  document.getElementById(
-    "panel"
-  ).classList.add("open");
-}
-
-function closePanel(){
-
-  document.getElementById(
-    "panel"
-  ).classList.remove("open");
-}
-
-document.getElementById(
-  "panelClose"
-).onclick=closePanel;
-
-/* =========================================================
-   TOOLBAR
-========================================================= */
-
-document
-  .querySelectorAll(
-    ".tool[data-tool]"
-  )
-  .forEach(btn=>{
-
-    btn.addEventListener(
-      "click",
-      ()=>{
-
-        initAudio();
-
-        const tool=
-          btn.dataset.tool;
-
-        state.selectedTool=
-          tool;
-
-        document
-          .querySelectorAll(
-            ".tool[data-tool]"
-          )
-          .forEach(
-            x=>
-              x.classList.remove(
-                "active"
-              )
-          );
-
-        btn.classList.add(
-          "active"
-        );
-
-        soundClick();
-
-        closePanel();
-
-      }
-    );
-  });
-
-document.getElementById(
-  "rotateTool"
-).onclick=()=>{
-
-  state.rotation=
-    (state.rotation+1)%4;
-
-  soundClick();
-
-  notify(
-    "↻ Direction : "+
-    [
-      "haut",
-      "droite",
-      "bas",
-      "gauche"
-    ][state.rotation]
-  );
-};
-
-document.getElementById(
-  "researchTool"
-).onclick=
-  openResearch;
-
-/* =========================================================
-   RESEARCH UI
-========================================================= */
-
-function openResearch(){
-
-  renderResearch();
-
-  document
-    .getElementById(
-      "researchModal"
-    )
-    .classList.add(
-      "show"
-    );
-}
-
-function renderResearch(){
-
-  const grid=
-    document.getElementById(
-      "researchGrid"
-    );
-
-  grid.innerHTML="";
-
-  for(
-    const r of RESEARCH
-  ){
-
-    const unlocked=
-      state.level>=r.level;
-
-    const bought=
-      !!state.research[r.id];
-
-    const div=
-      document.createElement(
-        "div"
-      );
-
-    div.className=
-      "research "+
-      (
-        bought
-          ?"done"
-          :""
-      )+
-      (
-        !unlocked
-          ?" locked"
-          :""
-      );
-
-    div.innerHTML=`
-
-      <h3>
-        ${
-          bought
-            ?"✅"
-            :"🔬"
-        }
-        ${r.name}
-      </h3>
-
-      <small>
-        ${r.desc}
-        <br>
-        Niveau requis :
-        ${r.level}
-      </small>
-
-      <button
-        ${
-          bought||
-          !unlocked
-            ?"disabled"
-            :""
-        }
-        onclick="
-          buyResearch(
-            '${r.id}'
-          )
-        ">
-
-        ${
-          bought
-            ?"Débloqué"
-            :formatMoney(r.cost)
-        }
-
-      </button>
-
-    `;
-
-    grid.appendChild(div);
-  }
-
-  document.getElementById(
-    "techLevel"
-  ).textContent=
-    state.level;
-
-  const needed=
-    xpNeeded();
-
-  document.getElementById(
-    "xpBar"
-  ).style.width=
-    Math.min(
-      100,
-      state.xp/
-      needed*
-      100
-    )+
-    "%";
-
-  document.getElementById(
-    "xpText"
-  ).textContent=
-    Math.floor(
-      state.xp
-    )+
-    " / "+
-    needed+
-    " XP";
-}
-
-/* =========================================================
-   CONTRACT UI
-========================================================= */
-
-function openContracts(){
-
-  renderContracts();
-
-  document
-    .getElementById(
-      "contractsModal"
-    )
-    .classList.add(
-      "show"
-    );
-}
-
-function renderContracts(){
-
-  const list=
-    document.getElementById(
-      "contractsList"
-    );
-
-  list.innerHTML="";
-
-  const active=
-    state.contracts.filter(
-      c=>c.active
-    );
-
-  if(
-    active.length===0
-  ){
-
-    list.innerHTML=`
-
-      <div class="card">
-
-        <h3>
-          Aucun contrat
-        </h3>
-
-        <p>
-          De nouvelles commandes
-          vont arriver.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-  }
-
-  for(
-    const c of active
-  ){
-
-    const type=
-      packageType(
-        c.type
-      );
-
-    const percent=
-      c.current/
-      c.required*
-      100;
-
-    const div=
-      document.createElement(
-        "div"
-      );
-
-    div.className=
-      "contract";
-
-    div.innerHTML=`
-
-      <div class="contractTop">
-
-        <span class="contractTitle">
-          ${c.title}
-        </span>
-
-        <span class="contractReward">
-          +${formatMoney(c.reward)}
-        </span>
-
-      </div>
-
-      <div class="contractDesc">
-
-        ${c.required}
-        colis
-        ${type.name}
-
-        <br>
-
-        Temps restant :
-        ${Math.ceil(c.time)} s
-
-      </div>
-
-      <div class="contractBar">
-
-        <div class="progress">
-
-          <i
-            style="
-              width:${percent}%
-            ">
-          </i>
-
-        </div>
-
-        <span class="contractStatus">
-          ${c.current}/${c.required}
-        </span>
-
-      </div>
-
-    `;
-
-    list.appendChild(div);
-  }
-}
-
-/* =========================================================
-   STATS
-========================================================= */
-
-function openStats(){
-
-  const e=
-    calculateEnergy();
-
-  let storage=0;
-
-  for(
-    const arr
-    of storageContents.values()
-  ){
-
-    storage+=
-      arr.length;
-  }
-
-  document.getElementById(
-    "statsContent"
-  ).innerHTML=`
-
-    <div class="card">
-
-      <h3>
-        💰 Économie
-      </h3>
-
-      <div class="row">
-        <span>Argent</span>
-        <strong>
-          ${formatMoney(state.money)}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Chiffre d'affaires</span>
-        <strong class="green">
-          ${formatMoney(state.revenue)}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Dépenses</span>
-        <strong class="red">
-          ${formatMoney(state.expenses)}
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        📦 Logistique
-      </h3>
-
-      <div class="row">
-        <span>Colis traités</span>
-        <strong>
-          ${formatNumber(
-            state.totalPackages
-          )}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Expédiés</span>
-        <strong class="green">
-          ${formatNumber(
-            state.shipped
-          )}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Bloqués</span>
-        <strong class="red">
-          ${formatNumber(
-            state.rejected
-          )}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Record colis/min</span>
-        <strong>
-          ${state.stats.bestPPM}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Stock</span>
-        <strong>
-          ${storage}
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        ⭐ Réputation
-      </h3>
-
-      <div class="big">
-        ${Math.floor(
-          state.reputation
-        )}/100
-      </div>
-
-      <div class="progress">
-        <i
-          style="
-            width:${state.reputation}%
-          ">
-        </i>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        🔥 Série actuelle
-      </h3>
-
-      <div class="big">
-        ${state.combo}
-      </div>
-
-      <p>
-        Expéditions consécutives.
-        Le bonus augmente avec la série.
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        ⚡ Énergie
-      </h3>
-
-      <div class="row">
-        <span>Production</span>
-        <strong class="green">
-          ${e.produced}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Consommation</span>
-        <strong class="cyan">
-          ${e.used}
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        🏭 Construction
-      </h3>
-
-      <div class="row">
-        <span>Construites</span>
-        <strong>
-          ${state.stats.totalBuilt}
-        </strong>
-      </div>
-
-      <div class="row">
-        <span>Détruites</span>
-        <strong>
-          ${state.stats.totalDestroyed}
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        ⏱️ Temps de jeu
-      </h3>
-
-      <div class="big">
-        ${formatDuration(
-          state.stats.playSeconds
-        )}
-      </div>
-
-    </div>
-
-  `;
-
-  document
-    .getElementById(
-      "statsModal"
-    )
-    .classList.add(
-      "show"
-    );
-}
-
-function formatDuration(
-  seconds
-){
-
-  seconds=
-    Math.floor(seconds);
-
-  const h=
-    Math.floor(
-      seconds/3600
-    );
-
-  const m=
-    Math.floor(
-      (seconds%3600)/60
-    );
-
-  const s=
-    seconds%60;
-
-  if(h>0)
-    return h+"h "+m+"m";
-
-  if(m>0)
-    return m+"m "+s+"s";
-
-  return s+"s";
-}
-
-/* =========================================================
-   SETTINGS / MODALS
-========================================================= */
-
-document.getElementById(
-  "researchBtn"
-).onclick=openResearch;
-
-document.getElementById(
-  "contractsBtn"
-).onclick=openContracts;
-
-document.getElementById(
-  "statsBtn"
-).onclick=openStats;
-
-document
-  .querySelectorAll(
-    ".modalClose"
-  )
-  .forEach(btn=>{
-
-    btn.onclick=()=>{
-
-      btn
-        .closest(".modal")
-        .classList.remove(
-          "show"
-        );
-    };
-
-  });
-
-/* =========================================================
-   SETTINGS BUTTON
-   Added as small floating gesture:
-   long press brand opens settings.
-========================================================= */
-
-let brandTimer=null;
-
-document
-  .querySelector(".brand")
-  .addEventListener(
-    "pointerdown",
-    ()=>{
-
-      brandTimer=
-        setTimeout(
-          ()=>{
-
-            document
-              .getElementById(
-                "settingsModal"
-              )
-              .classList.add(
-                "show"
-              );
-
-          },
-          600
-        );
-
-    }
-  );
-
-document
-  .querySelector(".brand")
-  .addEventListener(
-    "pointerup",
-    ()=>{
-      clearTimeout(
-        brandTimer
-      );
-    }
-  );
-
-/* =========================================================
-   PAUSE / SPEED
-========================================================= */
-
-document.getElementById(
-  "pauseBtn"
-).onclick=()=>{
-
-  initAudio();
-
-  state.paused=
-    !state.paused;
-
-  document.getElementById(
-    "pauseBtn"
-  ).textContent=
-    state.paused
-      ?"▶️ Reprendre"
-      :"⏸️ Pause";
-
-  soundClick();
-};
-
-document.getElementById(
-  "speedBtn"
-).onclick=()=>{
-
-  const speeds=[
-    1,
-    2,
-    4
-  ];
-
-  const i=
-    speeds.indexOf(
-      state.speed
-    );
-
-  state.speed=
-    speeds[
-      (i+1)%
-      speeds.length
-    ];
-
-  document.getElementById(
-    "speedBtn"
-  ).textContent=
-    "Vitesse : ×"+
-    state.speed;
-
-  soundClick();
-};
-
-/* =========================================================
-   SOUND BUTTONS
-========================================================= */
-
-document.getElementById(
-  "soundBtn"
-).onclick=()=>{
-
-  soundsEnabled=
-    !soundsEnabled;
-
-  document.getElementById(
-    "soundBtn"
-  ).textContent=
-    soundsEnabled
-      ?"🔊 Sons : activés"
-      :"🔇 Sons : coupés";
-
-  if(
-    soundsEnabled
-  ){
-    initAudio();
-    soundClick();
-  }
-};
-
-document.getElementById(
-  "musicBtn"
-).onclick=()=>{
-
-  musicEnabled=
-    !musicEnabled;
-
-  document.getElementById(
-    "musicBtn"
-  ).textContent=
-    musicEnabled
-      ?"🎵 Ambiance : activée"
-      :"🔇 Ambiance : coupée";
-};
-
-/* =========================================================
-   HUD
-========================================================= */
-
-function updateHUD(){
-
-  document.getElementById(
-    "money"
-  ).textContent=
-    formatMoney(
-      state.money
-    );
-
-  document.getElementById(
-    "ppm"
-  ).textContent=
-    currentPPM;
-
-  document.getElementById(
-    "shipped"
-  ).textContent=
-    formatNumber(
-      state.shipped
-    );
-
-  document.getElementById(
-    "level"
-  ).textContent=
-    state.level;
-
-  const e=
-    calculateEnergy();
-
-  document.getElementById(
-    "energy"
-  ).textContent=
-    Math.floor(
-      e.produced
-    )+
-    " / "+
-    Math.floor(
-      e.used
-    );
-
-  updateBuildingPrices();
-}
-
-/* =========================================================
-   SAVE / LOAD
-========================================================= */
-
-function serialiseGrid(){
-
-  return state.grid.map(
-    row=>
-      row.map(
-        b=>
-          b
-            ?{
-              type:b.type,
-              rotation:b.rotation,
-              level:b.level,
-              free:b.free||false
-            }
-            :null
-      )
-  );
-}
-
-function saveGame(
-  silent=false
-){
-
-  try{
-
-    const data={
-
-      version:3.1,
-
-      state:{
-        ...state,
-
-        grid:
-          serialiseGrid(),
-
-        packages:[],
-        trucks:[]
-      },
-
-      storage:
-        [
-          ...storageContents.entries()
-        ],
-
-      soundsEnabled:
-        soundsEnabled,
-
-      musicEnabled:
-        musicEnabled,
-
-      freeBuild:
-        freeBuild
-
-    };
-
-    localStorage.setItem(
-      "parcelflow_v31_save",
-      JSON.stringify(data)
-    );
-
-    if(!silent){
-
-      soundClick();
-
-      notify(
-        "💾 Partie sauvegardée.",
-        "green"
-      );
-    }
-
-  }catch(e){
-
-    notify(
-      "❌ Erreur de sauvegarde.",
-      "red"
-    );
-  }
-}
-
-function loadGame(){
-
-  try{
-
-    const raw=
-      localStorage.getItem(
-        "parcelflow_v31_save"
-      );
-
-    if(!raw){
-
-      notify(
-        "Aucune sauvegarde."
-      );
-
-      return;
-    }
-
-    const data=
-      JSON.parse(raw);
-
-    state={
-      ...state,
-      ...data.state,
-      grid:data.state.grid
-    };
-
-    soundsEnabled=
-      data.soundsEnabled??
-      true;
-
-    musicEnabled=
-      data.musicEnabled??
-      true;
-
-    freeBuild=
-      data.freeBuild??
-      false;
-
-    storageContents.clear();
-
-    if(data.storage){
-
-      for(
-        const [
-          key,
-          value
-        ]
-        of data.storage
-      ){
-
-        storageContents.set(
-          key,
-          value
-        );
-      }
-    }
-
-    soundClick();
-
-    notify(
-      "↩️ Sauvegarde chargée.",
-      "green"
-    );
-
-  }catch(e){
-
-    notify(
-      "❌ Sauvegarde invalide.",
-      "red"
-    );
-  }
-}
-
-document.getElementById(
-  "saveBtn"
-).onclick=()=>{
-  saveGame(false);
-};
-
-document.getElementById(
-  "loadBtn"
-).onclick=()=>{
-  loadGame();
-};
-
-document.getElementById(
-  "resetBtn"
-).onclick=()=>{
-
-  if(
-    !confirm(
-      "Supprimer toute la progression ?"
-    )
-  )
-    return;
-
-  localStorage.removeItem(
-    "parcelflow_v31_save"
-  );
-
-  location.reload();
-};
 
 /* =========================================================
    TUTORIAL
 ========================================================= */
 
-const tutorialSteps=[
+const tutorialSteps = [
 
-  {
-    title:
-      "Bienvenue dans ParcelFlow",
-    text:
-      "Tu diriges maintenant ton propre centre logistique. Ton objectif est de recevoir, trier et expédier des milliers de colis.",
-  },
+    {
+        icon: "🧩",
+        title: "Bienvenue",
+        text:
+            "Tu dois construire une machine où chaque objet déclenche le suivant jusqu'à atteindre la cible."
+    },
 
-  {
-    title:
-      "Construis des convoyeurs",
-    text:
-      "Sélectionne Convoyeur dans la barre du bas puis glisse ton doigt sur la grille. Les convoyeurs suivent automatiquement la direction de ton geste.",
-  },
+    {
+        icon: "🟫",
+        title: "Place des objets",
+        text:
+            "Choisis un objet dans la barre en bas puis touche le terrain pour le placer."
+    },
 
-  {
-    title:
-      "Fais circuler les colis",
-    text:
-      "Les colis apparaissent à l'entrée. Relie correctement les convoyeurs jusqu'au quai 🚚 pour gagner de l'argent.",
-  },
+    {
+        icon: "👆",
+        title: "Déplace-les",
+        text:
+            "Avec Sélection, touche un objet puis fais-le glisser avec ton doigt."
+    },
 
-  {
-    title:
-      "Améliore ton usine",
-    text:
-      "Appuie longtemps sur un bâtiment pour afficher son panneau. Tu verras son prix, sa consommation et le prix de son amélioration.",
-  },
+    {
+        icon: "💥",
+        title: "Crée une réaction",
+        text:
+            "Les objets proches peuvent se déclencher entre eux. Essaie de créer une chaîne."
+    },
 
-  {
-    title:
-      "Débloque des technologies",
-    text:
-      "Gagne de l'XP en construisant et en expédiant. Le centre de recherche permet de débloquer des machines beaucoup plus puissantes.",
-  },
+    {
+        icon: "▶️",
+        title: "Lance la machine",
+        text:
+            "Quand tout est prêt, appuie sur ▶. Regarde ta machine fonctionner."
+    },
 
-  {
-    title:
-      "Accepte des contrats",
-    text:
-      "Les contrats demandent des types et quantités de colis précis. Les réussir rapporte beaucoup plus d'argent.",
-  },
-
-  {
-    title:
-      "Construis ton empire",
-    text:
-      "Agrandis ton réseau, automatise ton centre et vise les millions. Plus ton usine devient grande, plus les investissements deviennent importants.",
-  }
+    {
+        icon: "🎯",
+        title: "Atteins la cible",
+        text:
+            "Le but est d'activer le 🎯. Plus les niveaux avancent, plus les mécanismes deviennent complexes."
+    }
 
 ];
 
-let tutorialIndex=0;
+let tutorialIndex = 0;
 
-function startTutorial(){
+function openTutorial() {
 
-  tutorialIndex=0;
+    tutorialIndex = 0;
 
-  showTutorialStep();
-
-  document
-    .getElementById(
-      "tutorial"
-    )
-    .classList.add(
-      "show"
-    );
-}
-
-function showTutorialStep(){
-
-  const step=
-    tutorialSteps[
-      tutorialIndex
-    ];
-
-  document.getElementById(
-    "tutorialStep"
-  ).textContent=
-    "ÉTAPE "+
-    (tutorialIndex+1)+
-    " / "+
-    tutorialSteps.length;
-
-  document.getElementById(
-    "tutorialTitle"
-  ).textContent=
-    step.title;
-
-  document.getElementById(
-    "tutorialText"
-  ).textContent=
-    step.text;
-
-  document.getElementById(
-    "tutorialNext"
-  ).textContent=
-    tutorialIndex===
-    tutorialSteps.length-1
-      ?"Terminer"
-      :"Suivant";
-}
-
-document.getElementById(
-  "tutorialNext"
-).onclick=()=>{
-
-  initAudio();
-
-  tutorialIndex++;
-
-  if(
-    tutorialIndex>=
-    tutorialSteps.length
-  ){
+    updateTutorial();
 
     document
-      .getElementById(
-        "tutorial"
-      )
-      .classList.remove(
-        "show"
-      );
+        .getElementById("tutorialModal")
+        .classList.add("show");
 
-    soundLevel();
-
-    notify(
-      "🎓 Tutoriel terminé !"
-    );
-
-    return;
-  }
-
-  showTutorialStep();
-
-  soundClick();
-};
-
-document.getElementById(
-  "tutorialSkip"
-).onclick=()=>{
-
-  document
-    .getElementById(
-      "tutorial"
-    )
-    .classList.remove(
-      "show"
-    );
-};
-
-document.getElementById(
-  "replayTutorialBtn"
-).onclick=()=>{
-
-  document
-    .getElementById(
-      "settingsModal"
-    )
-    .classList.remove(
-      "show"
-    );
-
-  startTutorial();
-};
-
-/* =========================================================
-   ADMIN LOGIN
-========================================================= */
-
-document.getElementById(
-  "adminBtn"
-).onclick=()=>{
-
-  initAudio();
-
-  document.getElementById(
-    "adminPassword"
-  ).value="";
-
-  document
-    .getElementById(
-      "adminLoginModal"
-    )
-    .classList.add(
-      "show"
-    );
-
-  setTimeout(
-    ()=>{
-      document.getElementById(
-        "adminPassword"
-      ).focus();
-    },
-    100
-  );
-};
-
-document.getElementById(
-  "adminCancel"
-).onclick=()=>{
-
-  document
-    .getElementById(
-      "adminLoginModal"
-    )
-    .classList.remove(
-      "show"
-    );
-};
-
-document.getElementById(
-  "adminLogin"
-).onclick=adminLogin;
-
-document.getElementById(
-  "adminPassword"
-).addEventListener(
-  "keydown",
-  e=>{
-
-    if(
-      e.key==="Enter"
-    ){
-      adminLogin();
-    }
-  }
-);
-
-function adminLogin(){
-
-  const password=
-    document.getElementById(
-      "adminPassword"
-    ).value;
-
-  if(
-    password===
-    ADMIN_PASSWORD
-  ){
-
-    adminUnlocked=true;
-
-    document
-      .getElementById(
-        "adminLoginModal"
-      )
-      .classList.remove(
-        "show"
-      );
-
-    document
-      .getElementById(
-        "adminModal"
-      )
-      .classList.add(
-        "show"
-      );
-
-    soundBuy();
-
-    notify(
-      "🧰 Accès administrateur."
-    );
-
-  }else{
-
-    soundError();
-
-    notify(
-      "❌ Mot de passe incorrect.",
-      "red"
-    );
-  }
 }
 
-/* =========================================================
-   ADMIN COMMANDS
-========================================================= */
+function updateTutorial() {
 
-function adminMoney(
-  amount
-){
+    const step =
+        tutorialSteps[tutorialIndex];
 
-  if(!adminUnlocked)
-    return;
+    document.getElementById("tutoStep")
+        .textContent =
+        "ÉTAPE " +
+        (tutorialIndex + 1) +
+        " / " +
+        tutorialSteps.length;
 
-  state.money+=amount;
+    document.getElementById("tutoIcon")
+        .textContent =
+        step.icon;
 
-  state.stats.maxMoney=
-    Math.max(
-      state.stats.maxMoney,
-      state.money
-    );
+    document.getElementById("tutoTitle")
+        .textContent =
+        step.title;
 
-  soundBuy();
+    document.getElementById("tutoText")
+        .textContent =
+        step.text;
 
-  notify(
-    "💰 +"+
-    formatMoney(amount),
-    "green"
-  );
+    document.getElementById("nextTutorial")
+        .textContent =
+        tutorialIndex === tutorialSteps.length - 1
+        ? "Jouer"
+        : "Suivant";
+
 }
 
-function adminXP(
-  amount
-){
+document.getElementById("nextTutorial")
+    .addEventListener("pointerdown", () => {
 
-  if(!adminUnlocked)
-    return;
+        if (
+            tutorialIndex >=
+            tutorialSteps.length - 1
+        ) {
 
-  addXP(amount);
+            document
+                .getElementById("tutorialModal")
+                .classList.remove("show");
 
-  notify(
-    "⭐ +"+
-    formatNumber(amount)+
-    " XP",
-    "green"
-  );
-}
+            state.tutorialSeen = true;
 
-function adminLevel(
-  amount
-){
-
-  if(!adminUnlocked)
-    return;
-
-  state.level+=amount;
-
-  soundLevel();
-
-  notify(
-    "⭐ Niveau "+
-    state.level
-  );
-}
-
-function adminUnlockResearch(){
-
-  if(!adminUnlocked)
-    return;
-
-  for(
-    const r of RESEARCH
-  ){
-    state.research[r.id]=true;
-  }
-
-  state.stats.researchBought=
-    RESEARCH.length;
-
-  soundResearch();
-
-  notify(
-    "🔓 Toutes les recherches sont débloquées.",
-    "green"
-  );
-
-  renderResearch();
-}
-
-function adminSpawn(
-  amount
-){
-
-  if(!adminUnlocked)
-    return;
-
-  for(
-    let i=0;
-    i<amount;
-    i++
-  ){
-    createPackage();
-  }
-
-  soundBuild();
-
-  notify(
-    "📦 "+
-    amount+
-    " colis ajoutés."
-  );
-}
-
-function adminContract(){
-
-  if(!adminUnlocked)
-    return;
-
-  createContract();
-
-  soundClick();
-
-  notify(
-    "📋 Nouveau contrat créé."
-  );
-}
-
-function adminSetSpeed(
-  speed
-){
-
-  if(!adminUnlocked)
-    return;
-
-  state.speed=speed;
-
-  document.getElementById(
-    "speedBtn"
-  ).textContent=
-    "Vitesse : ×"+
-    speed;
-
-  notify(
-    "⚡ Vitesse ×"+
-    speed
-  );
-}
-
-function adminFillEnergy(){
-
-  if(!adminUnlocked)
-    return;
-
-  infiniteEnergy=
-    !infiniteEnergy;
-
-  notify(
-    infiniteEnergy
-      ?"🔋 Énergie illimitée activée."
-      :"🔋 Énergie illimitée désactivée."
-  );
-}
-
-function adminFreeBuild(){
-
-  if(!adminUnlocked)
-    return;
-
-  freeBuild=
-    !freeBuild;
-
-  document.getElementById(
-    "freeBuildStatus"
-  ).textContent=
-    freeBuild
-      ?"Activé — les constructions sont gratuites."
-      :"Désactivé";
-
-  soundClick();
-
-  notify(
-    freeBuild
-      ?"🏗️ Construction gratuite activée."
-      :"🏗️ Construction gratuite désactivée."
-  );
-}
-
-function adminClearSave(){
-
-  if(!adminUnlocked)
-    return;
-
-  if(
-    !confirm(
-      "Effacer définitivement la sauvegarde ?"
-    )
-  )
-    return;
-
-  localStorage.removeItem(
-    "parcelflow_v31_save"
-  );
-
-  notify(
-    "🗑️ Sauvegarde effacée.",
-    "red"
-  );
-}
-
-/* =========================================================
-   CAMERA LIMITS
-========================================================= */
-
-function clampCamera(){
-
-  const visibleW=
-    W/
-    state.camera.zoom;
-
-  const visibleH=
-    H/
-    state.camera.zoom;
-
-  const halfW=
-    visibleW/2;
-
-  const halfH=
-    visibleH/2;
-
-  state.camera.x=
-    Math.max(
-      -halfW,
-      Math.min(
-        WORLD_W*TILE-halfW,
-        state.camera.x
-      )
-    );
-
-  state.camera.y=
-    Math.max(
-      -halfH,
-      Math.min(
-        WORLD_H*TILE-halfH,
-        state.camera.y
-      )
-    );
-}
-
-setInterval(
-  clampCamera,
-  100
-);
-
-/* =========================================================
-   RANDOM EVENTS
-========================================================= */
-
-let eventTimer=100;
-
-function randomBusinessEvent(){
-
-  const events=[
-
-    {
-      title:"📈 Pic de commandes",
-      text:
-        "La demande augmente.",
-      run:()=>{
-
-        state.nextPackage=
-          Math.min(
-            state.nextPackage||2,
-            .8
-          );
-      }
-    },
-
-    {
-      title:"🎁 Client premium",
-      text:
-        "Certains colis prennent temporairement de la valeur.",
-      run:()=>{
-
-        for(
-          const p
-          of state.packages
-        ){
-
-          p.value=
-            Math.floor(
-              p.value*1.2
-            );
+            return;
         }
-      }
-    },
 
-    {
-      title:"📦 Afflux logistique",
-      text:
-        "Une vague de colis arrive.",
-      run:()=>{
+        tutorialIndex++;
 
-        for(
-          let i=0;
-          i<5;
-          i++
-        ){
-          createPackage();
-        }
-      }
-    },
+        updateTutorial();
 
-    {
-      title:"⭐ Bonne réputation",
-      text:
-        "Les clients recommandent ton centre.",
-      run:()=>{
+    });
 
-        state.reputation=
-          Math.min(
-            100,
-            state.reputation+4
-          );
-      }
-    }
+document.getElementById("skipTutorial")
+    .addEventListener("pointerdown", () => {
 
-  ];
+        document
+            .getElementById("tutorialModal")
+            .classList.remove("show");
 
-  const event=
-    events[
-      Math.floor(
-        Math.random()*
-        events.length
-      )
-    ];
+        state.tutorialSeen = true;
 
-  event.run();
-
-  notify(
-    event.title+
-    " — "+
-    event.text
-  );
-}
-
-setInterval(
-  ()=>{
-
-    if(state.paused)
-      return;
-
-    eventTimer-=5;
-
-    if(
-      eventTimer<=0
-    ){
-
-      randomBusinessEvent();
-
-      eventTimer=
-        100+
-        Math.random()*100;
-    }
-
-  },
-  5000
-);
+    });
 
 /* =========================================================
-   LIVE CONTRACT REFRESH
+   HELP
 ========================================================= */
 
-setInterval(
-  ()=>{
+document.getElementById("helpBtn")
+    .addEventListener("pointerdown", () => {
 
-    if(
-      document
-        .getElementById(
-          "contractsModal"
-        )
-        .classList
-        .contains(
-          "show"
-        )
-    ){
+        document
+            .getElementById("helpModal")
+            .classList.add("show");
 
-      renderContracts();
-    }
+    });
 
-  },
-  1000
-);
+document.getElementById("closeHelp")
+    .addEventListener("pointerdown", () => {
+
+        document
+            .getElementById("helpModal")
+            .classList.remove("show");
+
+    });
+
+document.getElementById("replayTutorial")
+    .addEventListener("pointerdown", () => {
+
+        document
+            .getElementById("helpModal")
+            .classList.remove("show");
+
+        openTutorial();
+
+    });
 
 /* =========================================================
-   TUTORIAL FIRST START
+   START
 ========================================================= */
 
-setTimeout(
-  ()=>{
-
-    const saved=
-      localStorage.getItem(
-        "parcelflow_v31_save"
-      );
-
-    if(!saved){
-      startTutorial();
-    }
-
-  },
-  700
-);
-
-/* =========================================================
-   INITIAL CONTRACT
-========================================================= */
-
-if(
-  state.contracts.length===0
-){
-  createContract();
-}
-
-/* =========================================================
-   INITIAL PRICES
-========================================================= */
-
-updateBuildingPrices();
-
-/* =========================================================
-   STARTUP NOTIFICATIONS
-========================================================= */
-
-setTimeout(
-  ()=>{
-    notify(
-      "📦 Les premiers colis arrivent..."
-    );
-  },
-  1400
-);
-
-setTimeout(
-  ()=>{
-    notify(
-      "💡 Les prix sont affichés directement sous les bâtiments."
-    );
-  },
-  4200
-);
+loadLevel(1);
 
 </script>
 
