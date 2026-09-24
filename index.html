@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ParcelFlow</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #090b0f;
+    color: #eef2f6;
+    font-family: Inter, Arial, sans-serif;
+}
+
+button {
+    font: inherit;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOP */
+
+.topbar {
+    height: 68px;
+    flex-shrink: 0;
+    background: #11151b;
+    border-bottom: 1px solid #252c35;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    z-index: 20;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #55d99a;
+    color: #07100b;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+}
+
+.logo-text {
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: -.5px;
+}
+
+.logo-text span {
+    color: #55d99a;
+}
+
+.top-stats {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.top-stat {
+    background: #171c23;
+    border: 1px solid #29313b;
+    border-radius: 9px;
+    padding: 7px 12px;
+    min-width: 105px;
+}
+
+.top-stat-label {
+    font-size: 9px;
+    color: #77818d;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.top-stat-value {
+    margin-top: 2px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.money {
+    color: #63e49b;
+}
+
+/* MAIN */
+
+.main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+/* LEFT */
+
+.sidebar {
+    width: 245px;
+    flex-shrink: 0;
+    background: #10141a;
+    border-right: 1px solid #252c35;
+    padding: 14px;
+    overflow-y: auto;
+}
+
+.section-title {
+    color: #68737f;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 4px 5px 9px;
+}
+
+.tool {
+    width: 100%;
+    background: #151a21;
+    border: 1px solid #272f38;
+    border-radius: 10px;
+    padding: 11px;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-align: left;
+    transition: .12s;
+}
+
+.tool:hover {
+    background: #1b222a;
+}
+
+.tool.active {
+    border-color: #55d99a;
+    background: #14251d;
+    box-shadow: 0 0 0 1px rgba(85,217,154,.12);
+}
+
+.tool-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #202730;
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+    flex-shrink: 0;
+}
+
+.tool.active .tool-icon {
+    background: #55d99a;
+    color: #08120d;
+}
+
+.tool-name {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.tool-info {
+    font-size: 10px;
+    color: #727d89;
+    margin-top: 2px;
+}
+
+.price {
+    margin-left: auto;
+    font-size: 10px;
+    color: #55d99a;
+}
+
+/* CANVAS */
+
+.world {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, #151a20 0%, #0d1014 65%);
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+/* RIGHT */
+
+.rightbar {
+    width: 275px;
+    flex-shrink: 0;
+    background: #10141a;
+    border-left: 1px solid #252c35;
+    padding: 14px;
+    overflow-y: auto;
+}
+
+.panel {
+    background: #151a21;
+    border: 1px solid #272f38;
+    border-radius: 11px;
+    padding: 13px;
+    margin-bottom: 11px;
+}
+
+.panel-title {
+    font-size: 12px;
+    font-weight: 900;
+    margin-bottom: 11px;
+}
+
+.objective {
+    background: #0f1419;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.objective-title {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.objective-text {
+    font-size: 10px;
+    color: #79848f;
+    margin-top: 4px;
+}
+
+.progress {
+    width: 100%;
+    height: 6px;
+    background: #272e37;
+    border-radius: 20px;
+    margin-top: 9px;
+    overflow: hidden;
+}
+
+.progress > div {
+    height: 100%;
+    width: 0%;
+    background: #55d99a;
+    transition: width .25s;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid #242b33;
+}
+
+.metric:last-child {
+    border-bottom: 0;
+}
+
+.metric-label {
+    color: #77818c;
+    font-size: 10px;
+}
+
+.metric-value {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+.control-btn {
+    background: #20262e;
+    border: 1px solid #303944;
+    border-radius: 7px;
+    padding: 8px 3px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.control-btn.active {
+    background: #55d99a;
+    color: #07100b;
+    border-color: #55d99a;
+}
+
+.big-button {
+    width: 100%;
+    padding: 11px;
+    border-radius: 8px;
+    background: #20262e;
+    border: 1px solid #303944;
+    font-size: 11px;
+    font-weight: 800;
+    margin-top: 7px;
+}
+
+.big-button:hover {
+    background: #29313a;
+}
+
+.danger {
+    color: #ff7676;
+}
+
+/* WORLD UI */
+
+.world-top {
+    position: absolute;
+    top: 13px;
+    left: 13px;
+    right: 13px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.world-chip {
+    background: rgba(12,16,21,.88);
+    border: 1px solid #29313a;
+    border-radius: 9px;
+    padding: 8px 11px;
+    font-size: 10px;
+    color: #9aa4af;
+    backdrop-filter: blur(8px);
+}
+
+.world-chip strong {
+    color: white;
+}
+
+.toast {
+    position: absolute;
+    left: 50%;
+    top: 22px;
+    transform: translateX(-50%) translateY(-10px);
+    background: #55d99a;
+    color: #07100b;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 9px 14px;
+    border-radius: 9px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s;
+    z-index: 30;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* MOBILE */
+
+@media(max-width: 900px) {
+    .sidebar {
+        width: 190px;
+    }
+
+    .rightbar {
+        width: 225px;
+    }
+
+    .top-stat:nth-child(2) {
+        display: none;
+    }
+}
+
+@media(max-width: 700px) {
+    .sidebar {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 78px;
+        width: 100%;
+        z-index: 15;
+        border-right: 0;
+        border-top: 1px solid #252c35;
+        padding: 6px;
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .section-title {
+        display: none;
+    }
+
+    .tool {
+        width: 76px;
+        min-width: 76px;
+        margin: 0;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        text-align: center;
+    }
+
+    .tool-icon {
+        width: 29px;
+        height: 29px;
+        font-size: 14px;
+    }
+
+    .tool-name {
+        font-size: 8px;
+    }
+
+    .tool-info,
+    .price {
+        display: none;
+    }
+
+    .rightbar {
+        display: none;
+    }
+
+    .topbar {
+        height: 58px;
+    }
+
+    .top-stat {
+        min-width: 80px;
+        padding: 5px 8px;
+    }
+
+    .top-stat-label {
+        font-size: 8px;
+    }
+
+    .top-stat-value {
+        font-size: 11px;
+    }
+
+    .logo-text {
+        font-size: 15px;
+    }
+
+    .logo-icon {
+        width: 31px;
+        height: 31px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<header class="topbar">
+
+    <div class="logo">
+        <div class="logo-icon">📦</div>
+        <div class="logo-text">
+            PARCEL<span>FLOW</span>
+        </div>
+    </div>
+
+    <div class="top-stats">
+
+        <div class="top-stat">
+            <div class="top-stat-label">Argent</div>
+            <div class="top-stat-value money" id="money">1 000 €</div>
+        </div>
+
+        <div class="top-stat">
+            <div class="top-stat-label">Colis / min</div>
+            <div class="top-stat-value" id="ppm">0</div>
+        </div>
+
+        <div class="top-stat">
+            <div class="top-stat-label">Expédiés</div>
+            <div class="top-stat-value" id="shipped">0</div>
+        </div>
+
+    </div>
+
+</header>
+
+<main class="main">
+
+    <aside class="sidebar">
+
+        <div class="section-title">Construction</div>
+
+        <button class="tool active" data-tool="belt">
+            <div class="tool-icon">➜</div>
+            <div>
+                <div class="tool-name">Tapis roulant</div>
+                <div class="tool-info">Transporter les colis</div>
+            </div>
+            <div class="price">10 €</div>
+        </button>
+
+        <button class="tool" data-tool="splitter">
+            <div class="tool-icon">⑂</div>
+            <div>
+                <div class="tool-name">Répartiteur</div>
+                <div class="tool-info">Diviser le flux</div>
+            </div>
+            <div class="price">80 €</div>
+        </button>
+
+        <button class="tool" data-tool="merger">
+            <div class="tool-icon">Y</div>
+            <div>
+                <div class="tool-name">Fusionneur</div>
+                <div class="tool-info">Réunir les flux</div>
+            </div>
+            <div class="price">80 €</div>
+        </button>
+
+        <button class="tool" data-tool="sorter">
+            <div class="tool-icon">◇</div>
+            <div>
+                <div class="tool-name">Centre de tri</div>
+                <div class="tool-info">Traiter les colis</div>
+            </div>
+            <div class="price">250 €</div>
+        </button>
+
+        <button class="tool" data-tool="storage">
+            <div class="tool-icon">▣</div>
+            <div>
+                <div class="tool-name">Stockage</div>
+                <div class="tool-info">Entreposer</div>
+            </div>
+            <div class="price">300 €</div>
+        </button>
+
+        <div class="section-title" style="margin-top:18px">Actions</div>
+
+        <button class="tool" data-tool="erase">
+            <div class="tool-icon">⌫</div>
+            <div>
+                <div class="tool-name">Démolir</div>
+                <div class="tool-info">Supprimer une case</div>
+            </div>
+        </button>
+
+        <button class="tool" data-tool="select">
+            <div class="tool-icon">↖</div>
+            <div>
+                <div class="tool-name">Sélection</div>
+                <div class="tool-info">Inspecter</div>
+            </div>
+        </button>
+
+    </aside>
+
+    <section class="world">
+
+        <canvas id="game"></canvas>
+
+        <div class="world-top">
+            <div class="world-chip">
+                Mode : <strong id="modeText">Construction</strong>
+            </div>
+
+            <div class="world-chip">
+                Vitesse : <strong id="speedText">×1</strong>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+    </section>
+
+    <aside class="rightbar">
+
+        <div class="panel">
+
+            <div class="panel-title">Objectif actuel</div>
+
+            <div class="objective">
+
+                <div class="objective-title" id="objectiveTitle">
+                    Première expédition
+                </div>
+
+                <div class="objective-text" id="objectiveText">
+                    Expédie 20 colis.
+                </div>
+
+                <div class="progress">
+                    <div id="objectiveProgress"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="panel-title">Production</div>
+
+            <div class="metric">
+                <span class="metric-label">Colis entrants</span>
+                <span class="metric-value" id="incoming">0 / min</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Colis expédiés</span>
+                <span class="metric-value" id="shipped2">0</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">En attente</span>
+                <span class="metric-value" id="waiting">0</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Efficacité</span>
+                <span class="metric-value" id="efficiency">100 %</span>
+            </div>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="panel-title">Simulation</div>
+
+            <div class="controls">
+
+                <button class="control-btn active" data-speed="1">
+                    ×1
+                </button>
+
+                <button class="control-btn" data-speed="2">
+                    ×2
+                </button>
+
+                <button class="control-btn" data-speed="4">
+                    ×4
+                </button>
+
+            </div>
+
+            <button class="big-button" id="pauseBtn">
+                ⏸ Pause
+            </button>
+
+            <button class="big-button" id="resetBtn">
+                ↻ Recommencer
+            </button>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="panel-title">Économie</div>
+
+            <div class="metric">
+                <span class="metric-label">Valeur / colis</span>
+                <span class="metric-value money">12 €</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Coût tapis</span>
+                <span class="metric-value">10 €</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Valeur usine</span>
+                <span class="metric-value" id="factoryValue">0 €</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+</main>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let W = 0;
+let H = 0;
+
+const TILE = 52;
+const COLS = 18;
+const ROWS = 11;
+
+let offsetX = 0;
+let offsetY = 0;
+
+let selectedTool = "belt";
+let speed = 1;
+let paused = false;
+
+let lastTime = performance.now();
+
+const grid = [];
+
+for(let y = 0; y < ROWS; y++) {
+    grid[y] = [];
+
+    for(let x = 0; x < COLS; x++) {
+        grid[y][x] = null;
+    }
+}
+
+/*
+    Directions:
+    0 = droite
+    1 = bas
+    2 = gauche
+    3 = haut
+*/
+
+function makeBelt(dir = 0) {
+    return {
+        type: "belt",
+        dir: dir,
+        parcels: []
+    };
+}
+
+/* Entrée */
+
+grid[5][1] = {
+    type: "input",
+    parcels: [],
+    timer: 0
+};
+
+/* Sortie */
+
+grid[5][16] = {
+    type: "output",
+    parcels: [],
+    shipped: 0
+};
+
+/* Ligne de départ */
+
+for(let x = 2; x <= 5; x++) {
+    grid[5][x] = makeBelt(0);
+}
+
+/* Quelques tapis initiaux */
+
+grid[5][6] = makeBelt(0);
+grid[5][7] = makeBelt(0);
+grid[5][8] = makeBelt(0);
+grid[5][9] = makeBelt(0);
+grid[5][10] = makeBelt(0);
+grid[5][11] = makeBelt(0);
+grid[5][12] = makeBelt(0);
+grid[5][13] = makeBelt(0);
+grid[5][14] = makeBelt(0);
+grid[5][15] = makeBelt(0);
+
+let money = 1000;
+let totalShipped = 0;
+let totalIncoming = 0;
+let totalBuilt = 0;
+let currentPPM = 0;
+
+let factoryValue = 0;
+
+let spawnTimer = 0;
+
+const parcels = [];
+
+let mouse = {
+    x: 0,
+    y: 0,
+    down: false
+};
+
+let touchStart = null;
+
+/* ------------------------------------------------ */
+
+function resize() {
+
+    const rect = canvas.getBoundingClientRect();
+
+    W = rect.width;
+    H = rect.height;
+
+    canvas.width = Math.floor(W * devicePixelRatio);
+    canvas.height = Math.floor(H * devicePixelRatio);
+
+    ctx.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+
+    offsetX = Math.max(
+        20,
+        (W - COLS * TILE) / 2
+    );
+
+    offsetY = Math.max(
+        70,
+        (H - ROWS * TILE) / 2
+    );
+}
+
+window.addEventListener("resize", resize);
+
+resize();
+
+/* ------------------------------------------------ */
+
+function cellCenter(x, y) {
+
+    return {
+        x: offsetX + x * TILE + TILE / 2,
+        y: offsetY + y * TILE + TILE / 2
+    };
+}
+
+function mouseCell() {
+
+    return {
+        x: Math.floor((mouse.x - offsetX) / TILE),
+        y: Math.floor((mouse.y - offsetY) / TILE)
+    };
+}
+
+/* ------------------------------------------------ */
+
+function drawBackground() {
+
+    ctx.fillStyle = "#0d1014";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = "rgba(255,255,255,.035)";
+    ctx.lineWidth = 1;
+
+    for(let x = 0; x <= COLS; x++) {
+
+        const px = offsetX + x * TILE;
+
+        ctx.beginPath();
+        ctx.moveTo(px, offsetY);
+        ctx.lineTo(px, offsetY + ROWS * TILE);
+        ctx.stroke();
+    }
+
+    for(let y = 0; y <= ROWS; y++) {
+
+        const py = offsetY + y * TILE;
+
+        ctx.beginPath();
+        ctx.moveTo(offsetX, py);
+        ctx.lineTo(offsetX + COLS * TILE, py);
+        ctx.stroke();
+    }
+}
+
+/* ------------------------------------------------ */
+
+function drawCellBase(x, y) {
+
+    const px = offsetX + x * TILE;
+    const py = offsetY + y * TILE;
+
+    ctx.fillStyle = "#12171d";
+
+    ctx.fillRect(
+        px + 1,
+        py + 1,
+        TILE - 2,
+        TILE - 2
+    );
+}
+
+/* ------------------------------------------------ */
+
+function drawBelt(x, y, belt) {
+
+    const c = cellCenter(x,y);
+
+    const px = offsetX + x*TILE;
+    const py = offsetY + y*TILE;
+
+    ctx.fillStyle = "#20262d";
+
+    ctx.fillRect(
+        px + 5,
+        py + 5,
+        TILE - 10,
+        TILE - 10
+    );
+
+    ctx.strokeStyle = "#303943";
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(
+        px + 5,
+        py + 5,
+        TILE - 10,
+        TILE - 10
+    );
+
+    ctx.save();
+
+    ctx.translate(c.x,c.y);
+
+    const rotation = [
+        0,
+        Math.PI/2,
+        Math.PI,
+        -Math.PI/2
+    ][belt.dir];
+
+    ctx.rotate(rotation);
+
+    ctx.fillStyle = "#4b5661";
+
+    for(let i=-1;i<=1;i++) {
+
+        ctx.fillRect(
+            -20,
+            i*10-2,
+            40,
+            4
+        );
+    }
+
+    ctx.fillStyle = "#697582";
+
+    const phase =
+        (performance.now()/90)%16;
+
+    for(let i=-1;i<=1;i++) {
+
+        ctx.fillRect(
+            -20 + phase,
+            i*10-3,
+            7,
+            6
+        );
+
+        ctx.fillRect(
+            -20 + phase - 16,
+            i*10-3,
+            7,
+            6
+        );
+    }
+
+    ctx.restore();
+}
+
+/* ------------------------------------------------ */
+
+function drawInput(x,y) {
+
+    const c = cellCenter(x,y);
+
+    ctx.fillStyle = "#17271f";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        c.x-21,
+        c.y-21,
+        42,
+        42,
+        9
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#55d99a";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#55d99a";
+
+    ctx.font = "bold 22px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText("↓",c.x,c.y);
+
+    ctx.font = "bold 8px Arial";
+
+    ctx.fillText(
+        "ARRIVÉE",
+        c.x,
+        c.y+31
+    );
+}
+
+/* ------------------------------------------------ */
+
+function drawOutput(x,y) {
+
+    const c = cellCenter(x,y);
+
+    ctx.fillStyle = "#19222a";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        c.x-21,
+        c.y-21,
+        42,
+        42,
+        9
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#5d91c9";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#7fb4eb";
+
+    ctx.font = "bold 19px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText("✈",c.x,c.y);
+
+    ctx.font = "bold 8px Arial";
+
+    ctx.fillText(
+        "EXPÉDITION",
+        c.x,
+        c.y+31
+    );
+}
+
+/* ------------------------------------------------ */
+
+function drawSplitter(x,y) {
+
+    const c = cellCenter(x,y);
+
+    ctx.fillStyle = "#2a2416";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        c.x-20,
+        c.y-20,
+        40,
+        40,
+        8
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#d8b75c";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.strokeStyle = "#e9ca6c";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(c.x-12,c.y);
+    ctx.lineTo(c.x+12,c.y);
+    ctx.moveTo(c.x,c.y);
+    ctx.lineTo(c.x+8,c.y-10);
+    ctx.moveTo(c.x,c.y);
+    ctx.lineTo(c.x+8,c.y+10);
+    ctx.stroke();
+}
+
+/* ------------------------------------------------ */
+
+function drawMerger(x,y) {
+
+    const c = cellCenter(x,y);
+
+    ctx.fillStyle = "#20252d";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        c.x-20,
+        c.y-20,
+        40,
+        40,
+        8
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#9d91d7";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.strokeStyle = "#b6a9ef";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(c.x-10,c.y-10);
+    ctx.lineTo(c.x,c.y);
+    ctx.lineTo(c.x+12,c.y);
+    ctx.moveTo(c.x-10,c.y+10);
+    ctx.lineTo(c.x,c.y);
+    ctx.stroke();
+}
+
+/* ------------------------------------------------ */
+
+function drawSorter(x,y) {
+
+    const c = cellCenter(x,y);
+
+    ctx.fillStyle = "#20252b";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        c.x-22,
+        c.y-22,
+        44,
+        44,
+        10
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#d46bff";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#d46bff";
+
+    ctx.beginPath();
+
+    ctx.moveTo(c.x,c.y-12);
+    ctx.lineTo(c.x+12,c.y);
+    ctx.lineTo(c.x,c.y+12);
+    ctx.lineTo(c.x-12,c.y);
+    ctx.closePath();
+
+    ctx.fill();
+}
+
+/* ------------------------------------------------ */
+
+function drawStorage(x,y) {
+
+    const c = cellCenter(x,y);
+
+    ctx.fillStyle = "#242b32";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        c.x-21,
+        c.y-21,
+        42,
+        42,
+        7
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle = "#70a6d8";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#70a6d8";
+
+    ctx.fillRect(
+        c.x-12,
+        c.y-9,
+        24,
+        18
+    );
+
+    ctx.strokeStyle = "#0d1014";
+    ctx.strokeRect(
+        c.x-12,
+        c.y-9,
+        24,
+        18
+    );
+}
+
+/* ------------------------------------------------ */
+
+function drawGrid() {
+
+    for(let y=0;y<ROWS;y++) {
+
+        for(let x=0;x<COLS;x++) {
+
+            drawCellBase(x,y);
+
+            const item = grid[y][x];
+
+            if(!item) continue;
+
+            if(item.type === "belt")
+                drawBelt(x,y,item);
+
+            if(item.type === "input")
+                drawInput(x,y);
+
+            if(item.type === "output")
+                drawOutput(x,y);
+
+            if(item.type === "splitter")
+                drawSplitter(x,y);
+
+            if(item.type === "merger")
+                drawMerger(x,y);
+
+            if(item.type === "sorter")
+                drawSorter(x,y);
+
+            if(item.type === "storage")
+                drawStorage(x,y);
+        }
+    }
+}
+
+/* ------------------------------------------------ */
+
+function drawParcel(p) {
+
+    const c = cellCenter(p.x,p.y);
+
+    const size = 15;
+
+    ctx.save();
+
+    ctx.translate(
+        c.x + p.offsetX,
+        c.y + p.offsetY
+    );
+
+    ctx.rotate(
+        Math.sin(p.anim*2)*0.025
+    );
+
+    ctx.shadowColor = "rgba(255,190,80,.25)";
+    ctx.shadowBlur = 8;
+
+    ctx.fillStyle = "#d9a55d";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        -size/2,
+        -size/2,
+        size,
+        size,
+        3
+    );
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    ctx.strokeStyle = "#9d7139";
+    ctx.lineWidth = 1;
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#f0d09a";
+
+    ctx.fillRect(
+        -1,
+        -size/2,
+        2,
+        size
+    );
+
+    ctx.restore();
+}
+
+/* ------------------------------------------------ */
+
+function drawParcels() {
+
+    for(const p of parcels) {
+
+        if(
+            p.x >= 0 &&
+            p.x < COLS &&
+            p.y >= 0 &&
+            p.y < ROWS
+        ) {
+            drawParcel(p);
+        }
+    }
+}
+
+/* ------------------------------------------------ */
+
+function directionVector(dir) {
+
+    return [
+        {x:1,y:0},
+        {x:0,y:1},
+        {x:-1,y:0},
+        {x:0,y:-1}
+    ][dir];
+}
+
+/* ------------------------------------------------ */
+
+function spawnParcel() {
+
+    const input = grid[5][1];
+
+    const p = {
+        x: 2,
+        y: 5,
+        progress: 0,
+        offsetX: 0,
+        offsetY: 0,
+        anim: Math.random()*10
+    };
+
+    parcels.push(p);
+
+    totalIncoming++;
+}
+
+/* ------------------------------------------------ */
+
+function getCell(x,y) {
+
+    if(
+        x < 0 ||
+        y < 0 ||
+        x >= COLS ||
+        y >= ROWS
+    ) {
+        return null;
+    }
+
+    return grid[y][x];
+}
+
+/* ------------------------------------------------ */
+
+function moveParcel(p, dt) {
+
+    const cell = getCell(
+        p.x,
+        p.y
+    );
+
+    if(!cell) {
+
+        p.dead = true;
+        return;
+    }
+
+    let dir = 0;
+
+    if(cell.type === "belt") {
+
+        dir = cell.dir;
+
+    } else {
+
+        if(cell.type === "input") {
+            dir = 0;
+        }
+
+        if(cell.type === "output") {
+
+            p.dead = true;
+
+            totalShipped++;
+
+            money += 12;
+
+            return;
+        }
+
+        if(cell.type === "splitter") {
+
+            dir = chooseSplitterDirection(
+                p.x,
+                p.y
+            );
+        }
+
+        if(cell.type === "merger") {
+
+            dir = cell.dir ?? 0;
+        }
+
+        if(cell.type === "sorter") {
+
+            dir = cell.dir ?? 0;
+        }
+
+        if(cell.type === "storage") {
+
+            p.waiting = true;
+
+            return;
+        }
+    }
+
+    if(p.waiting) {
+        p.waiting = false;
+    }
+
+    const v = directionVector(dir);
+
+    p.progress += dt * 1.25 * speed;
+
+    const start = cellCenter(
+        p.x,
+        p.y
+    );
+
+    p.offsetX = v.x * p.progress * TILE;
+    p.offsetY = v.y * p.progress * TILE;
+
+    p.anim += dt * 5 * speed;
+
+    if(p.progress >= 1) {
+
+        p.progress = 0;
+
+        const nx = p.x + v.x;
+        const ny = p.y + v.y;
+
+        const next = getCell(nx,ny);
+
+        if(next) {
+
+            p.x = nx;
+            p.y = ny;
+
+        } else {
+
+            p.progress = .95;
+        }
+    }
+}
+
+/* ------------------------------------------------ */
+
+function chooseSplitterDirection(x,y) {
+
+    const cell = grid[y][x];
+
+    cell.counter = (cell.counter || 0) + 1;
+
+    if(cell.counter % 2 === 0) {
+
+        if(getCell(x+1,y))
+            return 0;
+
+        if(getCell(x,y-1))
+            return 3;
+
+        if(getCell(x,y+1))
+            return 1;
+
+    } else {
+
+        if(getCell(x,y+1))
+            return 1;
+
+        if(getCell(x+1,y))
+            return 0;
+
+        if(getCell(x,y-1))
+            return 3;
+    }
+
+    return 0;
+}
+
+/* ------------------------------------------------ */
+
+function simulation(dt) {
+
+    if(paused) return;
+
+    spawnTimer += dt * speed;
+
+    const spawnEvery = .85;
+
+    if(spawnTimer >= spawnEvery) {
+
+        spawnTimer -= spawnEvery;
+
+        if(parcels.length < 80) {
+            spawnParcel();
+        }
+    }
+
+    for(const p of parcels) {
+
+        if(!p.dead) {
+            moveParcel(p,dt);
+        }
+    }
+
+    for(let i=parcels.length-1;i>=0;i--) {
+
+        if(parcels[i].dead) {
+            parcels.splice(i,1);
+        }
+    }
+
+    currentPPM =
+        Math.round(
+            Math.min(
+                totalShipped,
+                999
+            )
+        );
+
+    factoryValue = totalBuilt * 10;
+}
+
+/* ------------------------------------------------ */
+
+function render() {
+
+    drawBackground();
+
+    drawGrid();
+
+    drawParcels();
+
+    drawPlacementPreview();
+
+    updateHUD();
+}
+
+/* ------------------------------------------------ */
+
+function drawPlacementPreview() {
+
+    const c = mouseCell();
+
+    if(
+        c.x < 0 ||
+        c.x >= COLS ||
+        c.y < 0 ||
+        c.y >= ROWS
+    ) return;
+
+    if(
+        selectedTool === "select"
+    ) return;
+
+    const px = offsetX + c.x*TILE;
+    const py = offsetY + c.y*TILE;
+
+    let valid =
+        grid[c.y][c.x] === null;
+
+    ctx.fillStyle =
+        valid
+        ? "rgba(85,217,154,.15)"
+        : "rgba(255,90,90,.12)";
+
+    ctx.fillRect(
+        px+2,
+        py+2,
+        TILE-4,
+        TILE-4
+    );
+
+    ctx.strokeStyle =
+        valid
+        ? "rgba(85,217,154,.7)"
+        : "rgba(255,90,90,.6)";
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(
+        px+3,
+        py+3,
+        TILE-6,
+        TILE-6
+    );
+}
+
+/* ------------------------------------------------ */
+
+function updateHUD() {
+
+    document.getElementById("money")
+        .textContent =
+        Math.floor(money).toLocaleString("fr-FR") + " €";
+
+    document.getElementById("ppm")
+        .textContent =
+        currentPPM;
+
+    document.getElementById("shipped")
+        .textContent =
+        totalShipped;
+
+    document.getElementById("shipped2")
+        .textContent =
+        totalShipped;
+
+    document.getElementById("incoming")
+        .textContent =
+        totalIncoming + " total";
+
+    document.getElementById("waiting")
+        .textContent =
+        parcels.filter(p => p.waiting).length;
+
+    let efficiency = 100;
+
+    if(totalIncoming > 0) {
+
+        efficiency =
+            Math.round(
+                totalShipped /
+                totalIncoming *
+                100
+            );
+    }
+
+    efficiency =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                efficiency
+            )
+        );
+
+    document.getElementById("efficiency")
+        .textContent =
+        efficiency + " %";
+
+    document.getElementById("factoryValue")
+        .textContent =
+        factoryValue.toLocaleString("fr-FR") + " €";
+
+    const progress =
+        Math.min(
+            100,
+            totalShipped / 20 * 100
+        );
+
+    document.getElementById("objectiveProgress")
+        .style.width =
+        progress + "%";
+
+    if(totalShipped >= 20) {
+
+        document.getElementById("objectiveTitle")
+            .textContent =
+            "Objectif terminé !";
+
+        document.getElementById("objectiveText")
+            .textContent =
+            "Tu as expédié 20 colis. Continue pour construire ton centre logistique.";
+
+    } else {
+
+        document.getElementById("objectiveTitle")
+            .textContent =
+            "Première expédition";
+
+        document.getElementById("objectiveText")
+            .textContent =
+            "Expédie " +
+            (20-totalShipped) +
+            " colis supplémentaires.";
+    }
+
+    document.getElementById("speedText")
+        .textContent =
+        "×" + speed;
+}
+
+/* ------------------------------------------------ */
+
+function toolPrice(tool) {
+
+    return {
+        belt: 10,
+        splitter: 80,
+        merger: 80,
+        sorter: 250,
+        storage: 300,
+        erase: 0,
+        select: 0
+    }[tool] || 0;
+}
+
+/* ------------------------------------------------ */
+
+function placeAt(x,y) {
+
+    if(
+        x < 0 ||
+        x >= COLS ||
+        y < 0 ||
+        y >= ROWS
+    ) return;
+
+    const existing = grid[y][x];
+
+    if(selectedTool === "erase") {
+
+        if(
+            existing &&
+            existing.type !== "input" &&
+            existing.type !== "output"
+        ) {
+
+            grid[y][x] = null;
+
+            toast("Élément supprimé");
+        }
+
+        return;
+    }
+
+    if(selectedTool === "select") {
+
+        if(existing) {
+
+            let name = {
+                belt: "Tapis roulant",
+                splitter: "Répartiteur",
+                merger: "Fusionneur",
+                sorter: "Centre de tri",
+                storage: "Stockage",
+                input: "Arrivée des colis",
+                output: "Expédition"
+            }[existing.type];
+
+            toast(name || "Élément");
+        }
+
+        return;
+    }
+
+    if(existing) {
+
+        if(existing.type === "belt") {
+
+            if(selectedTool === "belt") {
+
+                existing.dir =
+                    (existing.dir + 1) % 4;
+
+                toast("Tapis tourné");
+            }
+
+            return;
+        }
+
+        return;
+    }
+
+    const price = toolPrice(selectedTool);
+
+    if(money < price) {
+
+        toast("Pas assez d'argent");
+
+        return;
+    }
+
+    if(selectedTool === "belt") {
+
+        grid[y][x] =
+            makeBelt(0);
+
+    } else {
+
+        grid[y][x] = {
+            type: selectedTool,
+            parcels: [],
+            dir: 0,
+            counter: 0
+        };
+    }
+
+    money -= price;
+
+    totalBuilt++;
+
+    saveGame();
+
+    toast("Construction terminée");
+}
+
+/* ------------------------------------------------ */
+
+function setTool(tool) {
+
+    selectedTool = tool;
+
+    document.querySelectorAll(".tool")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.tool === tool
+            );
+        });
+
+    const labels = {
+        belt: "Construction",
+        splitter: "Construction",
+        merger: "Construction",
+        sorter: "Construction",
+        storage: "Construction",
+        erase: "Démolition",
+        select: "Inspection"
+    };
+
+    document.getElementById("modeText")
+        .textContent =
+        labels[tool] || "Construction";
+}
+
+/* ------------------------------------------------ */
+
+document.querySelectorAll(".tool")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => setTool(button.dataset.tool)
+        );
+    });
+
+/* ------------------------------------------------ */
+
+document.querySelectorAll(".control-btn")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                speed =
+                    Number(button.dataset.speed);
+
+                document
+                    .querySelectorAll(".control-btn")
+                    .forEach(b =>
+                        b.classList.remove("active")
+                    );
+
+                button.classList.add("active");
+            }
+        );
+    });
+
+/* ------------------------------------------------ */
+
+document.getElementById("pauseBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            paused = !paused;
+
+            document.getElementById("pauseBtn")
+                .textContent =
+                paused
+                ? "▶ Reprendre"
+                : "⏸ Pause";
+        }
+    );
+
+/* ------------------------------------------------ */
+
+document.getElementById("resetBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            if(!confirm(
+                "Recommencer complètement la partie ?"
+            )) return;
+
+            localStorage.removeItem(
+                "parcelflow_save"
+            );
+
+            location.reload();
+        }
+    );
+
+/* ------------------------------------------------ */
+
+function updatePointer(e) {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    mouse.x =
+        e.clientX - rect.left;
+
+    mouse.y =
+        e.clientY - rect.top;
+}
+
+/* ------------------------------------------------ */
+
+canvas.addEventListener(
+    "pointermove",
+    e => {
+
+        updatePointer(e);
+
+        if(e.pointerType === "mouse" && mouse.down) {
+
+            const c = mouseCell();
+
+            placeAt(
+                c.x,
+                c.y
+            );
+        }
+    }
+);
+
+canvas.addEventListener(
+    "pointerdown",
+    e => {
+
+        updatePointer(e);
+
+        mouse.down = true;
+
+        canvas.setPointerCapture(
+            e.pointerId
+        );
+
+        const c = mouseCell();
+
+        placeAt(
+            c.x,
+            c.y
+        );
+    }
+);
+
+canvas.addEventListener(
+    "pointerup",
+    e => {
+
+        mouse.down = false;
+
+        try {
+            canvas.releasePointerCapture(
+                e.pointerId
+            );
+        } catch {}
+    }
+);
+
+/* ------------------------------------------------ */
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        if(e.key === "Escape") {
+            setTool("select");
+        }
+
+        if(e.key === "1") setTool("belt");
+        if(e.key === "2") setTool("splitter");
+        if(e.key === "3") setTool("merger");
+        if(e.key === "4") setTool("sorter");
+        if(e.key === "5") setTool("storage");
+
+        if(e.key === "x" || e.key === "Delete")
+            setTool("erase");
+
+        if(e.code === "Space") {
+
+            e.preventDefault();
+
+            document.getElementById("pauseBtn")
+                .click();
+        }
+    }
+);
+
+/* ------------------------------------------------ */
+
+function toast(message) {
+
+    const element =
+        document.getElementById("toast");
+
+    element.textContent = message;
+
+    element.classList.add("show");
+
+    clearTimeout(
+        toast.timeout
+    );
+
+    toast.timeout =
+        setTimeout(
+            () => {
+                element.classList.remove("show");
+            },
+            1000
+        );
+}
+
+/* ------------------------------------------------ */
+
+function saveGame() {
+
+    const data = {
+
+        money,
+        totalShipped,
+        totalIncoming,
+        totalBuilt,
+
+        grid: grid.map(row =>
+            row.map(cell => {
+
+                if(!cell) return null;
+
+                return {
+                    type: cell.type,
+                    dir: cell.dir || 0,
+                    counter: cell.counter || 0
+                };
+            })
+        )
+    };
+
+    localStorage.setItem(
+        "parcelflow_save",
+        JSON.stringify(data)
+    );
+}
+
+/* ------------------------------------------------ */
+
+function loadGame() {
+
+    const raw =
+        localStorage.getItem(
+            "parcelflow_save"
+        );
+
+    if(!raw) return;
+
+    try {
+
+        const data =
+            JSON.parse(raw);
+
+        money =
+            data.money ?? money;
+
+        totalShipped =
+            data.totalShipped ?? totalShipped;
+
+        totalIncoming =
+            data.totalIncoming ?? totalIncoming;
+
+        totalBuilt =
+            data.totalBuilt ?? totalBuilt;
+
+        if(data.grid) {
+
+            for(let y=0;y<ROWS;y++) {
+
+                for(let x=0;x<COLS;x++) {
+
+                    const saved =
+                        data.grid[y]?.[x];
+
+                    if(!saved) {
+
+                        grid[y][x] = null;
+
+                        continue;
+                    }
+
+                    grid[y][x] = {
+                        type: saved.type,
+                        dir: saved.dir || 0,
+                        counter: saved.counter || 0,
+                        parcels: []
+                    };
+                }
+            }
+        }
+
+    } catch(e) {
+
+        console.log(
+            "Sauvegarde invalide"
+        );
+    }
+}
+
+/* ------------------------------------------------ */
+
+setInterval(
+    saveGame,
+    5000
+);
+
+/* ------------------------------------------------ */
+
+function loop(now) {
+
+    const dt =
+        Math.min(
+            .05,
+            (now-lastTime)/1000
+        );
+
+    lastTime = now;
+
+    simulation(dt);
+
+    render();
+
+    requestAnimationFrame(loop);
+}
+
+loadGame();
+
+requestAnimationFrame(loop);
+
+</script>
+
+</body>
+</html>
